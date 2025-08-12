@@ -8,7 +8,7 @@
                 <div class="alert alert-warning"><?=$_SESSION["message"]?></div>
                 <?php } ?>
                 <div class="card-content">
-        	        <form id="form_input" method="post" action="<?=base_url()?>admin/kategori/updateData">
+        	        <form id="form_input" method="post" action="<?=base_url()?>admin/kategori/update-data">
         		        <div class="col-lg-7">
                 			<div class="card-body">
                 			  <div class="form-group row">

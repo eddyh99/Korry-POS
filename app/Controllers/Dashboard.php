@@ -25,7 +25,7 @@ class Dashboard extends BaseController
         $this->dashboard = new DashboardModel();
     }
 
-    public function index()
+    public function getIndex()
     {
         $data = [
             'title'   => 'Dashboard Area',

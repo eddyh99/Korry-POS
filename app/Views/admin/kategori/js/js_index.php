@@ -12,7 +12,7 @@ $(function(){
             "pageLength": 50,
             "scrollX": true,
 			"ajax": {
-					"url": "<?=base_url()?>admin/kategori/Listdata",
+					"url": "<?=base_url()?>admin/kategori/listdata",
 					"type": "POST",
 					"dataSrc":function (data){
 							return data;							
@@ -24,7 +24,7 @@ $(function(){
 				"mRender": function (data, type, full, meta){
 				    if (full.role!="Admin"){
 				        button='<a href="<?=base_url()?>admin/kategori/ubah/'+encodeURI(btoa(full.namakategori))+'" class="btn btn-simple btn-danger btn-icon remove"><i class="material-icons">update</i></a>';
-				        button=button+'<a href="<?=base_url()?>admin/kategori/DelData/'+encodeURI(btoa(full.namakategori))+'" class="btn btn-simple btn-danger btn-icon remove"><i class="material-icons">close</i></a>';
+				        button=button+'<a href="<?=base_url()?>admin/kategori/hapus/'+encodeURI(btoa(full.namakategori))+'" class="btn btn-simple btn-danger btn-icon remove"><i class="material-icons">close</i></a>';
     			        return button;
 				    }else{
 				        button='<a href="<?=base_url()?>admin/kategori/ubah/'+encodeURI(btoa(full.namakategori))+'" class="btn btn-simple btn-danger btn-icon remove"><i class="material-icons">update</i></a>';

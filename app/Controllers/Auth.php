@@ -21,7 +21,7 @@ class Auth extends BaseApiController
         $this->assignModel = new AssignModel();
     }
 
-    public function index()
+    public function getIndex()
     {
         $data = [
             'title'    => 'Login',
@@ -32,7 +32,7 @@ class Auth extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
-    public function auth_login()
+    public function postAuth_login()
     {
         $this->validation->setRules([
             'uname' => 'required',
@@ -84,14 +84,14 @@ class Auth extends BaseApiController
                 $this->session->set('logged_status.store', $store->store);
             }
 
-            return redirect()->to(base_url("admin/dashboard"));
+            return redirect()->to(base_url("dashboard"));
         }
 
         $this->session->setFlashdata('error', "Username atau password salah, mohon periksa ulang");
         return redirect()->to('/auth');
     }
 
-    public function auth_logout()
+    public function getAuth_logout()
     {
         $this->session->destroy();
         return redirect()->to('/auth');
