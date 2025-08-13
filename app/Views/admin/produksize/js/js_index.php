@@ -12,7 +12,7 @@ $(function(){
             "pageLength": 50,
             "scrollX": true,
 			"ajax": {
-					"url": "<?=base_url()?>admin/produksize/Listdata",
+					"url": "<?=base_url()?>admin/produksize/listdata",
 					"type": "POST",
 					"dataSrc":function (data){
 						console.log(data);
@@ -23,7 +23,7 @@ $(function(){
 				"aTargets": [4],
 				"mData": "barcode",
 				"mRender": function (data, type, full, meta){
-				        button='<a href="<?=base_url()?>admin/produksize/DelData/'+encodeURI(btoa(full.barcode))+'/'+encodeURI(btoa(full.size))+'" class="btn btn-simple btn-danger btn-icon remove"><i class="material-icons">close</i></a>';
+				        button='<a href="<?=base_url()?>admin/produksize/hapus/'+encodeURI(btoa(full.barcode))+'/'+encodeURI(btoa(full.size))+'" class="btn btn-simple btn-danger btn-icon remove"><i class="material-icons">close</i></a>';
     			        return button;
 				}
 			}],

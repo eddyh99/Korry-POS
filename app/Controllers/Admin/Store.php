@@ -58,20 +58,83 @@ class Store extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
+    // public function postAddData()
+    // {
+    //     $rules = [
+    //         'store'      => 'required',
+    //         'alamat'     => 'required',
+    //         'kontak'     => 'required',
+    //         'keterangan' => 'required'
+    //     ];
+
+    //     if (!$this->validate($rules)) {
+    //         $this->session->setFlashdata(
+    //             'message',
+    //             $this->message->error_msg($this->validation->listErrors())
+    //         );
+    //         return redirect()->to(base_url("admin/store/tambah"));
+    //     }
+
+    //     $data = [
+    //         "store"      => esc($this->request->getPost('store')),
+    //         "alamat"     => esc($this->request->getPost('alamat')),
+    //         "kontak"     => esc($this->request->getPost('kontak')),
+    //         "keterangan" => esc($this->request->getPost('keterangan')),
+    //         "userid"     => $this->session->get('logged_status')['username']
+    //     ];
+
+    //     $result = $this->storeModel->insertData($data);
+
+    //     if ($result["code"] == 0) {
+    //         $this->session->setFlashdata('message', 'Data berhasil disimpan.');
+    //         return redirect()->to(base_url("admin/store"));
+    //     } else {
+    //         $this->session->setFlashdata('message', 'Data gagal disimpan.');
+    //         return redirect()->to(base_url("admin/store/tambah"));
+    //     }
+    // }
     public function postAddData()
     {
         $rules = [
-            'store'      => 'required',
-            'alamat'     => 'required',
-            'kontak'     => 'required',
-            'keterangan' => 'required'
+            'store' => [
+                'label' => 'Nama Store',
+                'rules' => 'required|trim|max_length[30]|alpha_numeric_space',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.',
+                    'max_length' => '{field} maksimal 30 karakter.'
+                ]
+            ],
+            'alamat' => [
+                'label' => 'Alamat',
+                'rules' => 'required|trim|max_length[50]|alpha_numeric_punct',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'alpha_numeric_punct' => '{field} hanya boleh berisi huruf, angka, spasi, dan tanda baca tertentu.',
+                    'max_length' => '{field} maksimal 50 karakter.'
+                ]
+            ],
+            'kontak' => [
+                'label' => 'Nomor Telepon',
+                'rules' => 'required|regex_match[/^((\+62|62|0)8[1-9][0-9]{6,9}|0[2-9][0-9]{1,3}[0-9]{5,8})$/]',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'regex_match' => '{field} tidak valid. Gunakan format +62..., 08..., atau 0361....'
+                ]
+            ],
+            'keterangan' => [
+                'label' => 'Keterangan',
+                'rules' => 'required|trim|max_length[100]|alpha_numeric_punct',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'alpha_numeric_punct' => '{field} hanya boleh berisi huruf, angka, spasi, dan tanda baca tertentu.',
+                    'max_length' => '{field} maksimal 100 karakter.'
+                ]
+            ]
         ];
 
         if (!$this->validate($rules)) {
-            $this->session->setFlashdata(
-                'message',
-                $this->message->error_msg($this->validation->listErrors())
-            );
+            $this->session->setFlashdata('message', implode('<br>', $this->validator->getErrors()));
             return redirect()->to(base_url("admin/store/tambah"));
         }
 
@@ -96,10 +159,6 @@ class Store extends BaseApiController
 
     public function getUbah($storeid)
     {
-        if (!$this->session->get('logged_status')) {
-            return redirect()->to(base_url());
-        }
-
         $storeid = base64_decode(esc($storeid));
         $result  = $this->storeModel->getStore($storeid);
 
@@ -116,22 +175,86 @@ class Store extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
+    // public function postUpdateData()
+    // {
+    //     $rules = [
+    //         'store'      => 'required',
+    //         'alamat'     => 'required',
+    //         'kontak'     => 'required',
+    //         'keterangan' => 'required'
+    //     ];
+
+    //     $storeid = esc($this->request->getPost('storeid'));
+
+    //     if (!$this->validate($rules)) {
+    //         $this->session->setFlashdata(
+    //             'message',
+    //             $this->message->error_msg($this->validation->listErrors())
+    //         );
+    //         return redirect()->to(base_url("admin/store/ubah/" . base64_encode($storeid)));
+    //     }
+
+    //     $data = [
+    //         "store"      => esc($this->request->getPost('store')),
+    //         "alamat"     => esc($this->request->getPost('alamat')),
+    //         "kontak"     => esc($this->request->getPost('kontak')),
+    //         "keterangan" => esc($this->request->getPost('keterangan')),
+    //         "userid"     => $this->session->get('logged_status')['username']
+    //     ];
+
+    //     $result = $this->storeModel->updateData($data, $storeid);
+
+    //     if ($result["code"] == 0) {
+    //         $this->session->setFlashdata('message', 'Data berhasil diubah.');
+    //         return redirect()->to(base_url("admin/store"));
+    //     } else {
+    //         $this->session->setFlashdata('message', 'Data gagal diubah.');
+    //         return redirect()->to(base_url("admin/store/ubah/" . base64_encode($storeid)));
+    //     }
+    // }
     public function postUpdateData()
     {
         $rules = [
-            'store'      => 'required',
-            'alamat'     => 'required',
-            'kontak'     => 'required',
-            'keterangan' => 'required'
+            'store' => [
+                'label' => 'Nama Cabang',
+                'rules' => 'required|trim|max_length[100]|alpha_numeric_space',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.',
+                ]
+            ],
+            'alamat' => [
+                'label' => 'Alamat',
+                'rules' => 'required|trim|max_length[255]|alpha_numeric_space',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.',
+                ]
+            ],
+            'kontak' => [
+                'label' => 'Nomor Telepon',
+                'rules' => 'required|regex_match[/^((\+62|62|0)8[1-9][0-9]{6,9}|0[2-9][0-9]{1,3}[0-9]{5,8})$/]',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'regex_match' => '{field} tidak valid. Masukkan nomor HP atau telepon rumah yang benar.',
+                ]
+            ],
+            'keterangan' => [
+                'label' => 'Keterangan',
+                'rules' => 'required|max_length[100]|alpha_numeric_space',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.',
+                ]
+            ],
         ];
 
         $storeid = esc($this->request->getPost('storeid'));
 
         if (!$this->validate($rules)) {
-            $this->session->setFlashdata(
-                'message',
-                $this->message->error_msg($this->validation->listErrors())
-            );
+            log_message('error', 'Validasi gagal pada postUpdateData Store ID ' . $storeid . ': ' . json_encode($this->validator->getErrors()));
+
+            $this->session->setFlashdata('message', implode('<br>', $this->validator->getErrors()));
             return redirect()->to(base_url("admin/store/ubah/" . base64_encode($storeid)));
         }
 
@@ -146,9 +269,11 @@ class Store extends BaseApiController
         $result = $this->storeModel->updateData($data, $storeid);
 
         if ($result["code"] == 0) {
+            log_message('info', 'Store ID ' . $storeid . ' berhasil diubah.');
             $this->session->setFlashdata('message', 'Data berhasil diubah.');
             return redirect()->to(base_url("admin/store"));
         } else {
+            log_message('error', 'Gagal update Store ID ' . $storeid . ': ' . $result['message']);
             $this->session->setFlashdata('message', 'Data gagal diubah.');
             return redirect()->to(base_url("admin/store/ubah/" . base64_encode($storeid)));
         }

@@ -8,7 +8,7 @@
                 <div class="alert alert-warning"><?=$_SESSION["message"]?></div>
                 <?php } ?>
                 <div class="card-content">
-        	        <form id="form_input" method="post" action="<?=base_url()?>admin/stok/AddData">
+        	        <form id="form_input" method="post" action="<?=base_url()?>admin/stok/add-data">
         	            <input type="hidden" name="restock" value="<?=$restock?>">
         		        <div class="col-lg-7">
                 			<div class="card-body">
@@ -32,11 +32,14 @@
                 				<label class="col-sm-4 col-form-label">Nama Produk</label>
                 				<div class="col-sm-6">
                 				    <input type="text" class="form-control" id="produk" name="produk" list="dataproduk">
-                				    <datalist id="dataproduk">
-                				        <?php foreach ($produk as $dt){?>
-                				            <option data-barcode="<?=$dt["barcode"]?>" value="<?=$dt["namaproduk"]?>">
-                				        <?php } ?>
-                				    </datalist>
+									<datalist id="dataproduk">
+										<?php foreach ($produk as $dt) { ?>
+											<option 
+												data-barcode="<?= $dt["barcode"] ?>" 
+												data-brand="<?= $dt["namabrand"] ?>" 
+												value="<?= $dt["namaproduk"] ?>">
+											<?php } ?>
+									</datalist>
                 				</div>
                 			  </div>
                 			  <div class="form-group row">

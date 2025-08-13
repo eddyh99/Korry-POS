@@ -50,19 +50,56 @@ class Kategori extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
+    // public function postAddData()
+    // {
+    //     $rules = [
+    //         'kategori' => 'trim|required'
+    //     ];
+
+    //     if (! $this->validate($rules)) {
+    //         session()->setFlashdata('message', $this->message->error_msg($this->validator->listErrors()));
+    //         return redirect()->to('/admin/kategori/tambah');
+    //     }
+
+    //     $kategori = ucfirst($this->request->getPost('kategori'));
+    //     $userid   = session()->get('logged_status')['username'] ?? '';
+
+    //     $data = [
+    //         'namakategori' => $kategori,
+    //         'userid'       => $userid
+    //     ];
+
+    //     $result = $this->kategoriModel->insertData($data);
+
+    //     if ($result['code'] == 0) {
+    //         $this->session->setFlashdata('message', 'Data berhasil disimpan.');
+    //         return redirect()->to('/admin/kategori');
+    //     } else {
+    //         $this->session->setFlashdata('message', 'Data gagal disimpan.');
+    //         return redirect()->to('/admin/kategori/tambah');
+    //     }
+    // }
     public function postAddData()
     {
         $rules = [
-            'kategori' => 'trim|required'
+            'kategori' => [
+                'label' => 'Kategori',
+                'rules' => 'required|alpha_numeric_space|max_length[20]',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'alpha_numeric_space' => '{field} hanya boleh huruf, angka, dan spasi.',
+                    'max_length' => '{field} maksimal 20 karakter.'
+                ]
+            ]
         ];
 
         if (! $this->validate($rules)) {
-            session()->setFlashdata('message', $this->message->error_msg($this->validator->listErrors()));
+            $this->session->setFlashdata('message', implode('<br>', $this->validator->getErrors()));
             return redirect()->to('/admin/kategori/tambah');
         }
 
-        $kategori = ucfirst($this->request->getPost('kategori'));
-        $userid   = session()->get('logged_status')['username'] ?? '';
+        $kategori = ucfirst(trim($this->request->getPost('kategori')));
+        $userid   = $this->session->get('logged_status')['username'] ?? '';
 
         $data = [
             'namakategori' => $kategori,
@@ -71,13 +108,10 @@ class Kategori extends BaseApiController
 
         $result = $this->kategoriModel->insertData($data);
 
-        if ($result['code'] == 0) {
-            $this->session->setFlashdata('message', 'Data berhasil disimpan.');
-            return redirect()->to('/admin/kategori');
-        } else {
-            $this->session->setFlashdata('message', 'Data gagal disimpan.');
-            return redirect()->to('/admin/kategori/tambah');
-        }
+        $msg = ($result['code'] == 0) ? 'Data berhasil disimpan.' : 'Data gagal disimpan.';
+        $this->session->setFlashdata('message', $msg);
+
+        return redirect()->to('/admin/kategori');
     }
 
     public function getUbah($kategori)
@@ -98,21 +132,60 @@ class Kategori extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
+    // public function postUpdateData()
+    // {
+    //     $rules = [
+    //         'kategori' => 'trim|required'
+    //     ];
+
+    //     $oldKategori = $this->request->getPost('oldkategori');
+
+    //     if (! $this->validate($rules)) {
+    //         session()->setFlashdata('message', $this->message->error_msg($this->validator->listErrors()));
+    //         return redirect()->to('/admin/kategori/ubah/' . base64_encode($oldkategori));
+    //     }
+
+    //     $kategori = ucfirst($this->request->getPost('kategori'));
+    //     $userid   = session()->get('logged_status')['username'] ?? '';
+
+    //     $data = [
+    //         'namakategori' => $kategori,
+    //         'userid'       => $userid
+    //     ];
+
+    //     $result = $this->kategoriModel->updateData($data, $oldKategori);
+
+    //     if ($result['code'] == 0) {
+    //         $this->session->setFlashdata('message', 'Data berhasil diubah.');
+    //         return redirect()->to('/admin/kategori');
+    //     } else {
+    //         $this->session->setFlashdata('message', 'Data gagal diubah.');
+    //         return redirect()->to('/admin/kategori/ubah/' . base64_encode($oldKategori));
+    //     }
+    // }
     public function postUpdateData()
     {
         $rules = [
-            'kategori' => 'trim|required'
+            'kategori' => [
+                'label' => 'Kategori',
+                'rules' => 'required|alpha_numeric_space|max_length[20]',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'alpha_numeric_space' => '{field} hanya boleh huruf, angka, dan spasi.',
+                    'max_length' => '{field} maksimal 20 karakter.'
+                ]
+            ]
         ];
 
         $oldKategori = $this->request->getPost('oldkategori');
 
         if (! $this->validate($rules)) {
-            session()->setFlashdata('message', $this->message->error_msg($this->validator->listErrors()));
-            return redirect()->to('/admin/kategori/ubah/' . base64_encode($oldkategori));
+            $this->session->setFlashdata('message', implode('<br>', $this->validator->getErrors()));
+            return redirect()->to('/admin/kategori/ubah/' . base64_encode($oldKategori));
         }
 
-        $kategori = ucfirst($this->request->getPost('kategori'));
-        $userid   = session()->get('logged_status')['username'] ?? '';
+        $kategori = ucfirst(trim($this->request->getPost('kategori')));
+        $userid   = $this->session->get('logged_status')['username'] ?? '';
 
         $data = [
             'namakategori' => $kategori,
@@ -121,13 +194,10 @@ class Kategori extends BaseApiController
 
         $result = $this->kategoriModel->updateData($data, $oldKategori);
 
-        if ($result['code'] == 0) {
-            $this->session->setFlashdata('message', 'Data berhasil diubah.');
-            return redirect()->to('/admin/kategori');
-        } else {
-            $this->session->setFlashdata('message', 'Data gagal diubah.');
-            return redirect()->to('/admin/kategori/ubah/' . base64_encode($oldKategori));
-        }
+        $msg = ($result['code'] == 0) ? 'Data berhasil diubah.' : 'Data gagal diubah.';
+        $this->session->setFlashdata('message', $msg);
+
+        return redirect()->to('/admin/kategori');
     }
 
     public function getHapus($kategori)

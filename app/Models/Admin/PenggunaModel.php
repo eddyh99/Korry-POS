@@ -48,14 +48,21 @@ class PenggunaModel extends Model
 		
 	}
 
+    // public function insertData($data)
+    // {
+    //     $sql = $this->db->table($this->table)
+    //                     ->set($data)
+    //                     ->getCompiledInsert() . 
+    //            " ON DUPLICATE KEY UPDATE passwd=?, nama=?, role=?, status='0'";
+
+    //     if ($this->db->query($sql, [$data['passwd'], $data['nama'], $data['role']])) {
+    //         return ['code' => 0, 'message' => ''];
+    //     }
+    //     return $this->db->error();
+    // }
     public function insertData($data)
     {
-        $sql = $this->db->table($this->table)
-                        ->set($data)
-                        ->getCompiledInsert() . 
-               " ON DUPLICATE KEY UPDATE passwd=?, nama=?, role=?, status='0'";
-
-        if ($this->db->query($sql, [$data['passwd'], $data['nama'], $data['role']])) {
+        if ($this->db->table($this->table)->insert($data)) {
             return ['code' => 0, 'message' => ''];
         }
         return $this->db->error();

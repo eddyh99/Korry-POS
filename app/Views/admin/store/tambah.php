@@ -26,7 +26,7 @@
                 			  <div class="form-group row">
                 				<label class="col-sm-3 col-form-label">Kontak</label>
                 				<div class="col-sm-7">
-                				  <input type="text" class="form-control" id="kontak" name="kontak" maxlength="50">
+                				  <input type="text" class="form-control" id="kontak" name="kontak" maxlength="50" placeholder="Masukkan No. HP atau Telepon (ex: 0812..., 021...)">
                 				</div>
                 			  </div>
                 			  <div class="form-group row">

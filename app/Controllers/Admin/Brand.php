@@ -50,36 +50,80 @@ class Brand extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
+    // public function postAddData()
+    // {
+    //     $rules = [
+    //         'brand' => 'trim|required',
+    //     ];
+
+    //     if (! $this->validate($rules)) {
+    //         session()->setFlashdata('message', $this->message->error_msg($this->validator->listErrors()));
+    //         return redirect()->to('/admin/brand/tambah');
+    //     }
+
+    //     $brand      = esc($this->request->getPost('brand'));
+    //     $keterangan = esc($this->request->getPost('keterangan'));
+    //     $userid     = session()->get('logged_status')['username'];
+
+    //     $data = [
+    //         'namabrand'  => ucfirst($brand),
+    //         'keterangan' => $keterangan,
+    //         'userid'     => $userid
+    //     ];
+
+    //     $result = $this->brandModel->insertData($data);
+
+    //     if ($result['code'] == 0) {
+    //         $this->session->setFlashdata('message', 'Data berhasil disimpan.');
+    //         return redirect()->to('/admin/brand');
+    //     } else {
+    //         $this->session->setFlashdata('message', 'Data gagal disimpan.');
+    //         return redirect()->to('/admin/brand/tambah');
+    //     }
+    // }
     public function postAddData()
     {
         $rules = [
-            'brand' => 'trim|required',
+            'brand' => [
+                'label'  => 'Nama Brand',
+                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
+                'errors' => [
+                    'required'             => '{field} wajib diisi.',
+                    'alpha_numeric_space'  => '{field} hanya boleh berisi huruf, angka, dan spasi.',
+                    'max_length'           => '{field} maksimal 50 karakter.'
+                ]
+            ],
+            'keterangan' => [
+                'label'  => 'Keterangan',
+                'rules'  => 'required|trim|max_length[100]|alpha_numeric_punct',
+                'errors' => [
+                    'required'             => '{field} wajib diisi.',
+                    'alpha_numeric_punct'  => '{field} hanya boleh berisi huruf, angka, spasi, dan tanda baca tertentu.',
+                    'max_length'           => '{field} maksimal 100 karakter.'
+                ]
+            ]
         ];
 
         if (! $this->validate($rules)) {
-            session()->setFlashdata('message', $this->message->error_msg($this->validator->listErrors()));
-            return redirect()->to('/admin/brand/tambah');
+            session()->setFlashdata('message', implode('<br>', $this->validator->getErrors()));
+            return redirect()->to('/admin/brand/tambah')->withInput();
         }
 
-        $brand      = esc($this->request->getPost('brand'));
-        $keterangan = esc($this->request->getPost('keterangan'));
-        $userid     = session()->get('logged_status')['username'];
-
         $data = [
-            'namabrand'  => ucfirst($brand),
-            'keterangan' => $keterangan,
-            'userid'     => $userid
+            'namabrand'  => ucfirst(esc($this->request->getPost('brand'))),
+            'keterangan' => esc($this->request->getPost('keterangan')),
+            'userid'     => session()->get('logged_status')['username']
         ];
 
         $result = $this->brandModel->insertData($data);
 
         if ($result['code'] == 0) {
-            $this->session->setFlashdata('message', 'Data berhasil disimpan.');
+            session()->setFlashdata('message', 'Data berhasil disimpan.');
             return redirect()->to('/admin/brand');
-        } else {
-            $this->session->setFlashdata('message', 'Data gagal disimpan.');
-            return redirect()->to('/admin/brand/tambah');
         }
+
+        session()->setFlashdata('message', 'Data gagal disimpan: ' . ($result['message'] ?? ''));
+        return redirect()->to('/admin/brand/tambah')->withInput();
     }
 
     public function getUbah($brand)
@@ -100,38 +144,84 @@ class Brand extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
+    // public function postUpdateData()
+    // {
+    //     $rules = [
+    //         'brand' => 'trim|required',
+    //     ];
+
+    //     $oldbrand = esc($this->request->getPost('oldbrand'));
+
+    //     if (! $this->validate($rules)) {
+    //         session()->setFlashdata('message', $this->message->error_msg($this->validator->listErrors()));
+    //         return redirect()->to('/admin/brand/ubah/' . base64_encode($oldbrand));
+    //     }
+
+    //     $brand      = esc($this->request->getPost('brand'));
+    //     $keterangan = esc($this->request->getPost('keterangan'));
+    //     $userid     = session()->get('logged_status')['username'];
+
+    //     $data = [
+    //         'namabrand'  => ucfirst($brand),
+    //         'keterangan' => $keterangan,
+    //         'userid'     => $userid
+    //     ];
+
+    //     $result = $this->brandModel->updateData($data, $oldbrand);
+
+    //     if ($result['code'] == 0) {
+    //         $this->session->setFlashdata('message', 'Data berhasil diubah.');
+    //         return redirect()->to('/admin/brand');
+    //     } else {
+    //         $this->session->setFlashdata('message', 'Data gagal diubah.');
+    //         return redirect()->to('/admin/brand/ubah/' . base64_encode($oldbrand));
+    //     }
+    // }
     public function postUpdateData()
     {
         $rules = [
-            'brand' => 'trim|required',
+            'brand' => [
+                'label'  => 'Nama Brand',
+                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
+                'errors' => [
+                    'required'             => '{field} wajib diisi.',
+                    'alpha_numeric_space'  => '{field} hanya boleh berisi huruf, angka, dan spasi.',
+                    'max_length'           => '{field} maksimal 50 karakter.'
+                ]
+            ],
+            'keterangan' => [
+                'label'  => 'Keterangan',
+                'rules'  => 'required|trim|max_length[100]|alpha_numeric_punct',
+                'errors' => [
+                    'required'             => '{field} wajib diisi.',
+                    'alpha_numeric_punct'  => '{field} hanya boleh berisi huruf, angka, spasi, dan tanda baca tertentu.',
+                    'max_length'           => '{field} maksimal 100 karakter.'
+                ]
+            ]
         ];
 
         $oldbrand = esc($this->request->getPost('oldbrand'));
 
         if (! $this->validate($rules)) {
-            session()->setFlashdata('message', $this->message->error_msg($this->validator->listErrors()));
-            return redirect()->to('/admin/brand/ubah/' . base64_encode($oldbrand));
+            session()->setFlashdata('message', implode('<br>', $this->validator->getErrors()));
+            return redirect()->to('/admin/brand/ubah/' . base64_encode($oldbrand))->withInput();
         }
 
-        $brand      = esc($this->request->getPost('brand'));
-        $keterangan = esc($this->request->getPost('keterangan'));
-        $userid     = session()->get('logged_status')['username'];
-
         $data = [
-            'namabrand'  => ucfirst($brand),
-            'keterangan' => $keterangan,
-            'userid'     => $userid
+            'namabrand'  => ucfirst(esc($this->request->getPost('brand'))),
+            'keterangan' => esc($this->request->getPost('keterangan')),
+            'userid'     => session()->get('logged_status')['username']
         ];
 
         $result = $this->brandModel->updateData($data, $oldbrand);
 
         if ($result['code'] == 0) {
-            $this->session->setFlashdata('message', 'Data berhasil diubah.');
+            session()->setFlashdata('message', 'Data berhasil diubah.');
             return redirect()->to('/admin/brand');
-        } else {
-            $this->session->setFlashdata('message', 'Data gagal diubah.');
-            return redirect()->to('/admin/brand/ubah/' . base64_encode($oldbrand));
         }
+
+        session()->setFlashdata('message', 'Data gagal diubah: ' . ($result['message'] ?? ''));
+        return redirect()->to('/admin/brand/ubah/' . base64_encode($oldbrand))->withInput();
     }
 
     public function getHapus($brand)

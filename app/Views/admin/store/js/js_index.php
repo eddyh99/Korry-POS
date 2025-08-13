@@ -5,7 +5,7 @@
     }
 </style>
 <script>
-var table;
+	var table;
 	$(function(){
 		console.log("Inisialisasi DataTable untuk Store...");
 

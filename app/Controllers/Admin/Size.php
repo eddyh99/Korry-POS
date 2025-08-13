@@ -60,19 +60,55 @@ class Size extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
+    // public function postAddData()
+    // {
+    //     $rules = [
+    //         'size' => 'trim|required',
+    //     ];
+
+    //     if (! $this->validate($rules)) {
+    //         session()->setFlashdata('message', $this->validator->listErrors());
+    //         return redirect()->to('/admin/size/tambah');
+    //     }
+
+    //     $size   = esc($this->request->getPost('size'));
+    //     $userid = session()->get('logged_status')['username'];
+
+    //     $data = [
+    //         'nama'   => $size,
+    //         'userid' => $userid
+    //     ];
+
+    //     $result = $this->sizeModel->insertData($data);
+
+    //     if ($result['code'] == 0) {
+    //         session()->setFlashdata('message', 'Data berhasil disimpan.');
+    //         return redirect()->to('/admin/size');
+    //     } else {
+    //         session()->setFlashdata('message', 'Data gagal disimpan: ' . $result['message']);
+    //         return redirect()->to('/admin/size/tambah');
+    //     }
+    // }
     public function postAddData()
     {
         $rules = [
-            'size' => 'trim|required',
+            'size' => [
+                'label' => 'Size',
+                'rules' => 'required|regex_match[/^(XS|S|M|L|XL|XXL|XXXL|4XL|5XL|6XL|7XL)$/]',
+                'errors' => [
+                    'required'    => '{field} wajib diisi.',
+                    'regex_match' => '{field} harus berupa ukuran baju yang valid (misal: S, M, L, XL, XXL, 3XL).'
+                ]
+            ]
         ];
 
         if (! $this->validate($rules)) {
-            session()->setFlashdata('message', $this->validator->listErrors());
+            session()->setFlashdata('message', implode('<br>', $this->validator->getErrors()));
             return redirect()->to('/admin/size/tambah');
         }
 
-        $size   = esc($this->request->getPost('size'));
-        $userid = session()->get('logged_status')['username'];
+        $size   = strtoupper(trim($this->request->getPost('size')));
+        $userid = session()->get('logged_status')['username'] ?? '';
 
         $data = [
             'nama'   => $size,
@@ -81,13 +117,10 @@ class Size extends BaseApiController
 
         $result = $this->sizeModel->insertData($data);
 
-        if ($result['code'] == 0) {
-            session()->setFlashdata('message', 'Data berhasil disimpan.');
-            return redirect()->to('/admin/size');
-        } else {
-            session()->setFlashdata('message', 'Data gagal disimpan: ' . $result['message']);
-            return redirect()->to('/admin/size/tambah');
-        }
+        $msg = ($result['code'] == 0) ? 'Data berhasil disimpan.' : 'Data gagal disimpan: ' . $result['message'];
+        session()->setFlashdata('message', $msg);
+
+        return redirect()->to('/admin/size');
     }
 
     public function getUbah($size)
@@ -111,21 +144,59 @@ class Size extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
+    // public function postUpdateData()
+    // {
+    //     $rules = [
+    //         'size' => 'trim|required',
+    //     ];
+
+    //     $oldsize = esc($this->request->getPost('oldsize'));
+
+    //     if (! $this->validate($rules)) {
+    //         session()->setFlashdata('message', $this->validator->listErrors());
+    //         return redirect()->to('/admin/size/ubah/' . base64_encode($oldsize));
+    //     }
+
+    //     $size   = esc($this->request->getPost('size'));
+    //     $userid = session()->get('logged_status')['username'];
+
+    //     $data = [
+    //         'nama'   => $size,
+    //         'userid' => $userid
+    //     ];
+
+    //     $result = $this->sizeModel->updateData($data, $oldsize);
+
+    //     if ($result['code'] == 0) {
+    //         session()->setFlashdata('message', 'Data berhasil diubah.');
+    //         return redirect()->to('/admin/size');
+    //     } else {
+    //         session()->setFlashdata('message', 'Data gagal diubah: ' . $result['message']);
+    //         return redirect()->to('/admin/size/ubah/' . base64_encode($oldsize));
+    //     }
+    // }
     public function postUpdateData()
     {
         $rules = [
-            'size' => 'trim|required',
+            'size' => [
+                'label' => 'Size',
+                'rules' => 'required|regex_match[/^(XS|S|M|L|XL|XXL|XXXL|4XL|5XL|6XL|7XL)$/]',
+                'errors' => [
+                    'required'    => '{field} wajib diisi.',
+                    'regex_match' => '{field} harus berupa ukuran baju yang valid (misal: S, M, L, XL, XXL, 3XL).'
+                ]
+            ]
         ];
 
-        $oldsize = esc($this->request->getPost('oldsize'));
+        $oldsize = strtoupper(trim($this->request->getPost('oldsize')));
 
         if (! $this->validate($rules)) {
-            session()->setFlashdata('message', $this->validator->listErrors());
+            session()->setFlashdata('message', implode('<br>', $this->validator->getErrors()));
             return redirect()->to('/admin/size/ubah/' . base64_encode($oldsize));
         }
 
-        $size   = esc($this->request->getPost('size'));
-        $userid = session()->get('logged_status')['username'];
+        $size   = strtoupper(trim($this->request->getPost('size')));
+        $userid = session()->get('logged_status')['username'] ?? '';
 
         $data = [
             'nama'   => $size,
@@ -134,13 +205,10 @@ class Size extends BaseApiController
 
         $result = $this->sizeModel->updateData($data, $oldsize);
 
-        if ($result['code'] == 0) {
-            session()->setFlashdata('message', 'Data berhasil diubah.');
-            return redirect()->to('/admin/size');
-        } else {
-            session()->setFlashdata('message', 'Data gagal diubah: ' . $result['message']);
-            return redirect()->to('/admin/size/ubah/' . base64_encode($oldsize));
-        }
+        $msg = ($result['code'] == 0) ? 'Data berhasil diubah.' : 'Data gagal diubah: ' . $result['message'];
+        session()->setFlashdata('message', $msg);
+
+        return redirect()->to('/admin/size');
     }
 
     public function getHapus($size)

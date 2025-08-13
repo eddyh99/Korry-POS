@@ -14,19 +14,19 @@
                 			  <div class="form-group row">
                 				<label class="col-sm-3 col-form-label">Username</label>
                 				<div class="col-sm-7">
-                				  <input type="text" class="form-control" id="username" name="username" maxlength="20">
+                				  <input type="text" class="form-control" id="username" name="username" maxlength="20" required>
                 				</div>
                 			  </div>
                 			  <div class="form-group row">
                 				<label class="col-sm-3 col-form-label">Password</label>
                 				<div class="col-sm-7">
-                				  <input type="password" class="form-control" id="password" name="password" maxlength="10">
+                				  <input type="password" class="form-control" id="password" name="password" maxlength="10" required>
                 				</div>
                 			  </div>
                 			  <div class="form-group row">
                 				<label class="col-sm-3 col-form-label">Nama</label>
                 				<div class="col-sm-7">
-                				  <input type="text" class="form-control" id="nama" name="nama" maxlength="50">
+                				  <input type="text" class="form-control" id="nama" name="nama" maxlength="50" required>
                 				</div>
                 			  </div>
                 			  <div class="form-group row">

@@ -6,50 +6,69 @@ use CodeIgniter\Model;
 
 class AssignModel extends Model
 {
-    protected $table           = 'assignstore';
-    protected $primaryKey      = 'username';
-    protected $allowedFields   = ['username', 'storeid', 'status', 'userid', 'lastupdate'];
-    protected $returnType      = 'object';
-    protected $useTimestamps   = false;
+    protected $table         = 'assignstore';
+    protected $primaryKey    = 'username';
+    protected $allowedFields = ['username', 'storeid', 'status', 'userid'];
 
-    protected $tablePengguna   = 'pengguna';
-    protected $tableStore      = 'store';
+    private $pengguna    = 'pengguna';
+    private $store       = 'store';
+    private $assignstore = 'assignstore';
 
-    // Daftar Staff dengan join
-    public function listStaff()
+    public function ListStaff()
     {
-        $sql = "SELECT a.username, b.nama, c.store, c.alamat, a.storeid
-                FROM {$this->table} a
-                INNER JOIN {$this->tablePengguna} b ON a.username = b.username
-                INNER JOIN {$this->tableStore} c ON a.storeid = c.storeid
-                WHERE a.status = '0' AND (b.role <> 'Admin')";
-        return $this->db->query($sql)->getResult();
+        $sql = "
+            SELECT a.username, b.nama, c.store, c.alamat, a.storeid
+            FROM {$this->assignstore} a
+            INNER JOIN {$this->pengguna} b ON a.username = b.username
+            INNER JOIN {$this->store} c ON a.storeid = c.storeid
+            WHERE a.status = '0'
+              AND (b.role <> 'Admin')
+        ";
+
+        $query = $this->db->query($sql);
+        return $query->getResultArray();
     }
 
-    // Get store berdasarkan username assign
     public function getStoreID($username)
     {
-        $sql = "SELECT a.*, b.store
-                FROM {$this->table} a
-                INNER JOIN {$this->tableStore} b ON a.storeid = b.storeid
-                WHERE a.status = '0' AND a.username = ?";
-        return $this->db->query($sql, [$username])->getRow();
+        $sql = "
+            SELECT a.*, b.store
+            FROM {$this->assignstore} a
+            INNER JOIN {$this->store} b ON a.storeid = b.storeid
+            WHERE a.status = '0'
+              AND a.username = ?
+        ";
+
+        $query = $this->db->query($sql, [$username]);
+        return $query->getRow();
     }
 
-    // Insert data assignstore, jika duplicate update status jadi 0 (aktif)
     public function insertData(array $data)
     {
-        // Gunakan query manual ON DUPLICATE KEY UPDATE
-        $builder = $this->db->table($this->table);
-        $sql = $builder->set($data)->getCompiledInsert() . " ON DUPLICATE KEY UPDATE status = '0', lastupdate = CURRENT_TIMESTAMP";
+        // di CI4 tidak ada insert_string, langsung raw SQL
+        $columns = implode(',', array_keys($data));
+        $values  = implode(',', array_map(fn($v) => $this->db->escape($v), array_values($data)));
 
-        return $this->db->query($sql);
+        $sql = "
+            INSERT INTO {$this->assignstore} ({$columns})
+            VALUES ({$values})
+            ON DUPLICATE KEY UPDATE status='0'
+        ";
+
+        if ($this->db->query($sql)) {
+            return ['code' => 0, 'message' => ''];
+        }
+        return $this->db->error();
     }
 
-    // Update data dengan where kondisi tertentu
     public function hapusData(array $data, array $where)
     {
-        $builder = $this->db->table($this->table);
-        return $builder->where($where)->update($data);
+        $builder = $this->db->table($this->assignstore);
+        $builder->where($where);
+
+        if ($builder->update($data)) {
+            return ['code' => 0, 'message' => ''];
+        }
+        return $this->db->error();
     }
 }

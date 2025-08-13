@@ -8,7 +8,7 @@
                 <div class="alert alert-warning"><?=$this->session->flashdata("message")?></div>
                 <?php } ?>
                 <div class="card-content">
-        	        <form id="form_input" method="post" action="<?=base_url()?>admin/produk/updateData">
+        	        <form id="form_input" method="post" action="<?=base_url()?>admin/produk/update-data">
         		        <div class="col-lg-6">
                 			<div class="card-body">
                 				<div class="form-group row">

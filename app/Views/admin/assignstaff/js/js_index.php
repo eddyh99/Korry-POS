@@ -12,7 +12,7 @@ $(function(){
             "scrollX": true,
             "pageLength": 50,
 			"ajax": {
-					"url": "<?=base_url()?>admin/assignstaff/Listdata",
+					"url": "<?=base_url()?>admin/assignstaff/listdata",
 					"type": "POST",
 					"dataSrc":function (data){
 							return data;							
@@ -24,7 +24,7 @@ $(function(){
 				"mRender": function (data, type, full, meta){
 					console.log(full.storeid);
 				    if (full.role!="Admin"){
-				        button='<a href="<?=base_url()?>admin/assignstaff/DelData/'+encodeURI(btoa(full.username))+'/'+encodeURI(btoa(full.storeid))+'" class="btn btn-simple btn-danger btn-icon remove"><i class="material-icons">close</i></a>';
+				        button='<a href="<?=base_url()?>admin/assignstaff/hapus/'+encodeURI(btoa(full.username))+'/'+encodeURI(btoa(full.storeid))+'" class="btn btn-simple btn-danger btn-icon remove"><i class="material-icons">close</i></a>';
     			        return button;
 				    }
 				}
