@@ -39,7 +39,7 @@ var table;
             ],
             "scrollX": true,
 			"ajax": {
-				"url": "<?=base_url()?>admin/laporan/Listnontunai",
+				"url": "<?=base_url()?>admin/laporan/listnontunai",
 				"type": "POST",
 				"data": {
 				    tgl     : function(){console.log($("#tgl").val()); return $("#tgl").val()},

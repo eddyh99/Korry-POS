@@ -39,7 +39,7 @@ var table;
             ],
             "scrollX": true,
 			"ajax": {
-				"url": "<?=base_url()?>admin/laporan/Listbrand",
+				"url": "<?=base_url()?>admin/laporan/listbrand",
 				"type": "POST",
 				"data": {
 				    tgl     : function(){return $("#tgl").val()},

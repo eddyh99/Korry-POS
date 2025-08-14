@@ -24,7 +24,7 @@ var table;
             ],
             "scrollX": true,
 			"ajax": {
-				"url": "<?=base_url()?>admin/laporan/Listmutasi",
+				"url": "<?=base_url()?>admin/laporan/listmutasi",
 				"type": "POST",
 				"data": {
 				    bulan   : function(){return $("#bulan").val()},

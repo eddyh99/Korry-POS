@@ -30,7 +30,7 @@ var table;
             ],
             "scrollX": true,
 			"ajax": {
-				"url": "<?=base_url()?>admin/laporan/listdetail",
+				"url": "<?=base_url()?>admin/laporan/listdetailpenjualan",
 				"type": "POST",
 				"data": {
 				    key     : function(){return $("#key").val()},
