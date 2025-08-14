@@ -16,7 +16,7 @@ $(function(){
 			"order"		 : [[ 1, "desc" ]],
             "scrollX"	 : true,
 			"ajax"		 : {
-								"url"		: "<?=base_url()?>admin/moving/Listdatakonfirm",
+								"url"		: "<?=base_url()?>admin/moving/listdatakonfirm",
 								"type"		: "POST",
 								"dataSrc"	: function (data){
 									return data["produk"];							

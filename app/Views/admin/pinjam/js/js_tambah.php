@@ -143,7 +143,7 @@
 		var barang=JSON.stringify(Object);
 
 		$.ajax({
-			url: "<?=base_url()?>admin/pinjam/addData",
+			url: "<?=base_url()?>admin/pinjam/add-data",
 			type: "post",
 			data: "nama="+$("#nama").val()+"&keterangan="+$("#keterangan").val()+"&barang="+barang,
 			success: function (data) {

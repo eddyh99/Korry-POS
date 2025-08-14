@@ -8,7 +8,7 @@
                 <div class="alert alert-warning"><?=$_SESSION["message"]?></div>
                 <?php } ?>
                 <div class="card-content">
-        	        <form id="form_input" method="post" action="<?=base_url()?>staff/kas/AddData">
+        	        <form id="form_input" method="post" action="<?=base_url()?>staff/kas/add-data">
         		        <div class="col-lg-6">
                 			<div class="card-body">
                 			  <div class="form-group row">

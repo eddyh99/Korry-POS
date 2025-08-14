@@ -10,7 +10,7 @@ $(function(){
 	table = $('#table_data').DataTable({
             "scrollX": true,
 			"ajax": {
-					"url": "<?=base_url()?>staff/kas/Listdata",
+					"url": "<?=base_url()?>staff/kas/listdata",
 					"type": "POST",
 					"dataSrc":function (data){
 							return data;							

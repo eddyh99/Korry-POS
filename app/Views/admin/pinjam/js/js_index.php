@@ -4,7 +4,7 @@ var table;
             "scrollX": true,
             "pageLength": 50,
 			"ajax": {
-					"url": "<?=base_url()?>admin/pinjam/Listdata",
+					"url": "<?=base_url()?>admin/pinjam/listdata",
 					"type": "POST",
 					"data": {
 					    store:function(){return $("#store").val()}
