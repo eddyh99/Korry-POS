@@ -6,7 +6,7 @@ $(function(){
             "scrollX": true,
             "pageLength": 50,
 			"ajax": {
-					"url": "<?=base_url()?>staff/retur/Listdata",
+					"url": "<?=base_url()?>staff/retur/listdata",
 					"type": "POST",
 					"dataSrc":function (data){
 							return data;							

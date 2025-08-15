@@ -116,7 +116,7 @@
 
             "scrollX": true,
 			"ajax": {
-					"url": "<?=base_url()?>admin/stok/Listdata",
+					"url": "<?=base_url()?>admin/stok/listdata",
 					"type": "POST",
 					"dataSrc":function (data){
 							return data["produk"];							
@@ -309,7 +309,7 @@
 
 	$("#simpanmember").on("click",function (e){
 		$.ajax({
-			url: "<?=base_url()?>staff/cashier/getDetail",
+			url: "<?=base_url()?>staff/cashier/getdetail",
 			type: "post",
 			data: "memberid="+$("#memberid").val() ,
 			success: function (data) {
@@ -333,7 +333,7 @@
 		if (e.which==13)
 		{
 			$.ajax({
-				url: "<?=base_url()?>staff/cashier/getDetail",
+				url: "<?=base_url()?>staff/cashier/getdetail",
 				type: "post",
 				data: "memberid="+$(this).val() ,
 				success: function (data) {
@@ -431,7 +431,7 @@
 			}
 			var barang=JSON.stringify(Object);
 			$.ajax({
-				url: "<?=base_url()?>staff/cashier/addData",
+				url: "<?=base_url()?>staff/cashier/add-data",
 				type: "post",
 				data: "memberid="+memberid+"&method="+method+"&fee="+fee+"&barang="+barang,
 				success: function (data) {

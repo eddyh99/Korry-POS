@@ -91,19 +91,20 @@ class Pengguna extends BaseApiController
                 'label' => 'Username',
                 'rules' => 'required|alpha_numeric|min_length[8]|max_length[20]|is_unique[pengguna.username]',
                 'errors' => [
-                    'required'     => '{field} wajib diisi.',
-                    'alpha_numeric'=> '{field} hanya boleh huruf dan angka.',
-                    'min_length'   => '{field} minimal 8 karakter.',
-                    'max_length'   => '{field} maksimal 20 karakter.',
-                    'is_unique'    => '{field} sudah digunakan.'
+                    'required'      => '{field} wajib diisi.',
+                    'alpha_numeric' => '{field} hanya boleh huruf dan angka.',
+                    'min_length'    => '{field} minimal 8 karakter.',
+                    'max_length'    => '{field} maksimal 20 karakter.',
+                    'is_unique'     => '{field} sudah digunakan.'
                 ],
             ],
             'password' => [
                 'label' => 'Password',
-                'rules' => 'required|min_length[8]',
+                'rules' => 'required|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/]',
                 'errors' => [
-                    'required'   => '{field} wajib diisi.',
-                    'min_length' => '{field} minimal 8 karakter.',
+                    'required'    => '{field} wajib diisi.',
+                    'min_length'  => '{field} minimal 8 karakter.',
+                    'regex_match' => '{field} harus mengandung huruf besar, huruf kecil, angka, dan karakter khusus.'
                 ],
             ],
             'nama' => [
@@ -231,9 +232,10 @@ class Pengguna extends BaseApiController
             ],
             'password' => [
                 'label' => 'Password',
-                'rules' => 'permit_empty|min_length[8]',
+                'rules' => 'permit_empty|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/]',
                 'errors' => [
-                    'min_length' => '{field} minimal 8 karakter jika ingin diganti.'
+                    'min_length' => '{field} minimal 8 karakter jika ingin diganti.',
+                    'regex_match' => '{field} harus mengandung huruf besar, huruf kecil, angka, dan karakter khusus.'
                 ]
             ],
         ];

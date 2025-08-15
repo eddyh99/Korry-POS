@@ -375,7 +375,7 @@
 			var barang=JSON.stringify(Object);
 			var barangretur = JSON.stringify(Objectretur);
 			$.ajax({
-				url: "<?=base_url()?>staff/retur/addretur",
+				url: "<?=base_url()?>staff/retur/add-retur",
 				type: "post",
 				data: "memberid="+memberid+"&method="+method+"&fee="+fee+"&barang="+barang+"&brgretur="+barangretur+"&id="+$("#key").val(),
 				success: function (data) {

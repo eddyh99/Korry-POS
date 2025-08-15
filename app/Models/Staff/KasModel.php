@@ -16,6 +16,23 @@ class KasModel extends Model
     protected $createdField  = 'tanggal';
     protected $updatedField  = 'lastupdate';
 
+    // public function insertData($data)
+    // {
+    //     $today = date("Y-m-d");
+
+    //     if ($data['jenis'] === 'Kas Awal') {
+    //         $sql = "SELECT * FROM kas WHERE dateonly=? AND storeid=? AND jenis='Kas Awal'";
+    //         $query = $this->db->query($sql, [$today, $data['storeid']]);
+
+    //         if ($query->getNumRows() > 0) {
+    //             return ['code' => 5051, 'message' => 'Kas awal sudah pernah dimasukkan hari ini'];
+    //         } else {
+    //             $this->insert($data);
+    //         }
+    //     } else {
+    //         $this->insert($data);
+    //     }
+    // }
     public function insertData($data)
     {
         $today = date("Y-m-d");
@@ -25,12 +42,24 @@ class KasModel extends Model
             $query = $this->db->query($sql, [$today, $data['storeid']]);
 
             if ($query->getNumRows() > 0) {
-                return ['code' => 5051, 'message' => 'Kas awal sudah pernah dimasukkan hari ini'];
-            } else {
-                $this->insert($data);
+                return [
+                    'code'    => 5051,
+                    'message' => 'Kas awal sudah pernah dimasukkan hari ini'
+                ];
             }
+        }
+
+        // Proses insert data
+        if ($this->insert($data)) {
+            return [
+                'code'    => 0,
+                'message' => 'Data berhasil disimpan'
+            ];
         } else {
-            $this->insert($data);
+            return [
+                'code'    => 500,
+                'message' => 'Gagal menyimpan data'
+            ];
         }
     }
 

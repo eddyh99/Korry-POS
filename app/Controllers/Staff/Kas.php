@@ -18,7 +18,7 @@ class Kas extends BaseApiController
         $this->storeModel = new StoreModel();
     }
 
-    public function index()
+    public function getIndex()
     {
         $data = [
             'title'   => 'Input Kas',
@@ -32,13 +32,13 @@ class Kas extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
-    public function Listdata()
+    public function postListdata()
     {
         $result = $this->kasModel->listkas();
         return $this->response->setJSON($result);
     }
 
-    public function tambah()
+    public function getTambah()
     {
         $data = [
             'title'   => 'Tambah Data Kas',
@@ -51,7 +51,7 @@ class Kas extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
-    public function AddData()
+    public function postAddData()
     {
         $rules = [
             'nominal'    => 'trim|required',
@@ -119,7 +119,7 @@ class Kas extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
-    public function sisakas()
+    public function postSisakas()
     {
         $tgl  = date_format(date_create($this->request->getPost('tglback')), "Y-m-d");
         $sisa = $this->request->getPost('sisa');
