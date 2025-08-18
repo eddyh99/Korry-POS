@@ -56,11 +56,51 @@ class AuthModel extends Model
     //     return false;
     // }
 
+    // public function verifyLogin($username, $password)
+    // {
+    //     $pass = sha1($password);
+
+    //     // Ambil dulu role user
+    //     $user = $this->where([
+    //         'username' => $username,
+    //         'passwd'   => $pass
+    //     ])->get()->getRow();
+
+    //     if (!$user) {
+    //         return false;
+    //     }
+
+    //     // Kalau bukan Admin/Owner → ambil store dari assignstore
+    //     if (!in_array($user->role, ['Admin', 'Owner'])) {
+    //         $sql = "
+    //             SELECT p.username, p.nama, p.role, a.storeid, s.store
+    //             FROM {$this->table} p
+    //             INNER JOIN assignstore a ON p.username = a.username
+    //             INNER JOIN store s ON a.storeid = s.storeid
+    //             WHERE p.username = ? AND p.passwd = ? AND a.status = '0' AND s.status = '0'
+    //             LIMIT 1
+    //         ";
+    //         $query = $this->db->query($sql, [$username, $pass]);
+    //         return $query->getRow();
+    //     }
+
+    //     // Kalau Admin/Owner → ambil store dari tabel store (default ke toko pertama)
+    //     $sql = "
+    //         SELECT p.username, p.nama, p.role, s.storeid, s.store
+    //         FROM {$this->table} p
+    //         INNER JOIN store s ON p.username = s.userid
+    //         WHERE p.username = ? AND p.passwd = ? AND s.status = '0'
+    //         ORDER BY s.storeid ASC
+    //         LIMIT 1
+    //     ";
+    //     $query = $this->db->query($sql, [$username, $pass]);
+    //     return $query->getRow();
+    // }
     public function verifyLogin($username, $password)
     {
         $pass = sha1($password);
 
-        // Ambil dulu role user
+        // Cari user dasar
         $user = $this->where([
             'username' => $username,
             'passwd'   => $pass
@@ -70,7 +110,6 @@ class AuthModel extends Model
             return false;
         }
 
-        // Kalau bukan Admin/Owner → ambil store dari assignstore
         if (!in_array($user->role, ['Admin', 'Owner'])) {
             $sql = "
                 SELECT p.username, p.nama, p.role, a.storeid, s.store
@@ -81,10 +120,12 @@ class AuthModel extends Model
                 LIMIT 1
             ";
             $query = $this->db->query($sql, [$username, $pass]);
-            return $query->getRow();
+            $result = $query->getRow();
+
+            return $result;
         }
 
-        // Kalau Admin/Owner → ambil store dari tabel store (default ke toko pertama)
+        // Admin / Owner
         $sql = "
             SELECT p.username, p.nama, p.role, s.storeid, s.store
             FROM {$this->table} p
@@ -94,6 +135,8 @@ class AuthModel extends Model
             LIMIT 1
         ";
         $query = $this->db->query($sql, [$username, $pass]);
-        return $query->getRow();
+        $result = $query->getRow();
+
+        return $result;
     }
 }

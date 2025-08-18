@@ -219,52 +219,104 @@ class CashierModel extends Model
         return $nonota;
     }
 
-    public function insertData($jual, $barang)
-    {
-        $opnameModel = model(\App\Models\Admin\OpnameModel::class);
+    // public function insertData($jual, $barang)
+    // {
+    //     $opnameModel = model(\App\Models\Admin\OpnameModel::class);
 
-        if ($_SESSION["identify"] == $_SESSION["nota_komplit"]) {
-            return 611;
-        }
+    //     if ($_SESSION["identify"] == $_SESSION["nota_komplit"]) {
+    //         return 611;
+    //     }
 
-        $this->db->transStart();
+    //     $this->db->transStart();
 
-        // insert ke tabel penjualan
-        $this->db->table($this->penjualan)->insert($jual);
-        $id = $this->db->insertID();
+    //     // insert ke tabel penjualan
+    //     $this->db->table($this->penjualan)->insert($jual);
+    //     $id = $this->db->insertID();
 
-        // detail penjualan
-        $detail = [];
-        foreach ($barang as $dt) {
-            $temp["id"]      = $id;
-            $temp["barcode"] = $dt[0];
-            $temp["size"]    = strtoupper($dt[2]);
+    //     // detail penjualan
+    //     $detail = [];
+    //     foreach ($barang as $dt) {
+    //         $temp["id"]      = $id;
+    //         $temp["barcode"] = $dt[0];
+    //         $temp["size"]    = strtoupper($dt[2]);
 
-            $sisa = $opnameModel->getStok($dt[0], $_SESSION["logged_status"]["storeid"], strtoupper($dt[2]));
+    //         $sisa = $opnameModel->getStok($dt[0], $_SESSION["logged_status"]["storeid"], strtoupper($dt[2]));
 
-            if ($sisa - $dt[3] < 0) {
-                $temp["jumlah"] = $sisa;
-            } elseif ($sisa - $dt[3] >= 0) {
-                $temp["jumlah"] = $dt[3];
-            } elseif ($sisa == 0) {
-                return "511";
-            }
+    //         if ($sisa - $dt[3] < 0) {
+    //             $temp["jumlah"] = $sisa;
+    //         } elseif ($sisa - $dt[3] >= 0) {
+    //             $temp["jumlah"] = $dt[3];
+    //         } elseif ($sisa == 0) {
+    //             return "511";
+    //         }
 
-            $temp["diskonn"] = $dt[5];
-            $temp["diskonp"] = $dt[6];
-            $temp["alasan"]  = $dt[8];
+    //         $temp["diskonn"] = $dt[5];
+    //         $temp["diskonp"] = $dt[6];
+    //         $temp["alasan"]  = $dt[8];
 
-            $detail[] = $temp;
-        }
+    //         $detail[] = $temp;
+    //     }
 
-        // insert ke tabel detail penjualan
-        $this->db->table($this->penjualan_detail)->insertBatch($detail);
+    //     // insert ke tabel detail penjualan
+    //     $this->db->table($this->penjualan_detail)->insertBatch($detail);
 
-        $this->db->transComplete();
+    //     $this->db->transComplete();
 
-        $_SESSION["nota_komplit"] = $_SESSION["identify"];
-        return $id;
+    //     $_SESSION["nota_komplit"] = $_SESSION["identify"];
+    //     return $id;
+    // }
+public function insertData($jual, $barang)
+{
+    $opnameModel = model(\App\Models\Admin\OpnameModel::class);
+
+    if (isset($_SESSION["identify"]) && $_SESSION["identify"] == ($_SESSION["nota_komplit"] ?? null)) {
+        return 611;
     }
+
+    $this->db->transStart();
+
+    // insert ke tabel penjualan
+    $this->db->table($this->penjualan)->insert($jual);
+    $id = $this->db->insertID();
+
+    // detail penjualan
+    $detail = [];
+    foreach ($barang as $dt) {
+        $temp["id"]      = $id;
+        $temp["barcode"] = $dt[0] ?? null;
+        $temp["size"]    = strtoupper($dt[2] ?? '');
+
+        $sisa = $opnameModel->getStok(
+            $dt[0] ?? '',
+            $_SESSION["logged_status"]["storeid"] ?? '',
+            strtoupper($dt[2] ?? '')
+        );
+
+        if ($sisa - ($dt[3] ?? 0) < 0) {
+            $temp["jumlah"] = $sisa;
+        } elseif ($sisa - ($dt[3] ?? 0) >= 0) {
+            $temp["jumlah"] = $dt[3] ?? 0;
+        } elseif ($sisa == 0) {
+            return 511;
+        }
+
+        $temp["diskonn"] = $dt[5] ?? 0;
+        $temp["diskonp"] = $dt[6] ?? 0;
+        $temp["alasan"]  = $dt[8] ?? '';
+
+        $detail[] = $temp;
+    }
+
+    // insert ke tabel detail penjualan
+    if (!empty($detail)) {
+        $this->db->table($this->penjualan_detail)->insertBatch($detail);
+    }
+
+    $this->db->transComplete();
+
+    $_SESSION["nota_komplit"] = $_SESSION["identify"] ?? null;
+    return $id;
+}
 
     public function getallnota($id)
     {

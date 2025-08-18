@@ -100,7 +100,7 @@ class Pengguna extends BaseApiController
             ],
             'password' => [
                 'label' => 'Password',
-                'rules' => 'required|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/]',
+                'rules' => 'required|min_length[8]|regex_match[^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).+$]',
                 'errors' => [
                     'required'    => '{field} wajib diisi.',
                     'min_length'  => '{field} minimal 8 karakter.',
@@ -118,34 +118,31 @@ class Pengguna extends BaseApiController
         ];
 
         if (!$this->validate($rules)) {
-            // Logging error validasi
-            log_message('error', 'Validasi gagal pada postAddData: ' . json_encode($this->validator->getErrors()));
-
             $this->session->setFlashdata('message', implode('<br>', $this->validator->getErrors()));
             return redirect()->to(base_url('admin/pengguna/tambah'));
         }
 
-        $password = esc($this->request->getPost('password'));
+        $username = esc($this->request->getPost('username'));
+        $password = $this->request->getPost('password'); // jangan gunakan esc() agar Hash konsisten
+        $nama     = esc($this->request->getPost('nama'));
+        $role     = esc($this->request->getPost('role'));
+
+        // Hash password → HARUS pakai sha1 supaya sinkron sama verifyLogin()
+        $hashedPass = sha1($password);
 
         $data = [
-            'username' => esc($this->request->getPost('username')),
-            'passwd'   => sha1($password), // pakai sha1 Username sudah digunakan.tanpa PASSWORD_DEFAULT
-            'nama'     => esc($this->request->getPost('nama')),
-            'role'     => esc($this->request->getPost('role')),
+            'username' => $username,
+            'passwd'   => $hashedPass,
+            'nama'     => $nama,
+            'role'     => $role,
         ];
 
         $result = $this->penggunaModel->insertData($data);
 
         if ($result['code'] == 0) {
-            // Logging sukses simpan data
-            log_message('info', 'User baru berhasil ditambahkan: ' . $data['username']);
-
             $this->session->setFlashdata('message', 'Data berhasil disimpan.');
             return redirect()->to(base_url('admin/pengguna'));
         }
-
-        // Logging gagal simpan data
-        log_message('error', 'Gagal tambah user ' . $data['username'] . ': ' . $result['message']);
 
         $this->session->setFlashdata('message', 'Gagal: ' . $result['message']);
         return redirect()->to(base_url('admin/pengguna/tambah'));
@@ -232,7 +229,7 @@ class Pengguna extends BaseApiController
             ],
             'password' => [
                 'label' => 'Password',
-                'rules' => 'permit_empty|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/]',
+                'rules' => 'permit_empty|min_length[8]|regex_match[^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).+$]',
                 'errors' => [
                     'min_length' => '{field} minimal 8 karakter jika ingin diganti.',
                     'regex_match' => '{field} harus mengandung huruf besar, huruf kecil, angka, dan karakter khusus.'
@@ -243,9 +240,6 @@ class Pengguna extends BaseApiController
         $username = esc($this->request->getPost('username'));
 
         if (!$this->validate($rules)) {
-            // Logging validasi error
-            log_message('error', 'Validasi gagal pada postUpdateData untuk user ' . $username . ': ' . json_encode($this->validator->getErrors()));
-
             $this->session->setFlashdata('message', implode('<br>', $this->validator->getErrors()));
             return redirect()->to(base_url('admin/pengguna/ubah/' . base64_encode($username)));
         }
@@ -262,9 +256,6 @@ class Pengguna extends BaseApiController
 
         if (!empty($password)) {
             $data['passwd'] = sha1($password);
-
-            // Logging password update
-            log_message('info', 'User ' . $username . ' mengupdate password.');
         }
 
         $result = $this->penggunaModel->updateData($data, $username);
@@ -272,18 +263,11 @@ class Pengguna extends BaseApiController
         if ($result['code'] == 0) {
             $this->session->setFlashdata('message', 'Data Berhasil Diubah');
 
-            // Logging sukses update data
-            log_message('info', 'User ' . $username . ' berhasil update data.');
-
             if ($this->session->get('logged_status')['role'] == 'Staff') {
                 return redirect()->to(base_url('staff/dashboard'));
             }
             return redirect()->to(base_url('admin/pengguna'));
         }
-
-        // Logging gagal update data
-        log_message('error', 'Gagal update data user ' . $username . ': ' . $result['message']);
-
         $this->session->setFlashdata('message', 'Gagal: ' . $result['message']);
         return redirect()->to(base_url('admin/pengguna/ubah/' . base64_encode($username)));
     }
