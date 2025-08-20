@@ -1,4 +1,5 @@
-<div class="sidebar" data-active-color="rose" data-background-color="black" data-image="<?=base_url()?>assets/img/sidebar-1.jpg">
+<!-- <div class="sidebar" data-active-color="rose" data-background-color="black" data-image="<?=base_url()?>assets/img/sidebar-1.jpg"> -->
+<div class="sidebar" data-active-color="rose" style="background-color: #7F9192 !important;" data-image="<?=base_url()?>assets/img/sidebar-1.jpg"> 
     <div class="logo">
         <a href="#" class="simple-text">
             Clothing
@@ -57,6 +58,9 @@
                             <li class="<?=@$side5?>">
                                 <a href="<?=base_url()?>admin/size">Size</a>
                             </li>
+                            <li class="<?=@$side6?>">
+                                <a href="<?=base_url()?>admin/bahanbaku">Bahan Baku</a>
+                            </li>
                         </ul>
                     </div>
                 </li>
@@ -81,9 +85,30 @@
                             <li class="<?=@$side9?>">
                                 <a href="<?=base_url()?>admin/stok">Stok</a>
                             </li>
+
+                            <li class="<?=@$side9?>">
+                                <a href="<?=base_url()?>admin/stokbahanbaku">Stok Bahan Baku</a>
+                            </li>
+
+                            <li class="<?=@$side10?>">
+                                <a href="<?=base_url()?>admin/vendorproduksi">Vendor</a>
+                            </li>
+                            <li class="<?=@$side11?>">
+                                <a href="<?=base_url()?>admin/partner">Partner</a>
+                            </li>
+                            <li class="<?=@$side12?>">
+                                <a href="<?=base_url()?>admin/wholesaler">Wholesaler</a>
+                            </li>
+
                         </ul>
                     </div>
                 </li>
+    			<li class="<?=@$mn_produksi?>">
+    				<a href="<?=base_url()?>produksi">
+    					<i class="material-icons">business</i>
+    					<p>Produksi</p>
+    				</a>
+    			</li>
                 <li class="<?=@$mn_laporan?>">
                     <a data-toggle="collapse" href="#laporan" aria-expanded="<?php echo (@$mn_laporan=="active")?"true":"false" ?>">
                         <i class="material-icons">settings</i>
@@ -153,7 +178,7 @@
     			<li class="<?=@$mn_confirm?>">
     				<a href="<?=base_url()?>admin/moving/konfirm">
     					<i class="fas fa-truck-moving"></i>
-    					<p>Konfirm Permintaan</p>
+    					<p>Konfirmasi Permintaan</p>
     				</a>
     			</li>
             <?php }elseif (@$_SESSION["logged_status"]["role"]=="Office Manager"){?>

@@ -4,7 +4,7 @@
 
         <div class="row">
             <div class="col-md-12 text-right">
-                <a class="btn btn-primary" href="<?=base_url()?>admin/produk/tambah">Tambah</a>
+                <a class="btn btn-primary" href="<?=base_url()?>admin/stokbahanbaku/tambah">Tambah</a>
             </div>
             <div class="card">
                 <?php if (isset($_SESSION["message"])){?>
@@ -15,13 +15,8 @@
                     	    <thead>
                     		<tr>
                     			<th>Barcode</th>
-                    			<th>Produk</th>
-                    			<th>Brand</th>
-                    			<th>Kategori</th>
-								<th>SKU</th>
-                    			<th>Harga</th>
-                    			<th>Diskon</th>
-                    			<th>Aksi</th>
+                    			<th>Bahan Baku</th> 
+                    			<th>Jumlah</th>
                     		</tr>
                     	    </thead>
                     	    <tbody>

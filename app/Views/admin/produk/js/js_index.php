@@ -33,7 +33,7 @@
 			},
 
 			"aoColumnDefs": [{  
-				"aTargets": [6], // kolom aksi
+				"aTargets": [7], // kolom aksi
 				"mData": "barcode",
 				"mRender": function (data, type, full, meta){
 					let button = '<a href="<?= base_url('admin/produk/ubah/') ?>'+encodeURIComponent(btoa(full.barcode))+'" class="btn btn-simple btn-danger btn-icon remove" title="Ubah"><i class="fas fa-pen"></i></a>';
@@ -51,6 +51,7 @@
 				{ "data": "namaproduk" },
 				{ "data": "namabrand" },
 				{ "data": "namakategori" },
+				{ "data": "sku" },
 				{ "data": "harga", render: $.fn.dataTable.render.number('.', ',', 0, '') },
 				{ "data": "diskon", render: $.fn.dataTable.render.number('.', ',', 0, '') },
 				{ "data": null } // kolom aksi
