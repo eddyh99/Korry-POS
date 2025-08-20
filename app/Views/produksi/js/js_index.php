@@ -26,7 +26,7 @@
 			"columns": [
 				{ "data": "nonota" },
 				{ "data": "tanggal" },
-				{ "data": "idvendor" },
+				{ "data": "vendor_nama" },
 				{ "data": "estimasi" },
 				{ "data": "dp" },
 				{ "data": "total" },

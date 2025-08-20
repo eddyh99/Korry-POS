@@ -3,17 +3,41 @@
 namespace App\Controllers;
 
 use App\Models\ProduksiModel;
+use App\Models\Admin\ProdukModel;
+use App\Models\Admin\VendorproduksiModel;
 
 use App\Controllers\BaseApiController;
 
 class Produksi extends BaseApiController
 {
     protected $produksiModel;
+    protected $produkModel;
+    protected $vendorproduksiModel;
 
     public function __construct()
     {
-        $this->produksiModel = new ProduksiModel();
+        $this->produksiModel        = new ProduksiModel();
+        $this->produkModel          = new ProdukModel();
+        $this->vendorproduksiModel  = new VendorproduksiModel();
+    }
 
+    public function getIndex()
+    {
+        if (!$this->session->get('logged_status')) {
+            return redirect()->to(base_url());
+        }
+
+        $data = [
+            'title'      => 'Data Stok Bahan Baku',
+            'content'    => 'produksi/index',
+            'extra'      => 'produksi/js/js_index', 
+            'mn_setting' => 'active',
+            'colmas'     => 'collapse',
+            'colset'     => 'collapse in',
+            'collap'     => 'collapse',
+            'side11'     => 'active',
+        ];
+        return view('layout/wrapper', $data);
     }
 
     public function postListdata()
@@ -21,173 +45,143 @@ class Produksi extends BaseApiController
         $result = $this->produksiModel->listProduksi();
         return $this->response->setJSON($result);
     }
-    public function getIndex()
-    {
-        $data = [
-            'title'      => 'Data Produksi',
-            'content'    => 'produksi/index',
-            'extra'      => 'produksi/js/js_index',
-            'mn_produksi'  => 'active',
-            'colmas'     => 'collapse',
-            'colset'     => 'collapse',
-            'collap'     => 'collapse',
-        ];
-
-        return view('layout/wrapper', $data);
-    }
-
-    public function postListdata1()
-    {
-        $columns = [
-            0 => 'member_id',
-            1 => 'nama',
-            2 => 'nope',
-            3 => 'email',
-        ];
-
-        $start  = $this->request->getPost('start');
-        $limit  = $this->request->getPost('length');
-        $order  = $columns[$this->request->getPost('order')[0]['column']];
-        $dir    = $this->request->getPost('order')[0]['dir'];
-
-        $totalData     = $this->memberModel->allposts_count();
-        $totalFiltered = $totalData;
-
-        if (empty($this->request->getPost('search')['value'])) {
-            $result = $this->memberModel->allposts($limit, $start, $order, $dir);
-        } else {
-            $search = $this->request->getPost('search')['value'];
-            $result = $this->memberModel->posts_search($limit, $start, $search, $order, $dir);
-            $totalFiltered = $this->memberModel->posts_search_count($search);
-        }
-
-        return $this->response->setJSON([
-            'recordsTotal'    => $totalData,
-            'recordsFiltered' => $totalFiltered,
-            'member'          => $result,
-        ]);
-    }
-
-    // Insert, Update, Delete
 
     public function getTambah()
     {
-        $data = [
-            'title'      => 'Tambah Data Member',
-            'content'    => 'member/tambah',
-            'mn_member'  => 'active',
-            'colmas'     => 'collapse',
-            'colset'     => 'collapse',
-            'collap'     => 'collapse',
-        ];
+        if (!$this->session->get('logged_status')) {
+            return redirect()->to(base_url());
+        }
 
+        $vendor     = $this->vendorproduksiModel->listVendor();
+        $produk     = $this->produkModel->Listproduk();
+
+        $data = [
+            'title'      => 'Tambah Produksi',
+            'content'    => 'produksi/tambah',
+            'vendor'     => $vendor,
+            'produk'     => $produk,
+            'mn_master'  => 'active',
+            'colmas'     => 'collapse',
+            'colset'     => 'collapse in',
+            'collap'     => 'collapse',
+            'side11'     => 'active',
+        ];
         return view('layout/wrapper', $data);
     }
 
-    public function getHapus($memberid)
+    public function getHapus($nonota)
     {
+        $userid  = session()->get('logged_status')['username'];
+        $nonota  = base64_decode(esc($nonota));
+
         $data = [
-            'status' => 1,
+            "status"     => 1,
+            "user_id"     => $userid,
+            "lastupdate" => date("Y-m-d H:i:s")
         ];
 
-        $memberid = base64_decode($memberid);
-        $result   = $this->memberModel->hapusData($data, $memberid);
+        $result = $this->produksiModel->hapusData($data, $nonota);
 
-        if ($result['code'] == 0) {
-            $this->session->setFlashdata('message', 'Data berhasil dihapus.');
+        if ($result["code"] == 0) {
+            session()->setFlashdata('message', 'Data berhasil dihapus.');
         } else {
-            $this->session->setFlashdata('message', 'Data gagal dihapus.');
+            session()->setFlashdata('message', 'Data gagal dihapus.');
         }
-
-        return redirect()->to('/member');
+        return redirect()->to('/produksi');
     }
 
-    // Handle simpan Tambah/Update
+    // Handle Post Tambah
 
     public function postAddData()
     {
         $rules = [
-            'nama' => [
-                'label' => 'Nama Member',
-                'rules' => 'required|max_length[50]',
-                'errors' => [
-                    'required'   => '{field} wajib diisi.',
-                    'max_length' => '{field} maksimal 50 karakter.',
-                ],
-            ],
-            'alamat' => [
-                'label' => 'Alamat Member',
-                'rules' => 'required|max_length[255]|alpha_numeric_space',
-                'errors' => [
-                    'required'            => '{field} wajib diisi.',
-                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.',
-                ],
-            ],
-            'tempatlahir' => [
-                'label'  => 'Tempat Lahir',
-                'rules'  => 'permit_empty|max_length[50]|alpha_numeric_space',
-            ],
-            'tgllahir' => [
-                'label'  => 'Tanggal Lahir',
-                'rules'  => 'permit_empty|valid_date',
-            ],
-            'nope' => [
-                'label' => 'Nomor HP',
-                'rules' => 'required|regex_match[/^((\+62|62|0)8[1-9][0-9]{6,11})$/]',
+            'nonota' => [
+                'label'  => 'No Nota',
+                'rules'  => 'required|alpha_numeric|max_length[5]',
                 'errors' => [
                     'required'    => '{field} wajib diisi.',
-                    'regex_match' => '{field} tidak valid. Masukkan nomor HP yang benar. (Format: +62 atau 08...)',
-                ],
+                    'alpha_numeric' => '{field} hanya boleh huruf/angka.',
+                    'max_length'  => '{field} maksimal 5 karakter.'
+                ]
             ],
-            'email' => [
-                'label' => 'Email',
-                'rules' => 'permit_empty|valid_email|max_length[100]',
+            'idvendor' => [
+                'label'  => 'Vendor',
+                'rules'  => 'required|integer',
                 'errors' => [
-                    'valid_email' => '{field} tidak valid.',
-                    'max_length'  => '{field} maksimal 100 karakter.',
-                ],
+                    'required' => '{field} wajib dipilih.',
+                    'integer'  => '{field} tidak valid.'
+                ]
             ],
-            'socmed' => [
-                'label' => 'Sosial Media',
-                'rules' => 'permit_empty|max_length[50]',
-            ],
-            'keterangan' => [
-                'label' => 'Keterangan',
-                'rules' => 'permit_empty|max_length[100]|alpha_numeric_punct',
+            'estimasi' => [
+                'label'  => 'Estimasi',
+                'rules'  => 'required|integer|greater_than_equal_to[0]',
                 'errors' => [
-                    'alpha_numeric_punct' => '{field} hanya boleh berisi huruf, angka, spasi, dan tanda baca tertentu.',
-                    'max_length'          => '{field} maksimal 100 karakter.'
-                ],
+                    'required' => '{field} wajib diisi.',
+                    'integer'  => '{field} hanya angka.',
+                    'greater_than_equal_to' => '{field} minimal 0.'
+                ]
             ],
+            'dp' => [
+                'label'  => 'DP',
+                'rules'  => 'required|integer|greater_than_equal_to[0]',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'integer'  => '{field} hanya angka.'
+                ]
+            ],
+            'total' => [
+                'label'  => 'Total',
+                'rules'  => 'required|integer|greater_than[0]',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'integer'  => '{field} hanya angka.',
+                    'greater_than' => '{field} harus lebih besar dari 0.'
+                ]
+            ],
+            'barcode' => [
+                'label'  => 'Barcode',
+                'rules'  => 'required|exact_length[13]|numeric',
+                'errors' => [
+                    'required'     => '{field} wajib diisi.',
+                    'exact_length' => '{field} harus 13 digit.',
+                    'numeric'      => '{field} hanya angka.'
+                ]
+            ],
+            'jumlah' => [
+                'label'  => 'Jumlah Produksi',
+                'rules'  => 'required|integer|greater_than[0]',
+                'errors' => [
+                    'required'     => '{field} wajib diisi.',
+                    'integer'      => '{field} hanya angka.',
+                    'greater_than' => '{field} harus lebih dari 0.'
+                ]
+            ]
         ];
 
         if (! $this->validate($rules)) {
-            $this->session->setFlashdata('message', implode('<br>', $this->validator->getErrors()));
-            return redirect()->to('/member/tambah')->withInput();
+            $this->session->setFlashdata('message', $this->validator->listErrors());
+            return redirect()->to('produksi/tambah')->withInput();
         }
 
-        // Ambil data POST
         $data = [
-            'member_id'    => date("Ymd") . $this->memberModel->getLastmember(),
-            'nama'         => $this->request->getPost('nama'),
-            'alamat'       => $this->request->getPost('alamat'),
-            'tempat_lahir' => $this->request->getPost('tempatlahir') ?: '-',
-            'tgl_lahir'    => $this->request->getPost('tgllahir') ?: '0000-00-00',
-            'nope'         => $this->request->getPost('nope'),
-            'jnskel'       => $this->request->getPost('jnskel') ?: '-',
-            'email'        => $this->request->getPost('email') ?: '-',
-            'socmed'       => $this->request->getPost('socmed') ?: '-',
-            'keterangan'   => $this->request->getPost('keterangan') ?: '-',
+            "nonota"   => esc($this->request->getPost('nonota')),
+            "idvendor" => esc($this->request->getPost('idvendor')),
+            "estimasi" => esc($this->request->getPost('estimasi')),
+            "dp"       => esc($this->request->getPost('dp')),
+            "total"    => esc($this->request->getPost('total')),
+            "user_id"  => session()->get('logged_status')['username'],
+            "barcode"  => esc($this->request->getPost('barcode')),
+            "jumlah"   => esc($this->request->getPost('jumlah'))
         ];
 
-        $result = $this->memberModel->insertData($data);
+        $result = $this->produksiModel->insertData($data);
 
-        if ($result['code'] == 0) {
+        if ($result["code"] == 0) {
             $this->session->setFlashdata('message', 'Data berhasil disimpan.');
-            return redirect()->to('/member');
+            return redirect()->to('/produksi');
         } else {
             $this->session->setFlashdata('message', 'Data gagal disimpan.');
-            return redirect()->to('/member/tambah')->withInput();
+            return redirect()->to('/produksi/tambah')->withInput();
         }
     }
 }

@@ -4,7 +4,7 @@
 
         <div class="row">
             <div class="col-md-12 text-right">
-                <a class="btn btn-primary" href="<?=base_url()?>member/tambah">Tambah</a>
+                <a class="btn btn-primary" href="<?=base_url()?>produksi/tambah">Tambah</a>
             </div>
             <div class="card">
                 <?php if (isset($_SESSION["message"])){?>
@@ -16,7 +16,7 @@
                     		<tr>
                     			<th>No. Nota</th>
                     			<th>Tgl</th>
-                    			<th>ID Vendor</th>
+                    			<th>Vendor</th>
                     			<th>Estimasi</th>
                     			<th>DP</th>
                                 <th>Total</th>

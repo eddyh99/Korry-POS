@@ -7,25 +7,7 @@ use CodeIgniter\Model;
 class StokbahanbakuModel extends Model
 {
     protected $table      = 'produk_bahan';
-    // protected $primaryKey = 'id';
-    // protected $allowedFields = [
-    //     'nama',
-    //     'alamat',    
-    //     'kontak',
-    //     'status'
-    // ];
 
-    // public function listStokbahanbaku()
-    // {
-    //     $sql = "SELECT * FROM {$this->table}";
-    //     $query = $this->db->query($sql);
-
-    //     if ($query) {
-    //         return $query->getResultArray();
-    //     } else {
-    //         return $this->db->error();
-    //     }
-    // }
     public function listStokbahanbaku()
     {
         $sql = "SELECT pb.barcode, 
