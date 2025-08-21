@@ -23,12 +23,56 @@
 									  <input type="text" class="form-control" id="produk" name="produk" maxlength="50" required>
 									</div>
                 				</div>
+
+								<!-- input baru: Fabric & Warna -->
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Fabric</label>
+									<div class="col-sm-7">
+									  <input type="text" class="form-control" id="fabric" name="fabric" maxlength="50" list="fabriclist" required>
+									  <datalist name="fabriclist" id="fabriclist">
+										<?php
+											foreach($fabric as $dt) {
+												echo "<option value='".$dt["nama"]."' />";
+											}
+										?>
+										</datalist>
+									</div>
+								</div>
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Warna</label>
+									<div class="col-sm-7">
+									  <input type="text" class="form-control" id="warna" name="warna" maxlength="50" list="warnalist" required>
+									  <datalist name="warnalist" id="warnalist">
+										<?php
+											foreach($warna as $dt) {
+												echo "<option value='".$dt["nama"]."' />";
+											}
+										?>
+										</datalist>
+									</div>
+								</div>								
+
                 				<div class="form-group row">
-									<label class="col-sm-3 col-form-label">Harga</label>
+									<label class="col-sm-3 col-form-label">Harga Retail</label>
 									<div class="col-sm-7">
 									  <input type="text" class="form-control" id="harga" name="harga" maxlength="7" required onkeypress="return isNumber(event)">
 									</div>
                 				</div>
+
+								<!-- Tambahan : Harga Konsinyasi & Wholesale -->
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Harga Konsinyasi</label>
+									<div class="col-sm-7">
+									  <input type="text" class="form-control" id="hargakonsinyasi" name="hargakonsinyasi" maxlength="7" required onkeypress="return isNumber(event)">
+									</div>
+                				</div>
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Harga Wholesale</label>
+									<div class="col-sm-7">
+									  <input type="text" class="form-control" id="hargawholesale" name="hargawholesale" maxlength="7" required onkeypress="return isNumber(event)">
+									</div>
+                				</div>
+
                 				<div class="form-group row">
 									<label class="col-sm-3 col-form-label">Diskon</label>
 									<div class="col-sm-7">
@@ -61,7 +105,7 @@
 										</datalist>
 									</div>
 								</div>
-								
+
 								<!-- input baru SKU -->
 								<div class="form-group row">
 									<label class="col-sm-3 col-form-label">SKU</label>

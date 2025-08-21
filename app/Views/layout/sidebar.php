@@ -61,6 +61,12 @@
                             <li class="<?=@$side6?>">
                                 <a href="<?=base_url()?>admin/bahanbaku">Bahan Baku</a>
                             </li>
+                            <li class="<?=@$side7?>">
+                                <a href="<?=base_url()?>admin/fabric">Kain</a>
+                            </li>
+                            <li class="<?=@$side8?>">
+                                <a href="<?=base_url()?>admin/warna">Warna</a>
+                            </li>
                         </ul>
                     </div>
                 </li>
@@ -80,7 +86,7 @@
                                 <a href="<?=base_url()?>admin/produk">Produk</a>
                             </li>
                             <li class="<?=@$side8?>">
-                                <a href="<?=base_url()?>admin/produksize">Produk-Size</a>
+                                <a href="<?=base_url()?>admin/produksize">Size</a>
                             </li>
                             <li class="<?=@$side9?>">
                                 <a href="<?=base_url()?>admin/stok">Stok</a>

@@ -14,9 +14,10 @@
                     	<table id="table_data" class="table table-striped nowrap" width="100%">
                     	    <thead>
                     		<tr>
-                    			<th>Barcode</th>
                     			<th>Bahan Baku</th> 
                     			<th>Jumlah</th>
+                    			<th>Satuan</th> 
+                    			<th>Harga</th>
                     		</tr>
                     	    </thead>
                     	    <tbody>

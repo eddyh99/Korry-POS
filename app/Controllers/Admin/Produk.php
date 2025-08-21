@@ -7,6 +7,9 @@ use App\Models\Admin\BrandModel;
 use App\Models\Admin\KategoriModel;
 use App\Models\Admin\BahanbakuModel;
 
+use App\Models\Admin\FabricModel;
+use App\Models\Admin\WarnaModel;
+
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
@@ -24,6 +27,9 @@ class Produk extends BaseApiController
         $this->brandModel       = new BrandModel();
         $this->kategoriModel    = new KategoriModel();
         $this->bahanbakuModel   = new BahanbakuModel();
+
+        $this->fabricModel      = new FabricModel();
+        $this->warnaModel       = new WarnaModel();
     }
 
     public function getIndex()
@@ -41,9 +47,35 @@ class Produk extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
+    // public function postListdata()
+    // {
+    //     $columns = ['barcode', 'namaproduk', 'namabrand', 'namakategori', 'harga'];
+
+    //     $start  = $this->request->getPost('start');
+    //     $limit  = $this->request->getPost('length');
+    //     $order  = $columns[$this->request->getPost('order')[0]['column']];
+    //     $dir    = $this->request->getPost('order')[0]['dir'];
+
+    //     $totalData = $this->produkModel->allposts_count();
+    //     $totalFiltered = $totalData;
+
+    //     if (empty($this->request->getPost('search')['value'])) {
+    //         $result = $this->produkModel->allposts($limit, $start, $order, $dir);
+    //     } else {
+    //         $search = $this->request->getPost('search')['value'];
+    //         $result = $this->produkModel->posts_search($limit, $start, $search, $order, $dir);
+    //         $totalFiltered = $this->produkModel->posts_search_count($search);
+    //     }
+
+    //     return $this->response->setJSON([
+    //         "recordsTotal"    => $totalData,
+    //         "recordsFiltered" => $totalFiltered,
+    //         "produk"          => $result
+    //     ]);
+    // }
     public function postListdata()
     {
-        $columns = ['barcode', 'namaproduk', 'namabrand', 'namakategori', 'harga'];
+        $columns = ['barcode', 'namaproduk', 'namabrand', 'namakategori', 'harga', 'harga_konsinyasi', 'harga_wholesale'];
 
         $start  = $this->request->getPost('start');
         $limit  = $this->request->getPost('length');
@@ -74,12 +106,17 @@ class Produk extends BaseApiController
         $kategori   = $this->kategoriModel->Listkategori();
         $bahanbaku  = $this->bahanbakuModel->Listbahanbaku();
 
+        $fabric = $this->fabricModel->listFabric();
+        $warna  = $this->warnaModel->listWarna();
+
         $data = [
             'title'    => 'Tambah Data Produk',
             'content'  => 'admin/produk/tambah',
             'extra'      => 'admin/produk/js/js_tambah',
             'brand'    => $brand,
             'kategori' => $kategori,
+            'fabric'    => $fabric,
+            'warna'     => $warna,
             'bahanbaku' => $bahanbaku,
             'mn_master' => 'active',
             'colmas'   => 'collapse in',
@@ -97,6 +134,10 @@ class Produk extends BaseApiController
 
         $brand      = $this->brandModel->Listbrand();
         $kategori   = $this->kategoriModel->Listkategori();
+
+        $fabric = $this->fabricModel->listFabric();
+        $warna  = $this->warnaModel->listWarna();
+
         $bahanbaku  = $this->bahanbakuModel->Listbahanbaku();
 
         $produkBahan = $this->produkModel->getProdukBahan($barcode);
@@ -109,6 +150,8 @@ class Produk extends BaseApiController
             'barcode'  => $barcode,
             'brand'    => $brand,
             'kategori' => $kategori,
+            'fabric'    => $fabric,
+            'warna'     => $warna,
             'bahanbaku' => $bahanbaku,
             'produkBahan'=> $produkBahan,
             'mn_master' => 'active',
@@ -163,6 +206,24 @@ class Produk extends BaseApiController
                     'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
                 ]
             ],
+            'fabric' => [
+                'label' => 'Nama Fabric',
+                'rules' => 'required|trim|max_length[30]|alpha_numeric_space',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'max_length' => '{field} maksimal 30 karakter.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                ]
+            ],
+            'warna' => [
+                'label' => 'Nama Warna',
+                'rules' => 'required|trim|max_length[30]|alpha_numeric_space',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'max_length' => '{field} maksimal 30 karakter.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                ]
+            ],
             'brand' => [
                 'label'  => 'Nama Brand',
                 'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
@@ -182,7 +243,25 @@ class Produk extends BaseApiController
                 ]
             ],
             'harga' => [
-                'label'  => 'Harga',
+                'label'  => 'Harga Retail',
+                'rules'  => 'required|trim|numeric|max_length[10]',
+                'errors' => [
+                    'required'   => '{field} wajib diisi.',
+                    'numeric'    => '{field} hanya boleh berisi angka.',
+                    'max_length' => '{field} maksimal 10 digit.'
+                ]
+            ],
+            'hargakonsinyasi' => [
+                'label'  => 'Harga Konsinyasi',
+                'rules'  => 'required|trim|numeric|max_length[10]',
+                'errors' => [
+                    'required'   => '{field} wajib diisi.',
+                    'numeric'    => '{field} hanya boleh berisi angka.',
+                    'max_length' => '{field} maksimal 10 digit.'
+                ]
+            ],
+            'hargawholesale' => [
+                'label'  => 'Harga Wholesale',
                 'rules'  => 'required|trim|numeric|max_length[10]',
                 'errors' => [
                     'required'   => '{field} wajib diisi.',
@@ -235,9 +314,17 @@ class Produk extends BaseApiController
         $data = [
             "barcode"      => esc($this->request->getPost('barcode')),
             "namaproduk"   => esc($this->request->getPost('produk')),
+            // Tambahan : Fabric & Warna
+            "fabric" => esc($this->request->getPost('fabric')),
+            "warna"  => esc($this->request->getPost('warna')),
+
             "namabrand"    => esc($this->request->getPost('brand')),
             "namakategori" => esc($this->request->getPost('kategori')),
             "harga"        => esc($this->request->getPost('harga')),
+            // Tambahan : Harga Konsinyasi & Harga Wholesale
+            "hargakonsinyasi" => esc($this->request->getPost('hargakonsinyasi')),
+            "hargawholesale"  => esc($this->request->getPost('hargawholesale')),
+            
             "diskon"       => esc($this->request->getPost('diskon')),
             "userid"       => session()->get('logged_status')['username'],
             "sku"          => esc($this->request->getPost('sku')),
@@ -269,6 +356,24 @@ class Produk extends BaseApiController
                     'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
                 ]
             ],
+            'fabric' => [
+                'label' => 'Nama Fabric',
+                'rules' => 'required|trim|max_length[30]|alpha_numeric_space',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'max_length' => '{field} maksimal 30 karakter.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                ]
+            ],
+            'warna' => [
+                'label' => 'Nama Warna',
+                'rules' => 'required|trim|max_length[30]|alpha_numeric_space',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'max_length' => '{field} maksimal 30 karakter.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                ]
+            ],
             'brand' => [
                 'label'  => 'Nama Brand',
                 'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
@@ -288,7 +393,25 @@ class Produk extends BaseApiController
                 ]
             ],
             'harga' => [
-                'label'  => 'Harga',
+                'label'  => 'Harga Retail',
+                'rules'  => 'required|trim|numeric|max_length[10]',
+                'errors' => [
+                    'required'   => '{field} wajib diisi.',
+                    'numeric'    => '{field} hanya boleh berisi angka.',
+                    'max_length' => '{field} maksimal 10 digit.'
+                ]
+            ],
+            'hargakonsinyasi' => [
+                'label'  => 'Harga Konsinyasi',
+                'rules'  => 'required|trim|numeric|max_length[10]',
+                'errors' => [
+                    'required'   => '{field} wajib diisi.',
+                    'numeric'    => '{field} hanya boleh berisi angka.',
+                    'max_length' => '{field} maksimal 10 digit.'
+                ]
+            ],
+            'hargawholesale' => [
+                'label'  => 'Harga Wholesale',
                 'rules'  => 'required|trim|numeric|max_length[10]',
                 'errors' => [
                     'required'   => '{field} wajib diisi.',
@@ -344,7 +467,15 @@ class Produk extends BaseApiController
             "namaproduk"   => esc($this->request->getPost('produk')),
             "namabrand"    => esc($this->request->getPost('brand')),
             "namakategori" => esc($this->request->getPost('kategori')),
+            // Tambahan : Fabric & Warna
+            "fabric" => esc($this->request->getPost('fabric')),
+            "warna"  => esc($this->request->getPost('warna')),
+
             "harga"        => esc($this->request->getPost('harga')),
+            // Tambahan : Harga Konsinyasi & Harga Wholesale
+            "hargakonsinyasi" => esc($this->request->getPost('hargakonsinyasi')),
+            "hargawholesale"  => esc($this->request->getPost('hargawholesale')),
+
             "diskon"       => esc($this->request->getPost('diskon')),
             "userid"       => session()->get('logged_status')['username'],
             "sku"          => esc($this->request->getPost('sku'))

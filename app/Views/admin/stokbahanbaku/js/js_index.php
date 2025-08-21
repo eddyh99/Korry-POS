@@ -24,9 +24,10 @@
 				}
 			},
 			"columns": [
-				{ "data": "barcode" },
 				{ "data": "namabahan" },
-				{ "data": "jumlah" }
+				{ "data": "jumlah" },
+				{ "data": "satuan" },
+				{ "data": "harga" }
 			]
 		});
 

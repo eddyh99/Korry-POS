@@ -8,68 +8,57 @@
                 <div class="alert alert-warning"><?=$_SESSION["message"]?></div>
                 <?php } ?>
                 <div class="card-content">
-        	        <form id="form_input" method="post" action="<?=base_url()?>admin/stokbahanbaku/add-data">
-        		        <div class="col-lg-6">
-							<div class="card-body">
 
-								<div class="form-group row">
-									<label class="col-sm-3 col-form-label">Barcode</label>
-									<div class="col-sm-7">
-										<select class="form-control" id="barcode" name="barcode" required>
-											<option value="">-- Pilih Barcode Produk --</option>
-											<?php foreach($produk as $dt): ?>
-												<option value="<?= $dt['barcode']; ?>">
-													<?= $dt['barcode']; ?> - <?= $dt['namaproduk']; ?>
-												</option>
-											<?php endforeach; ?>
-										</select>
-									</div>
-								</div>
-
-								<div class="form-group row">
-									<label class="col-sm-3 col-form-label">Bahan Baku</label>
-									<div class="col-sm-7">
-										<select class="form-control" id="idbahan" name="idbahan" required>
+					<form id="form_input" method="post" action="<?=base_url()?>admin/stokbahanbaku/add-data">
+						<div class="col-lg-8">  
+							<div class="card-body" id="bahan-container">
+								<!-- Row pertama default -->
+								<div class="form-group row align-items-center" id="row-0">
+									<label class="col-sm-2 col-form-label">Bahan 1</label>
+									<div class="col-sm-3">
+										<select class="form-control bahan-select" name="idbahan[0]" required>
 											<option value="">-- Pilih Bahan Baku --</option>
 											<?php foreach($bahanbaku as $dt): ?>
 												<option value="<?= $dt['id']; ?>"><?= $dt['namabahan']; ?></option>
 											<?php endforeach; ?>
 										</select>
 									</div>
-								</div>
-
-								<div class="form-group row">
-									<label class="col-sm-3 col-form-label">Jumlah</label>
-									<div class="col-sm-7">
-										<input type="number" class="form-control" id="jumlah" name="jumlah" min="1" required>
+									<div class="col-sm-2">
+										<input type="number" class="form-control jumlah-input" name="jumlah[0]" 
+											min="0" step="0.01" placeholder="Jumlah" required>
 									</div>
-								</div>
-
-								<div class="form-group row">
-									<label class="col-sm-3 col-form-label">Satuan</label>
-									<div class="col-sm-7">
-										<select class="form-control" id="satuan" name="satuan" required>
-											<option value="">-- Pilih Satuan --</option>
+									<div class="col-sm-2">
+										<select class="form-control satuan-select" name="satuan[0]" required>
+											<option value="">-- Satuan --</option>
 											<option value="yard">Yard</option>
 											<option value="meter">Meter</option>
 											<option value="pcs">Pcs</option>
 										</select>
 									</div>
+									<div class="col-sm-2">
+										<input type="text" class="form-control harga-input" name="harga[0]" 
+											placeholder="Harga" maxlength="11" required onkeypress="return isNumber(event)">
+									</div>
+									<div class="col-sm-1">
+										<!-- tombol hapus hidden utk row pertama -->
+									</div>
 								</div>
-
 							</div>
-        		        </div>
-        		        <div class="col-lg-12">
-            			    <div class="col-lg-6">
-                    		    <button id="btnSimpan" name="btnSimpan"  class="btn btn-primary">Simpan</button>
-                    		</div>
-                    	    <div class="col-lg-6 text-right">
-                				<a name="btnBack" href="<?=base_url()?>admin/stokbahanbaku" class="btn btn-warning">
-                				    <i class="material-icons">reply</i>
-                				    Back</a>
-                			</div>
-        		        </div>
-        	        </form>
+						</div>
+
+						<div class="col-lg-12 mt-3">
+							<div class="col-lg-6">
+								<button id="btnAddBahan" type="button" class="btn btn-light">Tambah Bahan Baku</button>
+								<button id="btnSimpan" name="btnSimpan" type="submit" class="btn btn-primary">Simpan</button>
+							</div>
+							<div class="col-lg-6 text-right">
+								<a name="btnBack" href="<?=base_url()?>admin/stokbahanbaku" class="btn btn-warning">
+									<i class="material-icons">reply</i> Back
+								</a>
+							</div>
+						</div>
+					</form>
+
                 </div>
             </div>
         </div>

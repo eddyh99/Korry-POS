@@ -4,8 +4,8 @@
 
         <div class="row">
             <div class="card">
-                <?php if (isset($_SESSION["message"])){?>
-                <div class="alert alert-warning"><?=$this->session->flashdata("message")?></div>
+				<?php if (isset($_SESSION["message"])){?>
+                <div class="alert alert-warning"><?=$_SESSION["message"]?></div>
                 <?php } ?>
                 <div class="card-content">
         	        <form id="form_input" method="post" action="<?=base_url()?>admin/produk/update-data">
@@ -23,12 +23,54 @@
 									  <input type="text" class="form-control" id="produk" name="produk" maxlength="50" required value="<?=$produk->namaproduk?>">
 									</div>
                 				</div>
+
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Fabric</label>
+									<div class="col-sm-7">
+									  <input type="text" class="form-control" id="fabric" name="fabric" maxlength="50" list="fabriclist" required value="<?=$produk->namafabric?>">
+									  <datalist name="fabriclist" id="fabriclist">
+										<?php
+											foreach($fabric as $dt) {
+												echo "<option value='".$dt["nama"]."' />";
+											}
+										?>
+										</datalist>
+									</div>
+								</div>
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Warna</label>
+									<div class="col-sm-7">
+									  <input type="text" class="form-control" id="warna" name="warna" maxlength="50" list="warnalist" required value="<?=$produk->namawarna?>">
+									  <datalist name="warnalist" id="warnalist">
+										<?php
+											foreach($warna as $dt) {
+												echo "<option value='".$dt["nama"]."' />";
+											}
+										?>
+										</datalist>
+									</div>
+								</div>
+
                 				<div class="form-group row">
-									<label class="col-sm-3 col-form-label">Harga</label>
+									<label class="col-sm-3 col-form-label">Harga Retail</label>
 									<div class="col-sm-7">
 									  <input type="text" class="form-control" id="harga" name="harga" maxlength="7" required value="<?=$produk->harga?>" onkeypress="return isNumber(event)">
 									</div>
                 				</div>
+
+                				<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Harga Konsinyasi</label>
+									<div class="col-sm-7">
+									  <input type="text" class="form-control" id="hargakonsinyasi" name="hargakonsinyasi" maxlength="7" required value="<?=$produk->harga_konsinyasi?>" onkeypress="return isNumber(event)">
+									</div>
+                				</div>
+                				<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Harga Wholesale</label>
+									<div class="col-sm-7">
+									  <input type="text" class="form-control" id="hargawholesale" name="hargawholesale" maxlength="7" required value="<?=$produk->harga_wholesale?>" onkeypress="return isNumber(event)">
+									</div>
+                				</div>
+
                 				<div class="form-group row">
 									<label class="col-sm-3 col-form-label">Diskon</label>
 									<div class="col-sm-7">

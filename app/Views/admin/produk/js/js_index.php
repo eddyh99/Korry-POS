@@ -49,10 +49,10 @@
 			"columns": [
 				{ "data": "barcode" },
 				{ "data": "namaproduk" },
-				{ "data": "namabrand" },
-				{ "data": "namakategori" },
 				{ "data": "sku" },
 				{ "data": "harga", render: $.fn.dataTable.render.number('.', ',', 0, '') },
+				{ "data": "harga_konsinyasi", render: $.fn.dataTable.render.number('.', ',', 0, '') },
+				{ "data": "harga_wholesale", render: $.fn.dataTable.render.number('.', ',', 0, '') },
 				{ "data": "diskon", render: $.fn.dataTable.render.number('.', ',', 0, '') },
 				{ "data": null } // kolom aksi
 			]

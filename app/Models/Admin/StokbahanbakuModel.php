@@ -6,16 +6,13 @@ use CodeIgniter\Model;
 
 class StokbahanbakuModel extends Model
 {
-    protected $table      = 'produk_bahan';
+    protected $table      = 'stok_bahanbaku';
 
     public function listStokbahanbaku()
     {
-        $sql = "SELECT pb.barcode, 
-                    pb.idbahan, 
-                    b.namabahan, 
-                    pb.jumlah
-                FROM {$this->table} pb
-                LEFT JOIN bahanbaku b ON b.id = pb.idbahan";
+        $sql = "SELECT sm.*, b.namabahan
+                FROM {$this->table} sm
+                LEFT JOIN bahanbaku b ON b.id = sm.idbahan";
         $query = $this->db->query($sql);
 
         if ($query) {
@@ -31,9 +28,6 @@ class StokbahanbakuModel extends Model
         $sql = $this->db->table($this->table)
             ->set($data)
             ->getCompiledInsert();
-
-        // tambahkan ON DUPLICATE KEY UPDATE
-        $sql .= " ON DUPLICATE KEY UPDATE jumlah = VALUES(jumlah), satuan = VALUES(satuan)";
 
         $query = $this->db->query($sql);
 
