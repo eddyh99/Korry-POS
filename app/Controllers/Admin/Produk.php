@@ -5,6 +5,10 @@ namespace App\Controllers\Admin;
 use App\Models\Admin\ProdukModel;
 use App\Models\Admin\BrandModel;
 use App\Models\Admin\KategoriModel;
+use App\Models\Admin\BahanbakuModel;
+
+use App\Models\Admin\FabricModel;
+use App\Models\Admin\WarnaModel;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
@@ -19,9 +23,13 @@ class Produk extends BaseApiController
 
     public function __construct()
     {
-        $this->produkModel   = new ProdukModel();
-        $this->brandModel    = new BrandModel();
-        $this->kategoriModel = new KategoriModel();
+        $this->produkModel      = new ProdukModel();
+        $this->brandModel       = new BrandModel();
+        $this->kategoriModel    = new KategoriModel();
+        $this->bahanbakuModel   = new BahanbakuModel();
+
+        $this->fabricModel      = new FabricModel();
+        $this->warnaModel       = new WarnaModel();
     }
 
     public function getIndex()
@@ -39,9 +47,35 @@ class Produk extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
+    // public function postListdata()
+    // {
+    //     $columns = ['barcode', 'namaproduk', 'namabrand', 'namakategori', 'harga'];
+
+    //     $start  = $this->request->getPost('start');
+    //     $limit  = $this->request->getPost('length');
+    //     $order  = $columns[$this->request->getPost('order')[0]['column']];
+    //     $dir    = $this->request->getPost('order')[0]['dir'];
+
+    //     $totalData = $this->produkModel->allposts_count();
+    //     $totalFiltered = $totalData;
+
+    //     if (empty($this->request->getPost('search')['value'])) {
+    //         $result = $this->produkModel->allposts($limit, $start, $order, $dir);
+    //     } else {
+    //         $search = $this->request->getPost('search')['value'];
+    //         $result = $this->produkModel->posts_search($limit, $start, $search, $order, $dir);
+    //         $totalFiltered = $this->produkModel->posts_search_count($search);
+    //     }
+
+    //     return $this->response->setJSON([
+    //         "recordsTotal"    => $totalData,
+    //         "recordsFiltered" => $totalFiltered,
+    //         "produk"          => $result
+    //     ]);
+    // }
     public function postListdata()
     {
-        $columns = ['barcode', 'namaproduk', 'namabrand', 'namakategori', 'harga'];
+        $columns = ['barcode', 'namaproduk', 'namabrand', 'namakategori', 'harga', 'harga_konsinyasi', 'harga_wholesale'];
 
         $start  = $this->request->getPost('start');
         $limit  = $this->request->getPost('length');
@@ -68,14 +102,22 @@ class Produk extends BaseApiController
 
     public function getTambah()
     {
-        $brand    = $this->brandModel->Listbrand();
-        $kategori = $this->kategoriModel->Listkategori();
+        $brand      = $this->brandModel->Listbrand();
+        $kategori   = $this->kategoriModel->Listkategori();
+        $bahanbaku  = $this->bahanbakuModel->Listbahanbaku();
+
+        $fabric = $this->fabricModel->listFabric();
+        $warna  = $this->warnaModel->listWarna();
 
         $data = [
             'title'    => 'Tambah Data Produk',
             'content'  => 'admin/produk/tambah',
+            'extra'      => 'admin/produk/js/js_tambah',
             'brand'    => $brand,
             'kategori' => $kategori,
+            'fabric'    => $fabric,
+            'warna'     => $warna,
+            'bahanbaku' => $bahanbaku,
             'mn_master' => 'active',
             'colmas'   => 'collapse in',
             'colset'   => 'collapse',
@@ -83,143 +125,35 @@ class Produk extends BaseApiController
             'side7'    => 'active',
         ];
         return view('layout/wrapper', $data);
-    }
-
-    // public function postAddData()
-    // {
-    //     $rules = [
-    //         'barcode'  => 'trim|required',
-    //         'produk'   => 'trim|required',
-    //         'brand'    => 'trim|required',
-    //         'kategori' => 'trim|required',
-    //         'harga'    => 'trim|required',
-    //         'diskon'   => 'trim|required',
-    //     ];
-
-    //     if (! $this->validate($rules)) {
-    //         $this->session->setFlashdata('message', $this->validator->listErrors());
-    //         return redirect()->to('/admin/produk/tambah');
-    //     }
-
-    //     $data = [
-    //         "barcode"      => esc($this->request->getPost('barcode')),
-    //         "namaproduk"   => esc($this->request->getPost('produk')),
-    //         "namabrand"    => esc($this->request->getPost('brand')),
-    //         "namakategori" => esc($this->request->getPost('kategori')),
-    //         "harga"        => esc($this->request->getPost('harga')),
-    //         "diskon"       => esc($this->request->getPost('diskon')),
-    //         "userid"       => session()->get('logged_status')['username']
-    //     ];
-
-    //     $result = $this->produkModel->insertData($data);
-
-    //     if ($result["code"] == 0) {
-    //         $this->session->setFlashdata('message', 'Data berhasil disimpan.');
-    //         return redirect()->to('/admin/produk');
-    //     } else {
-    //         $this->session->setFlashdata('message', 'Data gagal disimpan.');
-    //         return redirect()->to('/admin/produk/tambah');
-    //     }
-    // }
-    public function postAddData()
-    {
-        $rules = [
-            'barcode' => [
-                'label'  => 'Barcode',
-                'rules'  => 'required|trim|exact_length[13]|numeric',
-                'errors' => [
-                    'required'     => '{field} wajib diisi.',
-                    'exact_length' => '{field} harus terdiri dari 13 digit.',
-                    'numeric'      => '{field} hanya boleh berisi angka.'
-                ]
-            ],
-            'produk' => [
-                'label'  => 'Nama Produk',
-                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
-                'errors' => [
-                    'required'            => '{field} wajib diisi.',
-                    'max_length'          => '{field} maksimal 50 karakter.',
-                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
-                ]
-            ],
-            'brand' => [
-                'label'  => 'Nama Brand',
-                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
-                'errors' => [
-                    'required'            => '{field} wajib diisi.',
-                    'max_length'          => '{field} maksimal 50 karakter.',
-                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
-                ]
-            ],
-            'kategori' => [
-                'label'  => 'Kategori',
-                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
-                'errors' => [
-                    'required'            => '{field} wajib diisi.',
-                    'max_length'          => '{field} maksimal 50 karakter.',
-                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
-                ]
-            ],
-            'harga' => [
-                'label'  => 'Harga',
-                'rules'  => 'required|trim|numeric|max_length[10]',
-                'errors' => [
-                    'required'   => '{field} wajib diisi.',
-                    'numeric'    => '{field} hanya boleh berisi angka.',
-                    'max_length' => '{field} maksimal 10 digit.'
-                ]
-            ],
-            'diskon' => [
-                'label'  => 'Diskon',
-                'rules'  => 'required|trim|numeric|max_length[10]',
-                'errors' => [
-                    'required'   => '{field} wajib diisi.',
-                    'numeric'    => '{field} hanya boleh berisi angka.',
-                    'max_length' => '{field} maksimal 10 digit.'
-                ]
-            ]
-        ];
-
-        if (! $this->validate($rules)) {
-            $this->session->setFlashdata('message', $this->validator->listErrors());
-            return redirect()->to('/admin/produk/tambah')->withInput();
-        }
-
-        $data = [
-            "barcode"      => esc($this->request->getPost('barcode')),
-            "namaproduk"   => esc($this->request->getPost('produk')),
-            "namabrand"    => esc($this->request->getPost('brand')),
-            "namakategori" => esc($this->request->getPost('kategori')),
-            "harga"        => esc($this->request->getPost('harga')),
-            "diskon"       => esc($this->request->getPost('diskon')),
-            "userid"       => session()->get('logged_status')['username']
-        ];
-
-        $result = $this->produkModel->insertData($data);
-
-        if ($result["code"] == 0) {
-            $this->session->setFlashdata('message', 'Data berhasil disimpan.');
-            return redirect()->to('/admin/produk');
-        } else {
-            $this->session->setFlashdata('message', 'Data gagal disimpan.');
-            return redirect()->to('/admin/produk/tambah')->withInput();
-        }
     }
 
     public function getUbah($barcode)
     {
         $barcode    = base64_decode(esc($barcode));
         $produk     = $this->produkModel->getProduk($barcode);
+
         $brand      = $this->brandModel->Listbrand();
         $kategori   = $this->kategoriModel->Listkategori();
+
+        $fabric = $this->fabricModel->listFabric();
+        $warna  = $this->warnaModel->listWarna();
+
+        $bahanbaku  = $this->bahanbakuModel->Listbahanbaku();
+
+        $produkBahan = $this->produkModel->getProdukBahan($barcode);
 
         $data = [
             'title'    => 'Ubah Data Produk',
             'content'  => 'admin/produk/ubah',
+            'extra'      => 'admin/produk/js/js_ubah',
+            'produk'   => $produk,
+            'barcode'  => $barcode,
             'brand'    => $brand,
             'kategori' => $kategori,
-            'barcode'  => $barcode,
-            'produk'   => $produk,
+            'fabric'    => $fabric,
+            'warna'     => $warna,
+            'bahanbaku' => $bahanbaku,
+            'produkBahan'=> $produkBahan,
             'mn_master' => 'active',
             'colmas'   => 'collapse in',
             'colset'   => 'collapse',
@@ -227,127 +161,6 @@ class Produk extends BaseApiController
             'side7'    => 'active',
         ];
         return view('layout/wrapper', $data);
-    }
-
-    // public function postUpdateData()
-    // {
-    //     $rules = [
-    //         'barcode'  => 'trim|required',
-    //         'produk'   => 'trim|required',
-    //         'brand'    => 'trim|required',
-    //         'kategori' => 'trim|required',
-    //         'harga'    => 'trim|required',
-    //         'diskon'   => 'trim|required',
-    //     ];
-
-    //     if (! $this->validate($rules)) {
-    //         $this->session->setFlashdata('message', $this->validator->listErrors());
-    //         return redirect()->to('/admin/produk/ubah');
-    //     }
-
-    //     $barcode = esc($this->request->getPost('barcode'));
-    //     $data = [
-    //         "namaproduk"   => esc($this->request->getPost('produk')),
-    //         "namabrand"    => esc($this->request->getPost('brand')),
-    //         "namakategori" => esc($this->request->getPost('kategori')),
-    //         "harga"        => esc($this->request->getPost('harga')),
-    //         "diskon"       => esc($this->request->getPost('diskon')),
-    //         "userid"       => session()->get('logged_status')['username']
-    //     ];
-
-    //     $result = $this->produkModel->setData($data, $barcode);
-
-    //     if ($result["code"] == 0) {
-    //         $this->session->setFlashdata('message', 'Data berhasil diubah.');
-    //         return redirect()->to('/admin/produk');
-    //     } else {
-    //         $this->session->setFlashdata('message', 'Data gagal diubah.');
-    //         return redirect()->to('/admin/produk/ubah/' . base64_encode($barcode));
-    //     }
-    // }
-    public function postUpdateData()
-    {
-        $rules = [
-            'barcode' => [
-                'label'  => 'Barcode',
-                'rules'  => 'required|trim|exact_length[13]|numeric',
-                'errors' => [
-                    'required'     => '{field} wajib diisi.',
-                    'exact_length' => '{field} harus terdiri dari 13 digit.',
-                    'numeric'      => '{field} hanya boleh berisi angka.'
-                ]
-            ],
-            'produk' => [
-                'label'  => 'Nama Produk',
-                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
-                'errors' => [
-                    'required'            => '{field} wajib diisi.',
-                    'max_length'          => '{field} maksimal 50 karakter.',
-                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
-                ]
-            ],
-            'brand' => [
-                'label'  => 'Nama Brand',
-                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
-                'errors' => [
-                    'required'            => '{field} wajib diisi.',
-                    'max_length'          => '{field} maksimal 50 karakter.',
-                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
-                ]
-            ],
-            'kategori' => [
-                'label'  => 'Kategori',
-                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
-                'errors' => [
-                    'required'            => '{field} wajib diisi.',
-                    'max_length'          => '{field} maksimal 50 karakter.',
-                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
-                ]
-            ],
-            'harga' => [
-                'label'  => 'Harga',
-                'rules'  => 'required|trim|numeric|max_length[10]',
-                'errors' => [
-                    'required'   => '{field} wajib diisi.',
-                    'numeric'    => '{field} hanya boleh berisi angka.',
-                    'max_length' => '{field} maksimal 10 digit.'
-                ]
-            ],
-            'diskon' => [
-                'label'  => 'Diskon',
-                'rules'  => 'required|trim|numeric|max_length[10]',
-                'errors' => [
-                    'required'   => '{field} wajib diisi.',
-                    'numeric'    => '{field} hanya boleh berisi angka.',
-                    'max_length' => '{field} maksimal 10 digit.'
-                ]
-            ]
-        ];
-
-        if (! $this->validate($rules)) {
-            $this->session->setFlashdata('message', $this->validator->listErrors());
-            return redirect()->back()->withInput();
-        }
-
-        $barcode = esc($this->request->getPost('barcode'));
-        $data = [
-            "namaproduk"   => esc($this->request->getPost('produk')),
-            "namabrand"    => esc($this->request->getPost('brand')),
-            "namakategori" => esc($this->request->getPost('kategori')),
-            "harga"        => esc($this->request->getPost('harga')),
-            "diskon"       => esc($this->request->getPost('diskon')),
-            "userid"       => session()->get('logged_status')['username']
-        ];
-
-        $result = $this->produkModel->setData($data, $barcode);
-
-        if ($result["code"] == 0) {
-            $this->session->setFlashdata('message', 'Data berhasil diubah.');
-            return redirect()->to('/admin/produk');
-        } else {
-            $this->session->setFlashdata('message', 'Data gagal diubah.');
-            return redirect()->to('/admin/produk/ubah/' . base64_encode($barcode));
-        }
     }
 
     public function getHapus($barcode)
@@ -370,162 +183,385 @@ class Produk extends BaseApiController
         return redirect()->to('/admin/produk');
     }
 
-    // Batas Insert, Update, Delete
+// Handle Post Add & Update Data
 
-    // public function postImport()
-    // {
-    //     $userid = session()->get('logged_status')['username'];
+    public function postAddData()
+    {
+        $rules = [
+            'barcode' => [
+                'label'  => 'Barcode',
+                'rules'  => 'required|trim|exact_length[13]|numeric',
+                'errors' => [
+                    'required'     => '{field} wajib diisi.',
+                    'exact_length' => '{field} harus terdiri dari 13 digit.',
+                    'numeric'      => '{field} hanya boleh berisi angka.'
+                ]
+            ],
+            'produk' => [
+                'label'  => 'Nama Produk',
+                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
+                'errors' => [
+                    'required'            => '{field} wajib diisi.',
+                    'max_length'          => '{field} maksimal 50 karakter.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                ]
+            ],
+            'fabric' => [
+                'label' => 'Nama Fabric',
+                'rules' => 'required|trim|max_length[30]|alpha_numeric_space',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'max_length' => '{field} maksimal 30 karakter.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                ]
+            ],
+            'warna' => [
+                'label' => 'Nama Warna',
+                'rules' => 'required|trim|max_length[30]|alpha_numeric_space',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'max_length' => '{field} maksimal 30 karakter.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                ]
+            ],
+            'brand' => [
+                'label'  => 'Nama Brand',
+                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
+                'errors' => [
+                    'required'            => '{field} wajib diisi.',
+                    'max_length'          => '{field} maksimal 50 karakter.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                ]
+            ],
+            'kategori' => [
+                'label'  => 'Kategori',
+                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
+                'errors' => [
+                    'required'            => '{field} wajib diisi.',
+                    'max_length'          => '{field} maksimal 50 karakter.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                ]
+            ],
+            'harga' => [
+                'label'  => 'Harga Retail',
+                'rules'  => 'required|trim|numeric|max_length[10]',
+                'errors' => [
+                    'required'   => '{field} wajib diisi.',
+                    'numeric'    => '{field} hanya boleh berisi angka.',
+                    'max_length' => '{field} maksimal 10 digit.'
+                ]
+            ],
+            'hargakonsinyasi' => [
+                'label'  => 'Harga Konsinyasi',
+                'rules'  => 'required|trim|numeric|max_length[10]',
+                'errors' => [
+                    'required'   => '{field} wajib diisi.',
+                    'numeric'    => '{field} hanya boleh berisi angka.',
+                    'max_length' => '{field} maksimal 10 digit.'
+                ]
+            ],
+            'hargawholesale' => [
+                'label'  => 'Harga Wholesale',
+                'rules'  => 'required|trim|numeric|max_length[10]',
+                'errors' => [
+                    'required'   => '{field} wajib diisi.',
+                    'numeric'    => '{field} hanya boleh berisi angka.',
+                    'max_length' => '{field} maksimal 10 digit.'
+                ]
+            ],
+            'diskon' => [
+                'label'  => 'Diskon',
+                'rules'  => 'permit_empty|trim|numeric|max_length[10]',
+                'errors' => [
+                    'numeric'    => '{field} hanya boleh berisi angka.',
+                    'max_length' => '{field} maksimal 10 digit.'
+                ]
+            ],
+            'sku' => [
+                'label'  => 'SKU',
+                'rules'  => 'required|trim|alpha_numeric|min_length[10]|max_length[10]',
+                'errors' => [
+                    'required'    => '{field} wajib diisi.',
+                    'alpha_numeric' => '{field} hanya boleh huruf dan angka.',
+                    'min_length'  => '{field} harus 10 karakter.',
+                    'max_length'  => '{field} harus 10 karakter.'
+                ]
+            ],
+            'bahanbaku.*' => [
+                'label'  => 'Bahan Baku',
+                'rules'  => 'required|trim|integer',
+                'errors' => [
+                    'required' => '{field} wajib dipilih.',
+                    'integer'  => '{field} harus berupa ID yang valid.'
+                ]
+            ],
+            'jumlah.*' => [
+                'label'  => 'Jumlah Bahan',
+                'rules'  => 'required|trim|numeric|greater_than[0]',
+                'errors' => [
+                    'required'     => '{field} wajib diisi.',
+                    'numeric'      => '{field} hanya boleh berisi angka.',
+                    'greater_than' => '{field} harus lebih dari 0.'
+                ]
+            ]
+        ];
 
-    //     $fileMimes = [
-    //         'application/vnd.ms-excel',
-    //         'application/excel',
-    //         'application/vnd.msexcel',
-    //         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    //     ];
-
-    //     $file = $this->request->getFile('produk');
-
-    //     if ($file && in_array($file->getMimeType(), $fileMimes)) {
-    //         $reader = new Xlsx();
-    //         $spreadsheet = $reader->load($file->getTempName());
-    //         $sheetData = $spreadsheet->getActiveSheet()->toArray();
-
-    //         $array = array_map('array_filter', $sheetData);
-    //         $array = array_filter($array);
-    //         $input = array_map("unserialize", array_unique(array_map("serialize", $array)));
-
-    //         $data = [];
-    //         foreach ($input as $dt) {
-    //             $temp["barcode"]      = $dt[0];
-    //             $temp["namaproduk"]   = $dt[1];
-    //             $temp["namabrand"]    = $dt[2];
-    //             $temp["namakategori"] = $dt[3];
-    //             $temp["harga"]        = $dt[4];
-    //             $temp["userid"]       = $userid;
-    //             $data[]               = $temp;
-    //         }
-
-    //         $result = $this->produkModel->insertbatchData($data);
-    //         if ($result["code"] == 0) {
-    //             session()->setFlashdata('message', $this->message->success_msg());
-    //             return redirect()->to('/admin/produk');
-    //         } else {
-    //             session()->setFlashdata('message', $this->message->error_msg($result["message"]));
-    //             return redirect()->to('/admin/produk/tambah');
-    //         }
-    //     }
-
-    //     session()->setFlashdata('message', $this->message->error_msg("File tidak valid"));
-    //     return redirect()->to('/admin/produk/tambah');
-    // }
-// public function postImport()
-// {
-//     $userid = session()->get('logged_status')['username'];
-
-//     $fileMimes = [
-//         'application/vnd.ms-excel',
-//         'application/excel',
-//         'application/vnd.msexcel',
-//         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-//     ];
-
-//     $file = $this->request->getFile('produk');
-
-//     if ($file && in_array($file->getMimeType(), $fileMimes)) {
-//         $reader = new Xlsx();
-//         $spreadsheet = $reader->load($file->getTempName());
-//         $sheetData = $spreadsheet->getActiveSheet()->toArray();
-
-//         $array = array_map('array_filter', $sheetData);
-//         $array = array_filter($array);
-//         $input = array_map("unserialize", array_unique(array_map("serialize", $array)));
-
-//         $data = [];
-//         foreach ($input as $dt) {
-//             $temp["barcode"]      = $dt[0];
-//             $temp["namaproduk"]   = $dt[1];
-//             $temp["namabrand"]    = $dt[2];
-//             $temp["namakategori"] = $dt[3];
-//             $temp["harga"]        = $dt[4];
-//             $temp["userid"]       = $userid;
-//             $data[]               = $temp;
-//         }
-
-//         $result = $this->produkModel->insertbatchData($data);
-//         if ($result["code"] == 0) {
-//             $this->session->setFlashdata('message', 'Data Berhasil Di-import');
-//             return redirect()->to('/admin/produk');
-//         } else {
-//             $this->session->setFlashdata('message', 'Data Gagal Di-import');
-//             return redirect()->to('/admin/produk/tambah');
-//         }
-//     }
-
-//     session()->setFlashdata('message', $this->message->error_msg("File tidak valid"));
-//     return redirect()->to('/admin/produk/tambah');
-// }
-public function postImport()
-{
-    $userid = session()->get('logged_status')['username'];
-
-    $fileMimes = [
-        'application/vnd.ms-excel',
-        'application/excel',
-        'application/vnd.msexcel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    ];
-
-    $file = $this->request->getFile('produk');
-
-    if ($file && in_array($file->getMimeType(), $fileMimes)) {
-        log_message('debug', 'File diterima dengan MIME: ' . $file->getMimeType());
-
-        $reader = new Xlsx();
-        $spreadsheet = $reader->load($file->getTempName());
-        $sheetData = $spreadsheet->getActiveSheet()->toArray();
-
-        log_message('debug', 'Data sheet di-load, total baris: ' . count($sheetData));
-
-        $array = array_map('array_filter', $sheetData);
-        $array = array_filter($array);
-        $input = array_map("unserialize", array_unique(array_map("serialize", $array)));
-
-        log_message('debug', 'Data uniq setelah filter, total baris: ' . count($input));
-
-        $data = [];
-        foreach ($input as $index => $dt) {
-            if (count($dt) < 5) {
-                log_message('error', "Baris ke-$index invalid, kurang kolom: " . json_encode($dt));
-                continue;
-            }
-
-            $temp["barcode"]      = $dt[0];
-            $temp["namaproduk"]   = $dt[1];
-            $temp["namabrand"]    = $dt[2];
-            $temp["namakategori"] = $dt[3];
-            $temp["harga"]        = $dt[4];
-            $temp["userid"]       = $userid;
-            $data[]               = $temp;
+        if (! $this->validate($rules)) {
+            $this->session->setFlashdata('message', $this->validator->listErrors());
+            return redirect()->to('/admin/produk/tambah')->withInput();
         }
 
-        log_message('debug', 'Data siap insert, total record valid: ' . count($data));
+        $data = [
+            "barcode"      => esc($this->request->getPost('barcode')),
+            "namaproduk"   => esc($this->request->getPost('produk')),
+            // Tambahan : Fabric & Warna
+            "fabric" => esc($this->request->getPost('fabric')),
+            "warna"  => esc($this->request->getPost('warna')),
 
-        $result = $this->produkModel->insertbatchData($data);
+            "namabrand"    => esc($this->request->getPost('brand')),
+            "namakategori" => esc($this->request->getPost('kategori')),
+            "harga"        => esc($this->request->getPost('harga')),
+            // Tambahan : Harga Konsinyasi & Harga Wholesale
+            "hargakonsinyasi" => esc($this->request->getPost('hargakonsinyasi')),
+            "hargawholesale"  => esc($this->request->getPost('hargawholesale')),
+            
+            "diskon"       => esc($this->request->getPost('diskon')),
+            "userid"       => session()->get('logged_status')['username'],
+            "sku"          => esc($this->request->getPost('sku')),
+            // dynamic bahan
+            "bahanbaku"    => $this->request->getPost('bahanbaku'),
+            "jumlah"       => $this->request->getPost('jumlah')
+        ];
+
+        $result = $this->produkModel->insertData($data);
 
         if ($result["code"] == 0) {
-            $this->session->setFlashdata('message', 'Data Berhasil Di-import');
+            $this->session->setFlashdata('message', 'Data berhasil disimpan.');
             return redirect()->to('/admin/produk');
         } else {
-            log_message('error', 'Gagal insert batch data: ' . $result["message"]);
-            $this->session->setFlashdata('message', 'Data Gagal Di-import');
-            return redirect()->to('/admin/produk/tambah');
+            $this->session->setFlashdata('message', 'Data gagal disimpan.');
+            return redirect()->to('/admin/produk/tambah')->withInput();
         }
     }
 
-    log_message('error', 'File tidak valid atau tidak ditemukan saat import');
-    $this->session->setFlashdata('message', 'File tidak Valid');
-    return redirect()->to('/admin/produk/tambah');
-}
+    public function postUpdateData()
+    {
+        $rules = [
+            'produk' => [
+                'label'  => 'Nama Produk',
+                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
+                'errors' => [
+                    'required'            => '{field} wajib diisi.',
+                    'max_length'          => '{field} maksimal 50 karakter.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                ]
+            ],
+            'fabric' => [
+                'label' => 'Nama Fabric',
+                'rules' => 'required|trim|max_length[30]|alpha_numeric_space',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'max_length' => '{field} maksimal 30 karakter.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                ]
+            ],
+            'warna' => [
+                'label' => 'Nama Warna',
+                'rules' => 'required|trim|max_length[30]|alpha_numeric_space',
+                'errors' => [
+                    'required' => '{field} wajib diisi.',
+                    'max_length' => '{field} maksimal 30 karakter.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                ]
+            ],
+            'brand' => [
+                'label'  => 'Nama Brand',
+                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
+                'errors' => [
+                    'required'            => '{field} wajib diisi.',
+                    'max_length'          => '{field} maksimal 50 karakter.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                ]
+            ],
+            'kategori' => [
+                'label'  => 'Kategori',
+                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
+                'errors' => [
+                    'required'            => '{field} wajib diisi.',
+                    'max_length'          => '{field} maksimal 50 karakter.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                ]
+            ],
+            'harga' => [
+                'label'  => 'Harga Retail',
+                'rules'  => 'required|trim|numeric|max_length[10]',
+                'errors' => [
+                    'required'   => '{field} wajib diisi.',
+                    'numeric'    => '{field} hanya boleh berisi angka.',
+                    'max_length' => '{field} maksimal 10 digit.'
+                ]
+            ],
+            'hargakonsinyasi' => [
+                'label'  => 'Harga Konsinyasi',
+                'rules'  => 'required|trim|numeric|max_length[10]',
+                'errors' => [
+                    'required'   => '{field} wajib diisi.',
+                    'numeric'    => '{field} hanya boleh berisi angka.',
+                    'max_length' => '{field} maksimal 10 digit.'
+                ]
+            ],
+            'hargawholesale' => [
+                'label'  => 'Harga Wholesale',
+                'rules'  => 'required|trim|numeric|max_length[10]',
+                'errors' => [
+                    'required'   => '{field} wajib diisi.',
+                    'numeric'    => '{field} hanya boleh berisi angka.',
+                    'max_length' => '{field} maksimal 10 digit.'
+                ]
+            ],
+            'diskon' => [
+                'label'  => 'Diskon',
+                'rules'  => 'permit_empty|trim|numeric|max_length[10]',
+                'errors' => [
+                    'numeric'    => '{field} hanya boleh berisi angka.',
+                    'max_length' => '{field} maksimal 10 digit.'
+                ]
+            ],
+            'sku' => [
+                'label'  => 'SKU',
+                'rules'  => 'required|trim|alpha_numeric|min_length[10]|max_length[10]',
+                'errors' => [
+                    'required'      => '{field} wajib diisi.',
+                    'alpha_numeric' => '{field} hanya boleh huruf dan angka.',
+                    'min_length'    => '{field} harus 10 karakter.',
+                    'max_length'    => '{field} harus 10 karakter.'
+                ]
+            ],
+            'bahanbaku.*' => [
+                'label'  => 'Bahan Baku',
+                'rules'  => 'required|trim|integer',
+                'errors' => [
+                    'required' => '{field} wajib dipilih.',
+                    'integer'  => '{field} harus berupa ID yang valid.'
+                ]
+            ],
+            'jumlah.*' => [
+                'label'  => 'Jumlah Bahan',
+                'rules'  => 'required|trim|numeric|greater_than[0]',
+                'errors' => [
+                    'required'     => '{field} wajib diisi.',
+                    'numeric'      => '{field} hanya boleh berisi angka.',
+                    'greater_than' => '{field} harus lebih dari 0.'
+                ]
+            ]
+        ];
+
+        if (! $this->validate($rules)) {
+            $this->session->setFlashdata('message', $this->validator->listErrors());
+            return redirect()->back()->withInput();
+        }
+
+        $barcode = esc($this->request->getPost('barcode'));
+
+        $data = [
+            "namaproduk"   => esc($this->request->getPost('produk')),
+            "namabrand"    => esc($this->request->getPost('brand')),
+            "namakategori" => esc($this->request->getPost('kategori')),
+            // Tambahan : Fabric & Warna
+            "fabric" => esc($this->request->getPost('fabric')),
+            "warna"  => esc($this->request->getPost('warna')),
+
+            "harga"        => esc($this->request->getPost('harga')),
+            // Tambahan : Harga Konsinyasi & Harga Wholesale
+            "hargakonsinyasi" => esc($this->request->getPost('hargakonsinyasi')),
+            "hargawholesale"  => esc($this->request->getPost('hargawholesale')),
+
+            "diskon"       => esc($this->request->getPost('diskon')),
+            "userid"       => session()->get('logged_status')['username'],
+            "sku"          => esc($this->request->getPost('sku'))
+        ];
+
+        $bahanbaku = $this->request->getPost('bahanbaku'); // array
+        $jumlah    = $this->request->getPost('jumlah');    // array
+
+        $result = $this->produkModel->setData($data, $barcode);
+
+        if ($result["code"] == 0) {
+            // update relasi produk_bahan
+            $this->produkModel->setProdukBahan($barcode, $bahanbaku, $jumlah);
+
+            $this->session->setFlashdata('message', 'Data berhasil diubah.');
+            return redirect()->to('/admin/produk');
+        } else {
+            $this->session->setFlashdata('message', 'Data gagal diubah.');
+            return redirect()->to('/admin/produk/ubah/' . base64_encode($barcode));
+        }
+    }
+
+// Handle import
+
+    public function postImport()
+    {
+        $userid = session()->get('logged_status')['username'];
+
+        $fileMimes = [
+            'application/vnd.ms-excel',
+            'application/excel',
+            'application/vnd.msexcel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        ];
+
+        $file = $this->request->getFile('produk');
+
+        if ($file && in_array($file->getMimeType(), $fileMimes)) {
+            log_message('debug', 'File diterima dengan MIME: ' . $file->getMimeType());
+
+            $reader = new Xlsx();
+            $spreadsheet = $reader->load($file->getTempName());
+            $sheetData = $spreadsheet->getActiveSheet()->toArray();
+
+            log_message('debug', 'Data sheet di-load, total baris: ' . count($sheetData));
+
+            $array = array_map('array_filter', $sheetData);
+            $array = array_filter($array);
+            $input = array_map("unserialize", array_unique(array_map("serialize", $array)));
+
+            log_message('debug', 'Data uniq setelah filter, total baris: ' . count($input));
+
+            $data = [];
+            foreach ($input as $index => $dt) {
+                if (count($dt) < 5) {
+                    log_message('error', "Baris ke-$index invalid, kurang kolom: " . json_encode($dt));
+                    continue;
+                }
+
+                $temp["barcode"]      = $dt[0];
+                $temp["namaproduk"]   = $dt[1];
+                $temp["namabrand"]    = $dt[2];
+                $temp["namakategori"] = $dt[3];
+                $temp["harga"]        = $dt[4];
+                $temp["userid"]       = $userid;
+                $data[]               = $temp;
+            }
+
+            log_message('debug', 'Data siap insert, total record valid: ' . count($data));
+
+            $result = $this->produkModel->insertbatchData($data);
+
+            if ($result["code"] == 0) {
+                $this->session->setFlashdata('message', 'Data Berhasil Di-import');
+                return redirect()->to('/admin/produk');
+            } else {
+                log_message('error', 'Gagal insert batch data: ' . $result["message"]);
+                $this->session->setFlashdata('message', 'Data Gagal Di-import');
+                return redirect()->to('/admin/produk/tambah');
+            }
+        }
+
+        log_message('error', 'File tidak valid atau tidak ditemukan saat import');
+        $this->session->setFlashdata('message', 'File tidak Valid');
+        return redirect()->to('/admin/produk/tambah');
+    }
 
 
     public function getPanggil($barcode)

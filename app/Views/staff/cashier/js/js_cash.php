@@ -135,57 +135,114 @@
 	
 
 	//barcode enter
-	$("#barcode").on("keypress",function(e){
-		if(e.which == 13) {
-			if ($(this).val().length==0)
-			{
+	// $("#barcode").on("keypress",function(e){
+	// 	if(e.which == 13) {
+	// 		if ($(this).val().length==0)
+	// 		{
+	// 			return;
+	// 		}
+	// 		$.ajax({
+	// 			url: "<?=base_url()?>staff/cashier/readbarcode",
+	// 			type: "post",
+	// 			data: "barcode="+$(this).val() ,
+	// 			success: function (data) {
+	// 				data=JSON.parse(data);
+	// 				results=$.map(data, function (item) {
+	// 							return {
+	// 						   id: item.size,
+	// 						   text: item.size
+	// 							};
+	// 						})
+	// 				$('#size').select2({data:results});
+	// 				$("#modalsize").modal("show");
+	// 			},
+	// 			error: function(jqXHR, textStatus, errorThrown) {
+	// 			   console.log(textStatus, errorThrown);
+	// 			}
+	// 		});
+
+	// 		$.ajax({
+	// 			url: "<?=base_url()?>staff/cashier/getharga",
+	// 			type: "post",
+	// 			data: "barcode="+$(this).val() ,
+	// 			success: function (data) {
+	// 				data=JSON.parse(data);
+	// 				$("#produk").val(data.namaproduk);
+	// 				$("#harga").val(data.harga);
+	// 				$("#ketsale").show();
+	// 				$("#diskonsale").show();
+					
+	// 				if (data.diskon>0){
+	// 				    $("#potongan3").prop("checked",true);
+    // 					$("#diskon").val(data.diskon);
+    // 					$("#ketsale").hide();
+    // 					$("#diskonsale").hide();
+    // 					$("#keterangan").val("Sale");
+	// 				}
+	// 			},
+	// 			error: function(jqXHR, textStatus, errorThrown) {
+	// 			   console.log(textStatus, errorThrown);
+	// 			}
+	// 		});
+	// 	}
+	// })
+
+	// barcode enter
+	$("#barcode").on("keypress", function (e) {
+		if (e.which == 13) {
+			if ($(this).val().length == 0) {
 				return;
 			}
+
+			// === AJAX 1: readbarcode ===
 			$.ajax({
 				url: "<?=base_url()?>staff/cashier/readbarcode",
 				type: "post",
-				data: "barcode="+$(this).val() ,
+				data: { barcode: $(this).val() },   // ✅ ganti jadi object biar aman
+				dataType: "json",                   // ✅ tambahkan ini, otomatis parse JSON
 				success: function (data) {
-					data=JSON.parse(data);
-					results=$.map(data, function (item) {
-								return {
-							   id: item.size,
-							   text: item.size
-								};
-							})
-					$('#size').select2({data:results});
+					// ❌ tidak perlu JSON.parse(data) lagi
+					results = $.map(data, function (item) {
+						return {
+							id: item.size,
+							text: item.size
+						};
+					});
+					$('#size').select2({ data: results });
 					$("#modalsize").modal("show");
 				},
-				error: function(jqXHR, textStatus, errorThrown) {
-				   console.log(textStatus, errorThrown);
+				error: function (jqXHR, textStatus, errorThrown) {
+					console.log(textStatus, errorThrown);
 				}
 			});
 
+			// === AJAX 2: getharga ===
 			$.ajax({
 				url: "<?=base_url()?>staff/cashier/getharga",
 				type: "post",
-				data: "barcode="+$(this).val() ,
+				data: { barcode: $(this).val() },   // ✅ ganti jadi object
+				dataType: "json",                   // ✅ tambahkan ini
 				success: function (data) {
-					data=JSON.parse(data);
+					// ❌ tidak perlu JSON.parse(data)
 					$("#produk").val(data.namaproduk);
 					$("#harga").val(data.harga);
 					$("#ketsale").show();
 					$("#diskonsale").show();
-					
-					if (data.diskon>0){
-					    $("#potongan3").prop("checked",true);
-    					$("#diskon").val(data.diskon);
-    					$("#ketsale").hide();
-    					$("#diskonsale").hide();
-    					$("#keterangan").val("Sale");
+
+					if (data.diskon > 0) {
+						$("#potongan3").prop("checked", true);
+						$("#diskon").val(data.diskon);
+						$("#ketsale").hide();
+						$("#diskonsale").hide();
+						$("#keterangan").val("Sale");
 					}
 				},
-				error: function(jqXHR, textStatus, errorThrown) {
-				   console.log(textStatus, errorThrown);
+				error: function (jqXHR, textStatus, errorThrown) {
+					console.log(textStatus, errorThrown);
 				}
 			});
 		}
-	})
+	});
 
 	$('#namaproduk').select2();
 
@@ -307,52 +364,99 @@
 		$("#modalmember").modal("hide");
 	})
 
-	$("#simpanmember").on("click",function (e){
+	// $("#simpanmember").on("click",function (e){
+	// 	$.ajax({
+	// 		url: "<?=base_url()?>staff/cashier/getdetail",
+	// 		dataType: "json",  // penting
+	// 		type: "post",
+	// 		data: "memberid="+$("#memberid").val() ,
+	// 		success: function (data) {
+	// 			if (data==404)
+	// 			{
+	// 				alert("Member tidak Ditemukan");
+	// 				$(".membername").text("");
+	// 			}else{
+	// 				data=JSON.parse(data);
+	// 				$(".membername").text(data.nama);
+	// 				$("#modalmember").modal("hide");
+	// 			}
+	// 		},
+	// 		error: function(jqXHR, textStatus, errorThrown) {
+	// 		   console.log(textStatus, errorThrown);
+	// 		}
+	// 	});		
+	// })
+
+	// $("#memberid").on("keypress",function (e){
+	// 	if (e.which==13)
+	// 	{
+	// 		$.ajax({
+	// 			url: "<?=base_url()?>staff/cashier/getdetail",
+	// 			dataType: "json",  // penting
+	// 			type: "post",
+	// 			data: "memberid="+$(this).val() ,
+	// 			success: function (data) {
+	// 				if (data==404)
+	// 				{
+	// 					alert("Member tidak Ditemukan");
+	// 					$(".membername").text("");
+	// 				}else{
+	// 					data=JSON.parse(data);
+	// 					$(".membername").text(data.nama);
+	// 				}
+	// 			},
+	// 			error: function(jqXHR, textStatus, errorThrown) {
+	// 			   console.log(textStatus, errorThrown);
+	// 			}
+	// 		});
+	// 	}
+	// })
+
+	// Klik tombol Simpan
+	$("#simpanmember").on("click", function (e) {
 		$.ajax({
 			url: "<?=base_url()?>staff/cashier/getdetail",
 			type: "post",
-			data: "memberid="+$("#memberid").val() ,
+			data: { memberid: $("#memberid").val() }, // pakai object biar aman
+			dataType: "json", // otomatis parse JSON
 			success: function (data) {
-				if (data==404)
-				{
+				$(".membername").text(data.nama);
+				$("#modalmember").modal("hide");
+			},
+			error: function (xhr, textStatus, errorThrown) {
+				if (xhr.status === 404) {
 					alert("Member tidak Ditemukan");
 					$(".membername").text("");
-				}else{
-					data=JSON.parse(data);
-					$(".membername").text(data.nama);
-					$("#modalmember").modal("hide");
+				} else {
+					console.log("Error:", textStatus, errorThrown);
 				}
-			},
-			error: function(jqXHR, textStatus, errorThrown) {
-			   console.log(textStatus, errorThrown);
 			}
-		});		
-	})
+		});
+	});
 
-	$("#memberid").on("keypress",function (e){
-		if (e.which==13)
-		{
+	// Tekan Enter di input memberid
+	$("#memberid").on("keypress", function (e) {
+		if (e.which == 13) {
 			$.ajax({
 				url: "<?=base_url()?>staff/cashier/getdetail",
 				type: "post",
-				data: "memberid="+$(this).val() ,
+				data: { memberid: $(this).val() },
+				dataType: "json",
 				success: function (data) {
-					if (data==404)
-					{
+					$(".membername").text(data.nama);
+					$("#modalmember").modal("hide");
+				},
+				error: function (xhr, textStatus, errorThrown) {
+					if (xhr.status === 404) {
 						alert("Member tidak Ditemukan");
 						$(".membername").text("");
-					}else{
-						data=JSON.parse(data);
-						$(".membername").text(data.nama);
+					} else {
+						console.log("Error:", textStatus, errorThrown);
 					}
-				},
-				error: function(jqXHR, textStatus, errorThrown) {
-				   console.log(textStatus, errorThrown);
 				}
 			});
 		}
-	})
-
+	});
 
 	$("#btncari").on("click",function (){
 		$("#cariproduk").modal("show");

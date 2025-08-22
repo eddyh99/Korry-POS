@@ -72,6 +72,17 @@ class Cashier extends BaseApiController
         return $this->response->setJSON($result);
     }
 
+    // public function postGetdetail()
+    // {
+    //     $memberid = $this->request->getPost('memberid', FILTER_SANITIZE_STRING);
+    //     $result   = $this->memberModel->getMember($memberid);
+
+    //     if ($result['code'] == 0) {
+    //         return $this->response->setJSON($result['message']);
+    //     } else {
+    //         return $this->response->setStatusCode(404)->setBody('404');
+    //     }
+    // }
     public function postGetdetail()
     {
         $memberid = $this->request->getPost('memberid', FILTER_SANITIZE_STRING);
@@ -80,7 +91,8 @@ class Cashier extends BaseApiController
         if ($result['code'] == 0) {
             return $this->response->setJSON($result['message']);
         } else {
-            return $this->response->setStatusCode(404)->setBody('404');
+            return $this->response->setJSON(['error' => 'Member tidak ditemukan'])
+                                ->setStatusCode(404);
         }
     }
 
@@ -90,35 +102,70 @@ class Cashier extends BaseApiController
         session()->set('nota_komplit', '');
     }
 
+    // public function postAddData()
+    // {
+    //     $memberid = $this->request->getPost('memberid', FILTER_SANITIZE_STRING);
+    //     $fee      = $this->request->getPost('fee', FILTER_SANITIZE_STRING);
+    //     $method   = $this->request->getPost('method', FILTER_SANITIZE_STRING);
+    //     $barang   = json_decode($this->request->getPost('barang', FILTER_SANITIZE_STRING));
+
+    //     if (empty($memberid)) {
+    //         $memberid = null;
+    //     }
+
+    //     $nota = $this->cashierModel->getLastnota();
+
+    //     $jual = [
+    //         'nonota'    => $nota,
+    //         'storeid'   => $_SESSION['logged_status']['storeid'],
+    //         'tanggal'   => date('Y-m-d H:i:s'),
+    //         'method'    => $method,
+    //         'fee'       => $fee,
+    //         'member_id' => $memberid,
+    //         'userid'    => $_SESSION['logged_status']['username']
+    //     ];
+
+    //     $result = $this->cashierModel->insertData($jual, $barang);
+
+    //     return $this->response->setBody($result);
+    // }
     public function postAddData()
     {
-        $memberid = $this->request->getPost('memberid', FILTER_SANITIZE_STRING);
-        $fee      = $this->request->getPost('fee', FILTER_SANITIZE_STRING);
-        $method   = $this->request->getPost('method', FILTER_SANITIZE_STRING);
-        $barang   = json_decode($this->request->getPost('barang', FILTER_SANITIZE_STRING));
+        // Ambil input POST
+        $memberid = $this->request->getPost('memberid');
+        $fee      = $this->request->getPost('fee');
+        $method   = $this->request->getPost('method');
+        $barang   = json_decode($this->request->getPost('barang'), true);
 
+        // Null-kan kalau kosong
         if (empty($memberid)) {
             $memberid = null;
         }
 
+        // Ambil nomor nota terakhir
         $nota = $this->cashierModel->getLastnota();
 
+        // Ambil session user
+        $session = session();
+
         $jual = [
-            'nonota'    => $nota,
-            'storeid'   => $_SESSION['logged_status']['storeid'],
-            'tanggal'   => date('Y-m-d H:i:s'),
-            'method'    => $method,
-            'fee'       => $fee,
-            'member_id' => $memberid,
-            'userid'    => $_SESSION['logged_status']['username']
+            "nonota"    => $nota,
+            "storeid"   => $session->get("logged_status.storeid"),
+            "tanggal"   => date("Y-m-d H:i:s"),
+            "method"    => $method,
+            "fee"       => $fee,
+            "member_id" => $memberid,
+            "userid"    => $session->get("logged_status.username"),
         ];
 
+        // Insert ke database via model
         $result = $this->cashierModel->insertData($jual, $barang);
 
-        return $this->response->setBody($result);
+        // Return sebagai JSON (standar CI4)
+        return $this->response->setJSON($result);
     }
 
-    public function postCetaknota($id)
+    public function getCetaknota($id)
     {
         $store = $this->storeModel->getStore($_SESSION['logged_status']['storeid']);
         $data  = $this->cashierModel->getallnota($id);

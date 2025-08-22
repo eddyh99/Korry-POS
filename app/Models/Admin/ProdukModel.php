@@ -12,6 +12,7 @@ class ProdukModel extends Model
 
     private $produk = 'produk';
     private $harga  = 'harga';
+    private $produkbahan = 'produk_bahan';
 
     public function Listproduk()
     {
@@ -25,12 +26,37 @@ class ProdukModel extends Model
         }
     }
 
-    public function getProduk($barcode)
+    public function getProduk1($barcode)
     {
         $sql = "SELECT a.*, x.harga, x.diskon
                 FROM produk a
                 INNER JOIN (
                     SELECT a.harga, a.diskon, a.barcode
+                    FROM harga a
+                    INNER JOIN (
+                        SELECT MAX(tanggal) as tanggal, barcode 
+                        FROM harga 
+                        GROUP BY barcode
+                    ) x 
+                    ON a.barcode = x.barcode 
+                    AND a.tanggal = x.tanggal
+                ) x ON a.barcode = x.barcode
+                WHERE a.barcode = ?";
+        
+        $query = $this->db->query($sql, [$barcode]);
+
+        if ($query) {
+            return $query->getRow();
+        } else {
+            return $this->db->error();
+        }
+    }
+    public function getProduk($barcode)
+    {
+        $sql = "SELECT a.*, x.harga, x.harga_konsinyasi, x.harga_wholesale, x.diskon
+                FROM produk a
+                INNER JOIN (
+                    SELECT a.harga, a.harga_konsinyasi, a.harga_wholesale, a.diskon, a.barcode
                     FROM harga a
                     INNER JOIN (
                         SELECT MAX(tanggal) as tanggal, barcode 
@@ -56,8 +82,13 @@ class ProdukModel extends Model
         $produk = [
             'barcode'      => $data["barcode"],
             'namaproduk'   => $data["namaproduk"],
+            // Tambahan : Fabric & Warna
+            'namafabric'   => $data["fabric"],
+            'namawarna'    => $data["warna"],
+
             'namabrand'    => $data["namabrand"],
             'namakategori' => $data["namakategori"],
+            'sku'          => $data["sku"],
             'userid'       => $data["userid"]
         ];
 
@@ -65,27 +96,85 @@ class ProdukModel extends Model
             'barcode' => $data["barcode"],
             'tanggal' => date("Y-m-d H:i:s"),
             'harga'   => $data["harga"],
+            // Tambahan : Harga Konsinyasi & Wholesale
+            'harga_konsinyasi'   => $data["hargakonsinyasi"],
+            'harga_wholesale'    => $data["hargawholesale"],
+
             'diskon'  => $data["diskon"] ?? 0,
             'userid'  => $data["userid"]
         ];
 
         $this->db->transStart();
 
-        // Insert produk
         $this->db->table($this->produk)->insert($produk);
 
-        // Insert harga
         $this->db->table($this->harga)->insert($price);
+
+        if (!empty($data["bahanbaku"])) {
+            foreach ($data["bahanbaku"] as $i => $idbahan) {
+                $jumlah = $data["jumlah"][$i];
+
+                // anggap semua sudah dalam meter/pcs (yard dikonversi di sini jika ada logic tambahan)
+                $produkbahan = [
+                    'barcode' => $data["barcode"],
+                    'idbahan' => $idbahan,
+                    'jumlah'  => $jumlah
+                    // 'satuan'  => 'meter', // default (kalau mau pcs, bisa diset berdasarkan jenis bahan di DB)
+                    // 'userid'  => $data["userid"]
+                ];
+
+                $this->db->table($this->produkbahan)->insert($produkbahan);
+            }
+        }
 
         $this->db->transComplete();
 
         if ($this->db->transStatus() === false) {
             $this->db->transRollback();
-            return ["code" => 511, "message" => "Data sudah pernah digunakan"];
+            return ["code" => 511, "message" => "Data gagal disimpan"];
         } else {
             $this->db->transCommit();
-            return ["code" => 0, "message" => ""];
+            return ["code" => 0, "message" => "Data berhasil disimpan"];
         }
+    }
+
+    public function setData($data, $barcode)
+    {
+        $produk = [
+            'namaproduk'   => $data["namaproduk"],
+            'namabrand'    => $data["namabrand"],
+            'namakategori' => $data["namakategori"],
+            // Tambahan : Harga Konsinyasi & Wholesale
+            'namafabric'   => $data["fabric"],
+            'namawarna'    => $data["warna"],
+
+            'userid'       => $data["userid"]
+        ];
+
+        $this->db->table($this->table)->where("barcode", $barcode)->update($produk);
+
+        // cek harga terakhir
+        $lastharga = $this->getProduk($barcode);
+
+        if (($data["harga"] != $lastharga->harga) 
+            || ($data["diskon"]          != $lastharga->diskon) 
+            || ($data["hargakonsinyasi"] != $lastharga->harga_konsinyasi) 
+            || ($data["hargawholesale"]  != $lastharga->harga_wholesale)) {
+            $price = [
+                'barcode' => $barcode,
+                'tanggal' => date("Y-m-d H:i:s"),
+                'harga'   => $data["harga"],
+                // Tambahan : Harga Konsinyasi & Wholesale
+                'harga_konsinyasi'   => $data["hargakonsinyasi"],
+                'harga_wholesale'    => $data["hargawholesale"],
+                'diskon'  => $data["diskon"],
+                'userid'  => $data["userid"]
+            ];
+
+            $this->db->table($this->harga)->insert($price);
+        }
+
+        return ["code" => 0, "message" => ""];
     }
 
     public function hapusData($data, $barcode)
@@ -109,10 +198,10 @@ class ProdukModel extends Model
 
     public function allposts($limit, $start, $col, $dir)
     {
-        $sql = "SELECT a.*, x.harga, x.diskon
+        $sql = "SELECT a.*, x.harga, x.harga_konsinyasi, x.harga_wholesale, x.diskon
                 FROM {$this->produk} a
                 INNER JOIN (
-                    SELECT a.harga, a.barcode, a.diskon
+                    SELECT a.harga, a.harga_konsinyasi, a.harga_wholesale, a.barcode, a.diskon
                     FROM {$this->harga} a
                     INNER JOIN (
                         SELECT MAX(tanggal) as tanggal, barcode
@@ -180,6 +269,91 @@ class ProdukModel extends Model
         return $this->db->query($sql, [$like, $like, $like, $like, $like])->getNumRows();
     }
 
+    public function insertbatchData($data)
+    {
+        $this->db->transStart();
+
+        foreach ($data as $dt) {
+            // Skip jika ini header, biasanya baris pertama berisi nama kolom
+            if (isset($dt['barcode']) && strtolower($dt['barcode']) === 'barcode') {
+                continue;
+            }
+
+            $produk = [
+                'barcode'      => $dt["barcode"],
+                'namaproduk'   => $dt["namaproduk"],
+                'namabrand'    => $dt["namabrand"],
+                'namakategori' => $dt["namakategori"],
+                'userid'       => $dt["userid"]
+            ];
+
+            $price = [
+                'barcode' => $dt["barcode"],
+                'tanggal' => date("Y-m-d H:i:s"),
+                'harga'   => $dt["harga"],
+                'diskon'  => $dt["diskon"] ?? 0,
+                'userid'  => $dt["userid"]
+            ];
+
+            $this->db->table($this->table)->insert($produk);
+            $this->db->table($this->harga)->insert($price);
+        }
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false) {
+            return ["code" => 1, "message" => "Transaksi gagal"];
+        }
+
+        return ["code" => 0, "message" => ""];
+    }
+
+// Update Produk (termasuk Multiple Input Bahan Baku)
+
+    // public function getProdukBahan($barcode)
+    // {
+    //     return $this->db->table('produk_bahan pb')
+    //         ->select('pb.idbahan, pb.jumlah, b.namabahan')
+    //         ->join('bahanbaku b', 'b.id = pb.idbahan', 'left')
+    //         ->where('pb.barcode', $barcode)
+    //         ->get()
+    //         ->getResult();
+    // }
+    public function getProdukBahan($barcode)
+    {
+        $sql = "SELECT pb.idbahan, pb.jumlah, b.namabahan
+                FROM produk_bahan pb
+                LEFT JOIN bahanbaku b ON b.id = pb.idbahan
+                WHERE pb.barcode = ?";
+
+        return $this->db->query($sql, [$barcode])->getResult();
+    }
+
+
+    public function setProdukBahan($barcode, $idbahanArr, $jumlahArr)
+    {
+        // hapus dulu bahan lama
+        $this->db->table('produk_bahan')->where('barcode', $barcode)->delete();
+
+        if (!empty($idbahanArr) && is_array($idbahanArr)) {
+            foreach ($idbahanArr as $idx => $idbahan) {
+                if (!empty($idbahan) && !empty($jumlahArr[$idx])) {
+                    // konversi yard ke meter
+                    $jumlah = $jumlahArr[$idx];
+                    if (isset($_POST['satuan'][$idx]) && $_POST['satuan'][$idx] == 'yard') {
+                        $jumlah = $jumlah * 0.9144;
+                    }
+
+                    $this->db->table('produk_bahan')->insert([
+                        'barcode' => $barcode,
+                        'idbahan' => $idbahan,
+                        'jumlah'  => $jumlah
+                    ]);
+                }
+            }
+        }
+    }
+
     // public function insertbatchData($data)
     // {
     //     $this->db->transStart();
@@ -214,45 +388,6 @@ class ProdukModel extends Model
     //     return ["code" => 0, "message" => ""];
     // }
 
-    public function insertbatchData($data)
-{
-    $this->db->transStart();
-
-    foreach ($data as $dt) {
-        // Skip jika ini header, biasanya baris pertama berisi nama kolom
-        if (isset($dt['barcode']) && strtolower($dt['barcode']) === 'barcode') {
-            continue;
-        }
-
-        $produk = [
-            'barcode'      => $dt["barcode"],
-            'namaproduk'   => $dt["namaproduk"],
-            'namabrand'    => $dt["namabrand"],
-            'namakategori' => $dt["namakategori"],
-            'userid'       => $dt["userid"]
-        ];
-
-        $price = [
-            'barcode' => $dt["barcode"],
-            'tanggal' => date("Y-m-d H:i:s"),
-            'harga'   => $dt["harga"],
-            'diskon'  => $dt["diskon"] ?? 0,
-            'userid'  => $dt["userid"]
-        ];
-
-        $this->db->table($this->table)->insert($produk);
-        $this->db->table($this->harga)->insert($price);
-    }
-
-    $this->db->transComplete();
-
-    if ($this->db->transStatus() === false) {
-        return ["code" => 1, "message" => "Transaksi gagal"];
-    }
-
-    return ["code" => 0, "message" => ""];
-}
-
     // public function setData($data, $barcode)
     // {
     //     $produk = [
@@ -281,35 +416,43 @@ class ProdukModel extends Model
 
     //     return ["code" => 0, "message" => ""];
     // }
-    public function setData($data, $barcode)
-    {
-        $produk = [
-            'namaproduk'   => $data["namaproduk"],
-            'namabrand'    => $data["namabrand"],
-            'namakategori' => $data["namakategori"],
-            'userid'       => $data["userid"]
-        ];
 
-        $this->db->table($this->table)->where("barcode", $barcode)->update($produk);
+    // public function insertData($data)
+    // {
+    //     $produk = [
+    //         'barcode'      => $data["barcode"],
+    //         'namaproduk'   => $data["namaproduk"],
+    //         'namabrand'    => $data["namabrand"],
+    //         'namakategori' => $data["namakategori"],
+    //         'userid'       => $data["userid"]
+    //     ];
 
-        // cek harga terakhir
-        $lastharga = $this->getProduk($barcode);
+    //     $price = [
+    //         'barcode' => $data["barcode"],
+    //         'tanggal' => date("Y-m-d H:i:s"),
+    //         'harga'   => $data["harga"],
+    //         'diskon'  => $data["diskon"] ?? 0,
+    //         'userid'  => $data["userid"]
+    //     ];
 
-        if (($data["harga"] != $lastharga->harga) || ($data["diskon"] != $lastharga->diskon)) {
-            $price = [
-                'barcode' => $barcode,
-                'tanggal' => date("Y-m-d H:i:s"),
-                'harga'   => $data["harga"],
-                'diskon'  => $data["diskon"],
-                'userid'  => $data["userid"]
-            ];
+    //     $this->db->transStart();
 
-            $this->db->table($this->harga)->insert($price);
-        }
+    //     // Insert produk
+    //     $this->db->table($this->produk)->insert($produk);
 
-        return ["code" => 0, "message" => ""];
-    }
+    //     // Insert harga
+    //     $this->db->table($this->harga)->insert($price);
 
+    //     $this->db->transComplete();
+
+    //     if ($this->db->transStatus() === false) {
+    //         $this->db->transRollback();
+    //         return ["code" => 511, "message" => "Data sudah pernah digunakan"];
+    //     } else {
+    //         $this->db->transCommit();
+    //         return ["code" => 0, "message" => ""];
+    //     }
+    // }
 }
 
 
