@@ -87,7 +87,7 @@ $(document).ready(function(){
         let formData = $(this).serialize();
 
         $.ajax({
-            url: "<?=base_url('admin/konsinyasi/add-data')?>",
+            url: "<?=base_url('admin/konsinyasi/add-data-do')?>",
             type: "POST",
             data: formData,
             dataType: "json",

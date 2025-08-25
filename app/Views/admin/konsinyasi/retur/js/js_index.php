@@ -5,47 +5,62 @@
     }
 </style>
 <script>
-var table;
-$(function(){
-	table = $('#table_data').DataTable({
-            "responsive": true,
-            "processing": true,
-            "serverSide": true,
-            "pageLength": 50,
+	var table;
+	$(function(){
+		console.log("Inisialisasi DataTable untuk Retur Konsinyasi...");
 
-			"order": [[ 1, "desc" ]],
-            "scrollX": true,
+		table = $('#table_data').DataTable({
+			"order": [[ 0, "asc" ]],
+			"scrollX": true,
 			"ajax": {
-					"url": "<?=base_url()?>admin/konsinyasi/listdata",
-					"type": "POST",
-					"dataSrc":function (data){
-							return data["produk"];							
-						  }
-			},
-		    "aoColumnDefs": [{	
-				"aTargets": [4],
-				"mData": "mutasi_id",
-				"mRender": function (data, type, full, meta){
-					var button='';
-					<?php if($_SESSION["logged_status"]["role"]!="Office Staff"){?>
-    					if ((full.status=="Belum") || (full.status=="Dikirim"))
-    					{
-    						button='<a href="<?=base_url()?>admin/konsinyasi/terima/'+encodeURI(btoa(full.mutasi_id))+'" class="btn btn-simple btn-success btn-icon"><i class="material-icons">check_circle</i></a>';
-    				        button=button+'<a href="<?=base_url()?>admin/konsinyasi/batal/'+encodeURI(btoa(full.mutasi_id))+'" class="btn btn-simple btn-danger btn-icon"><i class="material-icons">close</i></a>';
-    					}else{
-    					    button=""
-    					}
-				    <?php } ?>
-    				button=button+'<a href="<?=base_url()?>admin/konsinyasi/detail/'+encodeURI(btoa(full.mutasi_id))+'/0" class="btn btn-info btn-sm btn-icon"><i class="fas fa-info"></i> Detail</a>';
-				    return button;			    
+				"url": "<?=base_url()?>admin/konsinyasi/returlistdata",
+				"type": "POST",
+				"dataSrc": function (data){
+					console.log("Data diterima dari server:", data);
+					return data;                            
+				},
+				"error": function (xhr, error, code) {
+					console.error("AJAX error:", error, "Code:", code, "Response:", xhr.responseText);
 				}
-			}],
-            "columns": [
-				  { "data": "mutasi_id"},
-				  { "data": "tanggal"},
-                  { "data": "dari" },
-                  { "data": "status"},
+			},
+			"columns": [
+				{ "data": "noretur" },
+				{ "data": "nokonsinyasi" },  
+				{ "data": "tanggal" },
+				{ "data": "noretur",
+					"render": function (data, type, full, meta){
+						let button = '';
+						// button += '<a href="<?=base_url()?>admin/konsinyasi/dohapus/' + encodeURI(btoa(data)) + '" class="btn btn-simple btn-danger btn-icon" title="Hapus"><i class="material-icons">close</i></a>';
+						button += '<button type="button" class="btn btn-simple btn-danger btn-icon btnDelete" title="Hapus" data-noretur="' + data + '"><i class="material-icons">close</i></button>';
+						return button;
+					}
+				}
 			]
+		});
+
+		table.on('error.dt', function(e, settings, techNote, message) {
+			console.error("DataTables error:", message);
+		});
+
+		// === Handle Hapus Modal (Bootstrap 4) ===
+		$('#table_data').on("click", ".btnDelete", function () {
+			const noretur = $(this).data("noretur"); // ambil noretur dari tombol
+			const encoded = btoa(noretur); // base64 encode biar aman di URL
+
+			// set ke modal
+			$("#noreturToDelete").text(noretur);
+			$("#noreturHidden").val(encoded);
+
+			// munculkan modal
+			$("#modal_deleteRetur").modal("show");
+		});
+
+		// Saat konfirmasi hapus ditekan
+		$("#confirmDeleteBtn").on("click", function () {
+			const encodedNota = $("#noreturHidden").val();
+			if (encodedNota) {
+				window.location.href = "<?=base_url()?>admin/konsinyasi/returhapus/" + encodedNota;
+			}
+		});
 	});
-})
 </script>
