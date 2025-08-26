@@ -26,6 +26,53 @@ class ProdukModel extends Model
         }
     }
 
+    public function ListProdukDoKonsinyasi()
+    {
+        $sql = "SELECT a.*, x.harga, x.harga_konsinyasi, x.harga_wholesale, x.diskon
+                FROM {$this->produk} a
+                INNER JOIN (
+                    SELECT h1.barcode, h1.harga, h1.harga_konsinyasi, h1.harga_wholesale, h1.diskon
+                    FROM {$this->harga} h1
+                    INNER JOIN (
+                        SELECT barcode, MAX(tanggal) as tanggal
+                        FROM {$this->harga}
+                        GROUP BY barcode
+                    ) h2 ON h1.barcode = h2.barcode AND h1.tanggal = h2.tanggal
+                ) x ON a.barcode = x.barcode
+                WHERE a.status = '0'";
+
+        $query = $this->db->query($sql);
+
+        if ($query) {
+            return $query->getResultArray();
+        } else {
+            return $this->db->error();
+        }
+    }
+    public function ListProdukNotaKonsinyasi()
+    {
+        $sql = "SELECT a.*, x.harga, x.harga_konsinyasi, x.harga_wholesale, x.diskon
+                FROM {$this->produk} a
+                INNER JOIN (
+                    SELECT h1.barcode, h1.harga, h1.harga_konsinyasi, h1.harga_wholesale, h1.diskon
+                    FROM {$this->harga} h1
+                    INNER JOIN (
+                        SELECT barcode, MAX(tanggal) as tanggal
+                        FROM {$this->harga}
+                        GROUP BY barcode
+                    ) h2 ON h1.barcode = h2.barcode AND h1.tanggal = h2.tanggal
+                ) x ON a.barcode = x.barcode
+                WHERE a.status = '0'";
+
+        $query = $this->db->query($sql);
+
+        if ($query) {
+            return $query->getResultArray();
+        } else {
+            return $this->db->error();
+        }
+    }
+
     public function getProduk1($barcode)
     {
         $sql = "SELECT a.*, x.harga, x.diskon

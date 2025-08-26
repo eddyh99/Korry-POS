@@ -67,6 +67,9 @@
                             <li class="<?=@$side8?>">
                                 <a href="<?=base_url()?>admin/warna">Warna</a>
                             </li>
+                            <li class="<?=@$side4?>">
+                                <a href="<?=base_url()?>admin/pengeluaran">Pengeluaran</a>
+                            </li>
                         </ul>
                     </div>
                 </li>
@@ -115,6 +118,45 @@
     					<p>Produksi</p>
     				</a>
     			</li>
+                <li class="<?=@$mn_konsinyasi?>">
+                    <a data-toggle="collapse" href="#konsinyasi" aria-expanded="<?php echo (@$mn_konsinyasi=="active")?"true":"false" ?>">
+                        <i class="material-icons">group</i>
+                        <p>Konsinyasi
+                            <b class="caret"></b>
+                        </p>
+                    </a>
+                    <div class="<?=@$collap?>" id="konsinyasi">
+                        <ul class="nav">
+                            <li class="<?=@$side10?>">
+                                <a href="<?=base_url()?>admin/konsinyasi/do">Delivery Order</a>
+                            </li>
+                            <li class="<?=@$side20?>">
+                                <a href="<?=base_url()?>admin/konsinyasi/nota">Nota</a>
+                            </li>
+                            <li class="<?=@$side11?>">
+                                <a href="<?=base_url()?>admin/konsinyasi/retur">Retur</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="<?=@$mn_wholesale?>">
+                    <a data-toggle="collapse" href="#wholesale" aria-expanded="<?php echo (@$mn_wholesale=="active")?"true":"false" ?>">
+                        <i class="material-icons">shopping_basket</i>
+                        <p>Wholesale
+                            <b class="caret"></b>
+                        </p>
+                    </a>
+                    <div class="<?=@$collap?>" id="wholesale">
+                        <ul class="nav">
+                            <li class="<?=@$side10?>">
+                                <a href="<?=base_url()?>admin/wholesale/order">Order</a>
+                            </li>
+                            <li class="<?=@$side20?>">
+                                <a href="<?=base_url()?>admin/wholesale/cicilan">Cicilan</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
                 <li class="<?=@$mn_laporan?>">
                     <a data-toggle="collapse" href="#laporan" aria-expanded="<?php echo (@$mn_laporan=="active")?"true":"false" ?>">
                         <i class="material-icons">settings</i>
