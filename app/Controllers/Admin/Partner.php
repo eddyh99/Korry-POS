@@ -101,11 +101,12 @@ class Partner extends BaseApiController
         $rules = [
             'partner' => [
                 'label' => 'Nama Partner',
-                'rules' => 'required|trim|max_length[30]|alpha_numeric_space',
+                'rules' => 'required|trim|max_length[30]|alpha_numeric_space|is_unique[partner_konsinyasi.nama]',
                 'errors' => [
                     'required' => '{field} wajib diisi.',
                     'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.',
-                    'max_length' => '{field} maksimal 30 karakter.'
+                    'max_length' => '{field} maksimal 30 karakter.',
+                    'is_unique'     => '{field} sudah digunakan.'
                 ]
             ],
             'alamat' => [
@@ -154,11 +155,12 @@ class Partner extends BaseApiController
         $rules = [
             'partner' => [
                 'label' => 'Nama Partner',
-                'rules' => 'required|trim|max_length[30]|alpha_numeric_space',
+                'rules' => 'required|trim|max_length[30]|alpha_numeric_space|is_unique[partner_konsinyasi.nama]',
                 'errors' => [
                     'required' => '{field} wajib diisi.',
                     'max_length' => '{field} maksimal 30 karakter.',
-                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.',
+                    'is_unique'     => '{field} sudah digunakan.'
                 ]
             ],
             'alamat' => [

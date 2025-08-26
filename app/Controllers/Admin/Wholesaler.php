@@ -101,11 +101,12 @@ class Wholesaler extends BaseApiController
         $rules = [
             'wholesaler' => [
                 'label' => 'Nama Wholesaler',
-                'rules' => 'required|trim|max_length[30]|alpha_numeric_space',
+                'rules' => 'required|trim|max_length[30]|alpha_numeric_space|is_unique[wholesaler.nama]',
                 'errors' => [
                     'required' => '{field} wajib diisi.',
                     'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.',
-                    'max_length' => '{field} maksimal 30 karakter.'
+                    'max_length' => '{field} maksimal 30 karakter.',
+                    'is_unique' => '{field} sudah digunakan.'
                 ]
             ],
             'alamat' => [
@@ -154,11 +155,12 @@ class Wholesaler extends BaseApiController
         $rules = [
             'wholesaler' => [
                 'label' => 'Nama Wholesaler',
-                'rules' => 'required|trim|max_length[30]|alpha_numeric_space',
+                'rules' => 'required|trim|max_length[30]|alpha_numeric_space|is_unique[wholesaler.nama]',
                 'errors' => [
                     'required' => '{field} wajib diisi.',
                     'max_length' => '{field} maksimal 30 karakter.',
                     'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.',
+                    'is_unique' => '{field} sudah digunakan.'
                 ]
             ],
             'alamat' => [
@@ -167,7 +169,7 @@ class Wholesaler extends BaseApiController
                 'errors' => [
                     'required' => '{field} wajib diisi.',
                     'max_length' => '{field} maksimal 50 karakter.',
-                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
                 ]
             ],
             'kontak' => [
@@ -175,7 +177,7 @@ class Wholesaler extends BaseApiController
                 'rules' => 'required|regex_match[/^((\+62|62|0)8[1-9][0-9]{6,9}|0[2-9][0-9]{1,3}[0-9]{5,8})$/]',
                 'errors' => [
                     'required' => '{field} wajib diisi.',
-                    'regex_match' => '{field} tidak valid. Masukkan nomor HP atau telepon rumah yang benar.',
+                    'regex_match' => '{field} tidak valid. Masukkan nomor HP atau telepon rumah yang benar.'
                 ]
             ]
         ];
