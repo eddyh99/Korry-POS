@@ -95,15 +95,6 @@ class Produksi extends BaseApiController
     public function postAddData()
     {
         $rules = [
-            'nonota' => [
-                'label'  => 'No Nota',
-                'rules'  => 'required|alpha_numeric|max_length[5]',
-                'errors' => [
-                    'required'    => '{field} wajib diisi.',
-                    'alpha_numeric' => '{field} hanya boleh huruf/angka.',
-                    'max_length'  => '{field} maksimal 5 karakter.'
-                ]
-            ],
             'idvendor' => [
                 'label'  => 'Vendor',
                 'rules'  => 'required|integer',
@@ -164,7 +155,6 @@ class Produksi extends BaseApiController
         }
 
         $data = [
-            "nonota"   => esc($this->request->getPost('nonota')),
             "idvendor" => esc($this->request->getPost('idvendor')),
             "estimasi" => esc($this->request->getPost('estimasi')),
             "dp"       => esc($this->request->getPost('dp')),
