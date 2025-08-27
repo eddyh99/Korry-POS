@@ -12,13 +12,6 @@
         		        <div class="col-lg-6">
 							<div class="card-body">
 								
-								<!-- input ke tabel produksi -->
-								<div class="form-group row">
-									<label class="col-sm-3 col-form-label">No. Nota</label>
-									<div class="col-sm-7">
-										<input type="text" class="form-control" id="nonota" name="nonota" maxlength="5" required>
-									</div>
-								</div>
 								<div class="form-group row">
 									<label class="col-sm-3 col-form-label">Vendor</label>
 									<div class="col-sm-7">
@@ -35,6 +28,7 @@
 									<div class="col-sm-7">
 										<input type="number" class="form-control" id="estimasi" name="estimasi" min="0" required>
 									</div>
+									<div class="col-sm-2">Hari</div>
 								</div>
 								<div class="form-group row">
 									<label class="col-sm-3 col-form-label">DP</label>

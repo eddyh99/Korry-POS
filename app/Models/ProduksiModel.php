@@ -15,17 +15,6 @@ class ProduksiModel extends Model
     private $vendor             = 'vendor';
 
 
-    // public function listProduksi()
-    // {
-    //     $sql = "SELECT * FROM {$this->table} WHERE status='0'";
-    //     $query = $this->db->query($sql);
-
-    //     if ($query) {
-    //         return $query->getResultArray();
-    //     } else {
-    //         return $this->db->error();
-    //     }
-    // }
     public function listProduksi()
     {
         $sql = "
@@ -48,9 +37,17 @@ class ProduksiModel extends Model
 
     public function insertData($data)
     {
+        $sql="SELECT LPAD(
+                CAST(MAX(nonota) AS UNSIGNED) + 1,
+                5,
+                '0'
+            ) AS next_nonota
+            FROM produksi";
+        $nonota = $this->db->query($sql)->getRow()->next_nonota;
+
         // data utama untuk tabel produksi
         $produksi = [
-            'nonota'     => $data["nonota"],
+            'nonota'     => $nonota,
             'tanggal'    => date("Y-m-d H:i:s"),
             'idvendor'   => $data["idvendor"],
             'estimasi'   => $data["estimasi"],
@@ -62,18 +59,18 @@ class ProduksiModel extends Model
 
         // data untuk tabel produksi detail
         $produksi_detail = [
-            'nonota'  => $data["nonota"],
+            'nonota'  => $nonota,
             'barcode' => $data["barcode"],
             'jumlah'  => $data["jumlah"]
         ];
 
         $this->db->transStart();
 
-        $this->db->table($this->produksi)->insert($produksi);
+            $this->db->table($this->produksi)->insert($produksi);
 
-        $this->db->table($this->produksi_detail)->insert($produksi_detail);
+            $this->db->table($this->produksi_detail)->insert($produksi_detail);
 
-        $this->db->transComplete();
+            $this->db->transComplete();
 
         if ($this->db->transStatus() === false) {
             $this->db->transRollback();
