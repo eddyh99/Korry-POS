@@ -50,20 +50,50 @@ class ProdukModel extends Model
         }
     }
 
+
     public function ListProdukDoKonsinyasi()
     {
-        $sql = "SELECT a.*, x.harga, x.harga_konsinyasi, x.harga_wholesale, x.diskon
-                FROM {$this->produk} a
+        $sql = "SELECT
+                    p.barcode,
+                    p.namaproduk,
+                    h.harga_konsinyasi,
+                    COALESCE(pd.total_produksi, 0) - COALESCE(dod.total_do, 0) AS total_jumlah
+                FROM produk p
+                -- harga konsinyasi terbaru per barcode
                 INNER JOIN (
-                    SELECT h1.barcode, h1.harga, h1.harga_konsinyasi, h1.harga_wholesale, h1.diskon
-                    FROM {$this->harga} h1
+                    SELECT h1.barcode, h1.harga_konsinyasi
+                    FROM harga h1
                     INNER JOIN (
-                        SELECT barcode, MAX(tanggal) as tanggal
-                        FROM {$this->harga}
+                        SELECT barcode, MAX(tanggal) AS tanggal
+                        FROM harga
                         GROUP BY barcode
-                    ) h2 ON h1.barcode = h2.barcode AND h1.tanggal = h2.tanggal
-                ) x ON a.barcode = x.barcode
-                WHERE a.status = '0'";
+                    ) h2
+                    ON h1.barcode = h2.barcode
+                    AND h1.tanggal = h2.tanggal
+                ) h
+                ON p.barcode = h.barcode
+
+                -- total produksi per barcode
+                LEFT JOIN (
+                    SELECT barcode, SUM(jumlah) AS total_produksi
+                    FROM produksi_detail
+                    GROUP BY barcode
+                ) pd
+                ON pd.barcode = p.barcode
+
+                -- total yang sudah dibuat DO konsinyasi (non-void) per barcode
+                LEFT JOIN (
+                    SELECT d.barcode, SUM(d.jumlah) AS total_do
+                    FROM do_konsinyasi_detail d
+                    INNER JOIN do_konsinyasi o
+                        ON o.nonota = d.nonota AND o.is_void = 0
+                    GROUP BY d.barcode
+                ) dod
+                ON dod.barcode = p.barcode
+
+                WHERE p.status = '0'
+                HAVING total_jumlah > 0
+                ORDER BY p.barcode;";
 
         $query = $this->db->query($sql);
 

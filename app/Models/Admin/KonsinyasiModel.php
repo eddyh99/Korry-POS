@@ -65,9 +65,19 @@ class KonsinyasiModel extends Model
     {
         $this->db->transStart();
 
+        // Auto-generate No. Do Konsinyasi
+        $sql = "SELECT LPAD(
+                    COALESCE(CAST(MAX(nonota) AS UNSIGNED), 0) + 1,
+                    6,
+                    '0'
+                ) AS next_nonota
+                FROM do_konsinyasi";
+
+        $nonota = $this->db->query($sql)->getRow()->next_nonota;
+
         // Insert master
         $do_konsinyasi = [
-            'nonota'               => $data["nonota"],
+            'nonota'               => $nonota,
             'tanggal'              => date("Y-m-d H:i:s"),
             'id_partnerkonsinyasi' => $data["partner"],
             'userid'               => $data["userid"]
@@ -78,7 +88,7 @@ class KonsinyasiModel extends Model
         // Insert detail
         foreach ($data["detail"] as $row) {
             $detail = [
-                'nonota'  => $data["nonota"],
+                'nonota'  => $nonota,
                 'barcode' => $row["barcode"],
                 'jumlah'  => $row["jumlah"]
             ];
@@ -101,6 +111,46 @@ class KonsinyasiModel extends Model
             ];
         }
     }
+    // public function insertDoKonsinyasi($data)
+    // {
+    //     $this->db->transStart();
+
+    //     // Insert master
+    //     $do_konsinyasi = [
+    //         'nonota'               => $data["nonota"],
+    //         'tanggal'              => date("Y-m-d H:i:s"),
+    //         'id_partnerkonsinyasi' => $data["partner"],
+    //         'userid'               => $data["userid"]
+    //     ];
+
+    //     $this->db->table($this->do_konsinyasi)->insert($do_konsinyasi);
+
+    //     // Insert detail
+    //     foreach ($data["detail"] as $row) {
+    //         $detail = [
+    //             'nonota'  => $data["nonota"],
+    //             'barcode' => $row["barcode"],
+    //             'jumlah'  => $row["jumlah"]
+    //         ];
+    //         $this->db->table($this->do_konsinyasi_detail)->insert($detail);
+    //     }
+
+    //     $this->db->transComplete();
+
+    //     if ($this->db->transStatus() === false) {
+    //         $this->db->transRollback();
+    //         return [
+    //             "status"  => false,
+    //             "message" => "DB Error: " . $this->db->error()["message"]
+    //         ];
+    //     } else {
+    //         $this->db->transCommit();
+    //         return [
+    //             "status"  => true,
+    //             "message" => "Data berhasil disimpan"
+    //         ];
+    //     }
+    // }
 
     // === DO Konsinyasi: Hapus ===
 

@@ -18,10 +18,10 @@
                                         <?php } ?>
                                     </select>
                                 </div>
-                                <div class="col-sm-2">
+                                <!-- <div class="col-sm-2">
                                     <label class="col-form-label">No Nota</label>
                                     <input type="text" id="nonota" name="nonota" class="form-control input-lg" maxlength="6" required onkeypress="return isNumber(event)">
-                                </div>
+                                </div> -->
                             </div>
 
                             <hr>
@@ -32,8 +32,8 @@
                                     <select id="produk" class="form-control select2">
                                         <option value="" disabled selected>--Pilih Produk--</option>
                                         <?php foreach ($produk as $dt){?>
-                                            <option value="<?=$dt["barcode"]?>" data-harga="<?=$dt["harga_konsinyasi"]?>">
-                                                <?=$dt["namaproduk"]?>
+                                            <option value="<?=$dt["barcode"]?>" data-harga="<?=$dt["harga_konsinyasi"]?>" data-jumlah="<?=$dt["total_jumlah"]?>">
+                                                <?= $dt['barcode']; ?> - <?= $dt['namaproduk']; ?>
                                             </option>
                                         <?php } ?>
                                     </select>
@@ -60,16 +60,28 @@
                                         <th>Nama Barang</th>
                                         <th>Jumlah</th>
                                         <th>Harga</th>
+                                        <th>Total</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="3"></th>
+                                        <th class="text-right">Sub Total</th>
+                                        <th id="subtotal">0</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
                             </table>
 
                             <div class="row mt-3">
                                 <div class="col-sm-6">
-                                    <button type="submit" class="btn btn-primary">Simpan</button>
-                                    <a name="btnBack" href="<?=base_url()?>admin/konsinyasi/do" class="btn btn-warning">Back</a>
+                                    <button type="submit" class="btn btn-primary">Simpan DO Konsinyasi</button>
+                                </div>
+                                <div class="col-sm-6 text-right">
+                                    
+                                    <a name="btnBack" href="<?=base_url()?>admin/konsinyasi/do" class="btn btn-warning"><i class="material-icons">reply</i>Kembali</a>
                                 </div>
                             </div>
                         </form>

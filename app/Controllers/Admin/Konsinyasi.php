@@ -58,19 +58,16 @@ class Konsinyasi extends BaseApiController
 
     public function getDotambah()
     {
-        $store = $this->storeModel->Liststore();
-        $produk = $this->produkModel->ListProdukDoKonsinyasi();
-
         $partner = $this->partnerModel->listPartner();
+        $produk  = $this->produkModel->ListProdukDoKonsinyasi();
 
         $data = [
             'title'    => 'Tambah Data',
             'content'  => 'admin/konsinyasi/do/tambah',
             'extra'    => 'admin/konsinyasi/do/js/js_tambah',
             'extracss' => 'admin/konsinyasi/do/css/css_tambah',
-            'store'    => $store,
+            'partner'  => $partner,
             'produk'   => $produk,
-            'partner'   => $partner,
             'mn_req'   => 'active',
             'colmas'   => 'collapse',
             'colset'   => 'collapse',
@@ -222,16 +219,6 @@ class Konsinyasi extends BaseApiController
     {
         // Rules validasi
         $rules = [
-            "nonota" => [
-                "label"  => "No Nota",
-                "rules"  => "required|exact_length[6]|numeric|is_unique[do_konsinyasi.nonota]",
-                "errors" => [
-                    "required"     => "{field} wajib diisi",
-                    "exact_length" => "{field} harus 6 digit",
-                    "numeric"      => "{field} hanya boleh angka",
-                    "is_unique"    => "{field} sudah digunakan."
-                ]
-            ],
             "partner" => [
                 "label"  => "Partner Konsinyasi",
                 "rules"  => "required|integer",
@@ -273,13 +260,11 @@ class Konsinyasi extends BaseApiController
         }
 
         // Ambil data setelah validasi
-        $nonota   = esc($this->request->getPost("nonota"));
         $partner  = esc($this->request->getPost("partner"));
         $barcodes = $this->request->getPost("barcode");
         $jumlahs  = $this->request->getPost("jumlah");
 
         $data = [
-            "nonota"  => $nonota,
             "partner" => $partner,
             "userid"  => session()->get("logged_status")["username"],
             "detail"  => []
@@ -296,6 +281,84 @@ class Konsinyasi extends BaseApiController
 
         return $this->response->setJSON($result);
     }
+    // public function postAddDataDo()
+    // {
+    //     // Rules validasi
+    //     $rules = [
+    //         "nonota" => [
+    //             "label"  => "No Nota",
+    //             "rules"  => "required|exact_length[6]|numeric|is_unique[do_konsinyasi.nonota]",
+    //             "errors" => [
+    //                 "required"     => "{field} wajib diisi",
+    //                 "exact_length" => "{field} harus 6 digit",
+    //                 "numeric"      => "{field} hanya boleh angka",
+    //                 "is_unique"    => "{field} sudah digunakan."
+    //             ]
+    //         ],
+    //         "partner" => [
+    //             "label"  => "Partner Konsinyasi",
+    //             "rules"  => "required|integer",
+    //             "errors" => [
+    //                 "required" => "{field} wajib dipilih",
+    //                 "integer"  => "{field} tidak valid"
+    //             ]
+    //         ],
+    //         "barcode" => [
+    //             "label"  => "Produk",
+    //             "rules"  => "required",
+    //             "errors" => [
+    //                 "required" => "{field} wajib dipilih"
+    //             ]
+    //         ],
+    //         "jumlah.*" => [ // validasi tiap elemen array jumlah
+    //             "label"  => "Jumlah Produk",
+    //             "rules"  => "required|integer|greater_than[0]",
+    //             "errors" => [
+    //                 "required"     => "{field} wajib diisi",
+    //                 "integer"      => "{field} harus berupa angka",
+    //                 "greater_than" => "{field} harus lebih dari 0"
+    //             ]
+    //         ],
+    //     ];
+
+    //     // Jalankan rules validasi
+    //     if (! $this->validate($rules)) {
+    //         if ($this->request->isAJAX()) {
+    //             return $this->response->setJSON([
+    //                 "status"  => false,
+    //                 "message" => implode("\n", $this->validator->getErrors()),
+    //                 "errors"  => $this->validator->getErrors()
+    //             ]);
+    //         } else {
+    //             $this->session->setFlashdata('message', $this->validator->listErrors());
+    //             return redirect()->to('/admin/konsinyasi/dotambah')->withInput();
+    //         }
+    //     }
+
+    //     // Ambil data setelah validasi
+    //     $nonota   = esc($this->request->getPost("nonota"));
+    //     $partner  = esc($this->request->getPost("partner"));
+    //     $barcodes = $this->request->getPost("barcode");
+    //     $jumlahs  = $this->request->getPost("jumlah");
+
+    //     $data = [
+    //         "nonota"  => $nonota,
+    //         "partner" => $partner,
+    //         "userid"  => session()->get("logged_status")["username"],
+    //         "detail"  => []
+    //     ];
+
+    //     foreach ($barcodes as $i => $barcode) {
+    //         $data["detail"][] = [
+    //             "barcode" => esc($barcode),
+    //             "jumlah"  => (int) $jumlahs[$i]
+    //         ];
+    //     }
+
+    //     $result = $this->konsinyasiModel->insertDoKonsinyasi($data);
+
+    //     return $this->response->setJSON($result);
+    // }
 
     public function postAddDataNota()
     {
