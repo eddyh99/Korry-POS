@@ -32,7 +32,23 @@ class ProdukModel extends Model
         $sql = "SELECT
                     p.barcode,
                     p.namaproduk,
-                    h.harga
+                    h.harga,
+                    CONCAT(
+                        '[',
+                        GROUP_CONCAT(
+                            CONCAT(
+                                '{',
+                                    '\"idbahan\":', '\"', IFNULL(pb.idbahan,''), '\"', ',',
+                                    '\"namabahan\":', '\"', IFNULL(b.namabahan,''), '\"', ',',
+                                    '\"jumlah\":', IFNULL(pb.jumlah,0), ',',
+                                    '\"satuan\":', '\"', IFNULL(pb.satuan,''), '\"', ',',
+                                    '\"stok\":', IFNULL(sb.total_stok,0) - IFNULL(kebutuhan.total_kebutuhan,0),
+                                '}'
+                            )
+                            SEPARATOR ','
+                        ),
+                        ']'
+                    ) AS bahan
                 FROM produk p
                 INNER JOIN (
                     SELECT h1.barcode, h1.harga
@@ -41,22 +57,140 @@ class ProdukModel extends Model
                         SELECT barcode, MAX(tanggal) AS tanggal
                         FROM harga
                         GROUP BY barcode
-                    ) h2
-                    ON h1.barcode = h2.barcode
-                    AND h1.tanggal = h2.tanggal
-                ) h
-                ON p.barcode = h.barcode
+                    ) h2 ON h1.barcode = h2.barcode AND h1.tanggal = h2.tanggal
+                ) h ON p.barcode = h.barcode
+                LEFT JOIN produk_bahan pb ON p.barcode = pb.barcode
+                LEFT JOIN bahanbaku b ON pb.idbahan = b.id
+                -- stok asli dari stok_bahanbaku
+                LEFT JOIN (
+                    SELECT idbahan, SUM(jumlah) AS total_stok
+                    FROM stok_bahanbaku
+                    GROUP BY idbahan
+                ) sb ON pb.idbahan = sb.idbahan
+                -- kebutuhan bahan dari produksi_detail
+                LEFT JOIN (
+                    SELECT pb.idbahan, SUM(pd.jumlah * pb.jumlah) AS total_kebutuhan
+                    FROM produksi_detail pd
+                    INNER JOIN produk_bahan pb ON pd.barcode = pb.barcode
+                    GROUP BY pb.idbahan
+                ) kebutuhan ON pb.idbahan = kebutuhan.idbahan
                 WHERE p.status = '0'
+                GROUP BY p.barcode, p.namaproduk, h.harga
                 ORDER BY p.barcode;";
 
         $query = $this->db->query($sql);
 
         if ($query) {
-            return $query->getResultArray();
+            $result = $query->getResultArray();
+
+            // parsing string jadi array JSON beneran
+            foreach ($result as &$row) {
+                if (!empty($row['bahan'])) {
+                    $row['bahan'] = json_decode($row['bahan'], true);
+                } else {
+                    $row['bahan'] = [];
+                }
+            }
+
+            return $result;
         } else {
             return $this->db->error();
         }
     }
+    // public function ListProdukProduksi()
+    // {
+    //     $sql = "SELECT
+    //                 p.barcode,
+    //                 p.namaproduk,
+    //                 h.harga,
+    //                 CONCAT(
+    //                     '[', 
+    //                     GROUP_CONCAT(
+    //                         CONCAT(
+    //                             '{',
+    //                                 '\"idbahan\":', '\"', IFNULL(pb.idbahan,''), '\"', ',',
+    //                                 '\"namabahan\":', '\"', IFNULL(b.namabahan,''), '\"', ',',
+    //                                 '\"jumlah\":', IFNULL(pb.jumlah,0), ',',
+    //                                 '\"satuan\":', '\"', IFNULL(pb.satuan,''), '\"', ',',
+    //                                 '\"stok\":', IFNULL(sb.total_stok,0),
+    //                             '}'
+    //                         )
+    //                         SEPARATOR ','
+    //                     ),
+    //                     ']'
+    //                 ) AS bahan
+    //             FROM produk p
+    //             INNER JOIN (
+    //                 SELECT h1.barcode, h1.harga
+    //                 FROM harga h1
+    //                 INNER JOIN (
+    //                     SELECT barcode, MAX(tanggal) AS tanggal
+    //                     FROM harga
+    //                     GROUP BY barcode
+    //                 ) h2
+    //                 ON h1.barcode = h2.barcode
+    //                 AND h1.tanggal = h2.tanggal
+    //             ) h ON p.barcode = h.barcode
+    //             LEFT JOIN produk_bahan pb ON p.barcode = pb.barcode
+    //             LEFT JOIN bahanbaku b ON pb.idbahan = b.id
+    //             LEFT JOIN (
+    //                 SELECT idbahan, SUM(jumlah) AS total_stok
+    //                 FROM stok_bahanbaku
+    //                 GROUP BY idbahan
+    //             ) sb ON pb.idbahan = sb.idbahan
+    //             WHERE p.status = '0'
+    //             GROUP BY p.barcode, p.namaproduk, h.harga
+    //             ORDER BY p.barcode;";
+
+    //     $query = $this->db->query($sql);
+
+    //     if ($query) {
+    //         $result = $query->getResultArray();
+
+    //         // parsing string jadi array JSON beneran
+    //         foreach ($result as &$row) {
+    //             if (!empty($row['bahan'])) {
+    //                 $row['bahan'] = json_decode($row['bahan'], true);
+    //             } else {
+    //                 $row['bahan'] = [];
+    //             }
+    //         }
+
+    //         return $result;
+    //     } else {
+    //         return $this->db->error();
+    //     }
+    // }
+    // public function ListProdukProduksi()
+    // {
+    //     $sql = "SELECT
+    //                 p.barcode,
+    //                 p.namaproduk,
+    //                 h.harga
+    //             FROM produk p
+    //             INNER JOIN (
+    //                 SELECT h1.barcode, h1.harga
+    //                 FROM harga h1
+    //                 INNER JOIN (
+    //                     SELECT barcode, MAX(tanggal) AS tanggal
+    //                     FROM harga
+    //                     GROUP BY barcode
+    //                 ) h2
+    //                 ON h1.barcode = h2.barcode
+    //                 AND h1.tanggal = h2.tanggal
+    //             ) h
+    //             ON p.barcode = h.barcode
+    //             WHERE p.status = '0'
+    //             ORDER BY p.barcode;";
+
+    //     $query = $this->db->query($sql);
+
+    //     if ($query) {
+    //         return $query->getResultArray();
+    //     } else {
+    //         return $this->db->error();
+    //     }
+    // }
 
     public function ListProdukOrderWholesale()
     {

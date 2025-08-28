@@ -39,11 +39,8 @@
         $("#produk").change(function(){
             let selected = $(this).find(":selected");
             let harga = selected.data("harga");
-            // let maxJumlah = selected.data("jumlah");
 
-            // kalau bukan produk valid, jangan apa-apa
             if (!harga) {
-                // $("#jumlah").val(1).removeAttr("max");
                 $("#harga").val("");
                 checkProdukAvailable();
                 return;
@@ -52,91 +49,111 @@
             // $("#jumlah").val(maxJumlah);
             $("#harga").val(harga);
 
-            // $("#jumlah").attr("max", maxJumlah); // set max attribute
-
             checkProdukAvailable(); // cek tombol +Tambah
         });
 
-        // === Validasi jumlah ketika user ubah manual
-        // $("#jumlah").on("input", function(){
-        //     let max = parseInt($(this).attr("max")) || 0;
-        //     let val = parseInt($(this).val()) || 0;
-        //     let namaProduk = $("#produk option:selected").text();
+		// === Tambah ke grid
+		// === Tambah ke grid
+		// === Tambah ke grid
+		$("#btnAdd").click(function(){
+			let barcode = $("#produk").val();
+			let nama    = $("#produk option:selected").text();
+			let jumlah  = parseInt($("#jumlah").val());
+			let harga   = parseInt($("#harga").val());
 
-        //     if(val > max){
-        //         alert("Hanya boleh input jumlah " + namaProduk + " sebanyak " + max);
-        //         $(this).val(max); // kembalikan ke max
-        //     } else if(val < 1){
-        //         $(this).val(1); // biar ga bisa nol/negatif
-        //     }
-        // });
+			// --- [NEW] Ambil komposisi bahan (JSON dari atribut data-bahan)
+			let bahanJson = $("#produk option:selected").attr("data-bahan");
+			let komposisi = [];
+			if (bahanJson) {
+				try {
+					komposisi = JSON.parse(bahanJson);
+				} catch(e) {
+					console.error("Format data-bahan salah:", e);
+					alert("Data bahan tidak valid, hubungi admin.");
+					return;
+				}
+			}
 
-        // === Tambah ke grid
-        $("#btnAdd").click(function(){
-            let barcode = $("#produk").val();
-            let nama    = $("#produk option:selected").text();
-            let jumlah  = parseInt($("#jumlah").val());
-            let harga   = parseInt($("#harga").val());
-            let maxJumlah = parseInt($("#produk option:selected").data("jumlah"));
+			if(!barcode || !jumlah || !harga){
+				alert("Produk, jumlah & harga wajib diisi!");
+				return;
+			}
 
-            if(!barcode || !jumlah || !harga){
-                alert("Produk, jumlah & harga wajib diisi!");
-                return;
-            }
+			// --- [NEW] Hitung jumlah produk yang sudah ada di tabel
+			let existingJumlah = 0;
+			table.rows().every(function(){
+				let row = this.data();
+				let existingBarcode = $(row[0]).filter("input").val();
+				if(existingBarcode === barcode){
+					existingJumlah = parseInt($(row[2]).filter("input").val()) || 0;
+				}
+			});
 
-            // cek apakah produk sudah ada di DataTable
-            let rowFound = null;
-            table.rows().every(function(){
-                let row = this.data();
-                let existingBarcode = $(row[0]).filter("input").val();
-                if(existingBarcode === barcode){
-                    rowFound = this;
-                }
-            });
+			let totalJumlah = existingJumlah + jumlah; // jumlah total setelah ditambah
 
-            if(rowFound){
-                // update jumlah lama
-                let oldJumlah = parseInt($(rowFound.data()[2]).filter("input").val());
-                let newJumlah = oldJumlah + jumlah;
+			// --- [NEW] Cek stok bahan berdasarkan totalJumlah
+			let kurang = [];
+			komposisi.forEach(function(item){
+				// kebutuhan total = total jumlah produk × kebutuhan bahan per produk
+				let kebutuhan = totalJumlah * item.jumlah;
+				if(kebutuhan > item.stok){
+					kurang.push(
+						`${item.namabahan}: butuh ${kebutuhan} ${item.satuan}, stok hanya ${item.stok} ${item.satuan}`
+					);
+				}
+			});
 
-                if(newJumlah > maxJumlah){
-                    alert("Jumlah melebihi stok, dibatasi " + maxJumlah);
-                    newJumlah = maxJumlah;
-                }
+			if(kurang.length > 0){
+				alert("Stok bahan tidak mencukupi:\n" + kurang.join("\n"));
+				return; // hentikan proses tambah
+			}
 
-                let total = newJumlah * harga;
+			// cek apakah produk sudah ada di DataTable
+			let rowFound = null;
+			table.rows().every(function(){
+				let row = this.data();
+				let existingBarcode = $(row[0]).filter("input").val();
+				if(existingBarcode === barcode){
+					rowFound = this;
+				}
+			});
 
-                // update row di DataTable
-                rowFound.data([
-                    `<input type="hidden" name="barcode[]" value="${barcode}">${barcode}`,
-                    nama,
-                    `<input type="hidden" name="jumlah[]" value="${newJumlah}">${newJumlah}`,
-                    `<input type="hidden" name="harga[]" value="${harga}">${formatNumber(harga)}`,
-                    `<input type="hidden" name="total[]" value="${total}">${formatNumber(total)}`,
-                    `<button type="button" class="btn btn-danger btn-sm btnDelete">x</button>`
-                ]).draw(false);
+			if(rowFound){
+				// update jumlah lama jadi jumlah total (existing + baru)
+				let newJumlah = totalJumlah;
+				let total = newJumlah * harga;
 
-            }else{
-                // insert row baru
-                let total = jumlah * harga;
-                table.row.add([
-                    `<input type="hidden" name="barcode[]" value="${barcode}">${barcode}`,
-                    nama,
-                    `<input type="hidden" name="jumlah[]" value="${jumlah}">${jumlah}`,
-                    `<input type="hidden" name="harga[]" value="${harga}">${formatNumber(harga)}`,
-                    `<input type="hidden" name="total[]" value="${total}">${formatNumber(total)}`,
-                    `<button type="button" class="btn btn-danger btn-sm btnDelete">x</button>`
-                ]).draw(false);
-            }
+				// update row di DataTable
+				rowFound.data([
+					`<input type="hidden" name="barcode[]" value="${barcode}">${barcode}`,
+					nama,
+					`<input type="hidden" name="jumlah[]" value="${newJumlah}">${newJumlah}`,
+					`<input type="hidden" name="harga[]" value="${harga}">${formatNumber(harga)}`,
+					`<input type="hidden" name="total[]" value="${total}">${formatNumber(total)}`,
+					`<button type="button" class="btn btn-danger btn-sm btnDelete">x</button>`
+				]).draw(false);
 
-            // Reset input
-            $("#produk").val("").trigger("change");
-            $("#jumlah").val(1);
-            $("#harga").val("");
+			}else{
+				// insert row baru
+				let total = jumlah * harga;
+				table.row.add([
+					`<input type="hidden" name="barcode[]" value="${barcode}">${barcode}`,
+					nama,
+					`<input type="hidden" name="jumlah[]" value="${jumlah}">${jumlah}`,
+					`<input type="hidden" name="harga[]" value="${harga}">${formatNumber(harga)}`,
+					`<input type="hidden" name="total[]" value="${total}">${formatNumber(total)}`,
+					`<button type="button" class="btn btn-danger btn-sm btnDelete">x</button>`
+				]).draw(false);
+			}
 
-            updateSubtotal();
-            checkProdukAvailable(); // cek lagi setelah reset
-        });
+			// Reset input
+			$("#produk").val("").trigger("change");
+			$("#jumlah").val(1);
+			$("#harga").val("");
+
+			updateSubtotal();
+			checkProdukAvailable(); // cek lagi setelah reset
+		});
 
         // === Hapus baris
         $("#table_data tbody").on("click", ".btnDelete", function(){

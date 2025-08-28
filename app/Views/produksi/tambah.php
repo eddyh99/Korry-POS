@@ -43,19 +43,22 @@
 
 							<!-- Detail Produksi -->
 							<div class="row form-group">
+
 								<div class="col-sm-3">
 									<label class="col-form-label">Produk</label>
 									<select id="produk" class="form-control select2">
 										<option value="" disabled selected>-- Pilih Produk --</option>
-										<?php foreach ($produk as $dt){?>
-										<option value="<?=$dt["barcode"]?>" 
-												data-nama="<?=$dt["namaproduk"]?>" 
-												data-harga="<?=$dt["harga"]?>">
-											<?= $dt['barcode']; ?> - <?= $dt['namaproduk']; ?>
-										</option>
+										<?php foreach ($produk as $dt){ ?>
+											<option value="<?= $dt["barcode"] ?>" 
+													data-nama="<?= $dt["namaproduk"] ?>" 
+													data-harga="<?= $dt["harga"] ?>" 
+													data-bahan='<?= json_encode($dt["bahan"], JSON_HEX_APOS | JSON_HEX_QUOT) ?>'>
+												<?= $dt['barcode']; ?> - <?= $dt['namaproduk']; ?>
+											</option>
 										<?php } ?>
 									</select>
 								</div>
+
 								<div class="col-sm-2">
 									<label class="col-form-label">Jumlah</label>
 									<input type="number" id="jumlah" class="form-control" min="1" value="1">
@@ -67,6 +70,7 @@
 								<div class="col-sm-2 d-flex align-items-end">
 									<button type="button" id="btnAdd" class="btn btn-success">+ Tambah</button>
 								</div>
+								
 							</div>
 
 							<hr>
