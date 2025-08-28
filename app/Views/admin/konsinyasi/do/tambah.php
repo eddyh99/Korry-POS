@@ -7,7 +7,9 @@
 				<div class="card-body">
 
                     <div class="col-sm-12">
+
                         <form id="form_do">
+                            
                             <div class="row form-group">
                                 <div class="col-sm-2">
                                     <label class="col-form-label">Nama Partner Konsinyasi</label>
@@ -80,11 +82,12 @@
                                     <button type="submit" class="btn btn-primary">Simpan DO Konsinyasi</button>
                                 </div>
                                 <div class="col-sm-6 text-right">
-                                    
                                     <a name="btnBack" href="<?=base_url()?>admin/konsinyasi/do" class="btn btn-warning"><i class="material-icons">reply</i>Kembali</a>
                                 </div>
                             </div>
+
                         </form>
+
                     </div>
 
 				</div>

@@ -28,7 +28,7 @@ class Produksi extends BaseApiController
         }
 
         $data = [
-            'title'      => 'Data Stok Bahan Baku',
+            'title'      => 'Data Produksi',
             'content'    => 'produksi/index',
             'extra'      => 'produksi/js/js_index', 
             'mn_setting' => 'active',
@@ -53,11 +53,13 @@ class Produksi extends BaseApiController
         }
 
         $vendor     = $this->vendorproduksiModel->listVendor();
-        $produk     = $this->produkModel->Listproduk();
+        $produk     = $this->produkModel->ListProdukProduksi();
 
         $data = [
             'title'      => 'Tambah Produksi',
             'content'    => 'produksi/tambah',
+            'extra'      => 'produksi/js/js_tambah', 
+            'extracss'   => 'produksi/css/css_tambah',
             'vendor'     => $vendor,
             'produk'     => $produk,
             'mn_master'  => 'active',
@@ -94,84 +96,181 @@ class Produksi extends BaseApiController
 
     public function postAddData()
     {
+        // Rules validasi
         $rules = [
-            'idvendor' => [
-                'label'  => 'Vendor',
-                'rules'  => 'required|integer',
-                'errors' => [
-                    'required' => '{field} wajib dipilih.',
-                    'integer'  => '{field} tidak valid.'
+            "idvendor" => [
+                "label"  => "Vendor",
+                "rules"  => "required|integer",
+                "errors" => [
+                    "required" => "{field} wajib dipilih",
+                    "integer"  => "{field} tidak valid"
                 ]
             ],
-            'estimasi' => [
-                'label'  => 'Estimasi',
-                'rules'  => 'required|integer|greater_than_equal_to[0]',
-                'errors' => [
-                    'required' => '{field} wajib diisi.',
-                    'integer'  => '{field} hanya angka.',
-                    'greater_than_equal_to' => '{field} minimal 0.'
+            "estimasi" => [
+                "label"  => "Estimasi",
+                "rules"  => "required|integer|greater_than_equal_to[0]",
+                "errors" => [
+                    "required" => "{field} wajib diisi",
+                    "integer"  => "{field} hanya angka",
+                    "greater_than_equal_to" => "{field} minimal 0"
                 ]
             ],
-            'dp' => [
-                'label'  => 'DP',
-                'rules'  => 'required|integer|greater_than_equal_to[0]',
-                'errors' => [
-                    'required' => '{field} wajib diisi.',
-                    'integer'  => '{field} hanya angka.'
+            "dp" => [
+                "label"  => "DP",
+                "rules"  => "permit_empty|integer|greater_than_equal_to[0]", // bisa kosong → default di model
+                "errors" => [
+                    "integer"  => "{field} hanya angka",
+                    "greater_than_equal_to" => "{field} minimal 0"
                 ]
             ],
-            'total' => [
-                'label'  => 'Total',
-                'rules'  => 'required|integer|greater_than[0]',
-                'errors' => [
-                    'required' => '{field} wajib diisi.',
-                    'integer'  => '{field} hanya angka.',
-                    'greater_than' => '{field} harus lebih besar dari 0.'
+            "totalproduksi" => [
+                "label"  => "Total Produksi",
+                "rules"  => "permit_empty|integer|greater_than_equal_to[0]", // bisa kosong
+                "errors" => [
+                    "integer"  => "{field} hanya angka",
+                    "greater_than_equal_to" => "{field} minimal 0"
                 ]
             ],
-            'barcode' => [
-                'label'  => 'Barcode',
-                'rules'  => 'required|exact_length[13]|numeric',
-                'errors' => [
-                    'required'     => '{field} wajib diisi.',
-                    'exact_length' => '{field} harus 13 digit.',
-                    'numeric'      => '{field} hanya angka.'
+            "barcode.*" => [
+                "label"  => "Produk",
+                "rules"  => "required|exact_length[13]|numeric",
+                "errors" => [
+                    "required"     => "{field} wajib diisi",
+                    "exact_length" => "{field} harus 13 digit",
+                    "numeric"      => "{field} hanya angka"
                 ]
             ],
-            'jumlah' => [
-                'label'  => 'Jumlah Produksi',
-                'rules'  => 'required|integer|greater_than[0]',
-                'errors' => [
-                    'required'     => '{field} wajib diisi.',
-                    'integer'      => '{field} hanya angka.',
-                    'greater_than' => '{field} harus lebih dari 0.'
+            "jumlah.*" => [
+                "label"  => "Jumlah Produksi",
+                "rules"  => "required|integer|greater_than[0]",
+                "errors" => [
+                    "required"     => "{field} wajib diisi",
+                    "integer"      => "{field} hanya angka",
+                    "greater_than" => "{field} harus lebih dari 0"
                 ]
             ]
         ];
 
+        // Jalankan rules validasi
         if (! $this->validate($rules)) {
-            $this->session->setFlashdata('message', $this->validator->listErrors());
-            return redirect()->to('produksi/tambah')->withInput();
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    "status"  => false,
+                    "message" => implode("\n", $this->validator->getErrors()),
+                    "errors"  => $this->validator->getErrors()
+                ]);
+            } else {
+                $this->session->setFlashdata('message', $this->validator->listErrors());
+                return redirect()->to('/produksi/tambah')->withInput();
+            }
         }
 
+        // Ambil data setelah validasi
+        $barcodes = $this->request->getPost("barcode");
+        $jumlahs  = $this->request->getPost("jumlah");
+        $hargas   = $this->request->getPost("harga");
+
         $data = [
-            "idvendor" => esc($this->request->getPost('idvendor')),
-            "estimasi" => esc($this->request->getPost('estimasi')),
-            "dp"       => esc($this->request->getPost('dp')),
-            "total"    => esc($this->request->getPost('total')),
-            "user_id"  => session()->get('logged_status')['username'],
-            "barcode"  => esc($this->request->getPost('barcode')),
-            "jumlah"   => esc($this->request->getPost('jumlah'))
+            "idvendor" => esc($this->request->getPost("idvendor")),
+            "estimasi" => (int) $this->request->getPost("estimasi"),
+            "dp"       => (int) $this->request->getPost("dp") ?: 0,
+            "total"    => (int) $this->request->getPost("totalproduksi") ?: 0,
+            "user_id"  => session()->get("logged_status")["username"],
+            "detail"   => []
         ];
+
+        foreach ($barcodes as $i => $barcode) {
+            $data["detail"][] = [
+                "barcode" => esc($barcode),
+                "jumlah"  => (int) $jumlahs[$i],
+                "harga"   => (int) $hargas[$i],
+            ];
+        }
 
         $result = $this->produksiModel->insertData($data);
 
-        if ($result["code"] == 0) {
-            $this->session->setFlashdata('message', 'Data berhasil disimpan.');
-            return redirect()->to('/produksi');
-        } else {
-            $this->session->setFlashdata('message', 'Data gagal disimpan.');
-            return redirect()->to('/produksi/tambah')->withInput();
-        }
+        return $this->response->setJSON($result);
     }
+    // public function postAddData()
+    // {
+    //     $rules = [
+    //         'idvendor' => [
+    //             'label'  => 'Vendor',
+    //             'rules'  => 'required|integer',
+    //             'errors' => [
+    //                 'required' => '{field} wajib dipilih.',
+    //                 'integer'  => '{field} tidak valid.'
+    //             ]
+    //         ],
+    //         'estimasi' => [
+    //             'label'  => 'Estimasi',
+    //             'rules'  => 'required|integer|greater_than_equal_to[0]',
+    //             'errors' => [
+    //                 'required' => '{field} wajib diisi.',
+    //                 'integer'  => '{field} hanya angka.',
+    //                 'greater_than_equal_to' => '{field} minimal 0.'
+    //             ]
+    //         ],
+    //         'dp' => [
+    //             'label'  => 'DP',
+    //             'rules'  => 'required|integer|greater_than_equal_to[0]',
+    //             'errors' => [
+    //                 'required' => '{field} wajib diisi.',
+    //                 'integer'  => '{field} hanya angka.'
+    //             ]
+    //         ],
+    //         'total' => [
+    //             'label'  => 'Total',
+    //             'rules'  => 'required|integer|greater_than[0]',
+    //             'errors' => [
+    //                 'required' => '{field} wajib diisi.',
+    //                 'integer'  => '{field} hanya angka.',
+    //                 'greater_than' => '{field} harus lebih besar dari 0.'
+    //             ]
+    //         ],
+    //         'barcode' => [
+    //             'label'  => 'Barcode',
+    //             'rules'  => 'required|exact_length[13]|numeric',
+    //             'errors' => [
+    //                 'required'     => '{field} wajib diisi.',
+    //                 'exact_length' => '{field} harus 13 digit.',
+    //                 'numeric'      => '{field} hanya angka.'
+    //             ]
+    //         ],
+    //         'jumlah' => [
+    //             'label'  => 'Jumlah Produksi',
+    //             'rules'  => 'required|integer|greater_than[0]',
+    //             'errors' => [
+    //                 'required'     => '{field} wajib diisi.',
+    //                 'integer'      => '{field} hanya angka.',
+    //                 'greater_than' => '{field} harus lebih dari 0.'
+    //             ]
+    //         ]
+    //     ];
+
+    //     if (! $this->validate($rules)) {
+    //         $this->session->setFlashdata('message', $this->validator->listErrors());
+    //         return redirect()->to('produksi/tambah')->withInput();
+    //     }
+
+    //     $data = [
+    //         "idvendor" => esc($this->request->getPost('idvendor')),
+    //         "estimasi" => esc($this->request->getPost('estimasi')),
+    //         "dp"       => esc($this->request->getPost('dp')),
+    //         "total"    => esc($this->request->getPost('total')),
+    //         "user_id"  => session()->get('logged_status')['username'],
+    //         "barcode"  => esc($this->request->getPost('barcode')),
+    //         "jumlah"   => esc($this->request->getPost('jumlah'))
+    //     ];
+
+    //     $result = $this->produksiModel->insertData($data);
+
+    //     if ($result["code"] == 0) {
+    //         $this->session->setFlashdata('message', 'Data berhasil disimpan.');
+    //         return redirect()->to('/produksi');
+    //     } else {
+    //         $this->session->setFlashdata('message', 'Data gagal disimpan.');
+    //         return redirect()->to('/produksi/tambah')->withInput();
+    //     }
+    // }
 }

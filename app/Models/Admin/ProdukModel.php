@@ -17,6 +17,38 @@ class ProdukModel extends Model
     public function Listproduk()
     {
         $sql = "SELECT * FROM {$this->produk} WHERE status='0'";
+        
+        $query = $this->db->query($sql);
+
+        if ($query) {
+            return $query->getResultArray();
+        } else {
+            return $this->db->error();
+        }
+    }
+
+    public function ListProdukProduksi()
+    {
+        $sql = "SELECT
+                    p.barcode,
+                    p.namaproduk,
+                    h.harga
+                FROM produk p
+                INNER JOIN (
+                    SELECT h1.barcode, h1.harga
+                    FROM harga h1
+                    INNER JOIN (
+                        SELECT barcode, MAX(tanggal) AS tanggal
+                        FROM harga
+                        GROUP BY barcode
+                    ) h2
+                    ON h1.barcode = h2.barcode
+                    AND h1.tanggal = h2.tanggal
+                ) h
+                ON p.barcode = h.barcode
+                WHERE p.status = '0'
+                ORDER BY p.barcode;";
+
         $query = $this->db->query($sql);
 
         if ($query) {
