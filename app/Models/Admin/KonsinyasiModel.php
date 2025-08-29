@@ -177,11 +177,13 @@ class KonsinyasiModel extends Model
                 p.nama AS partner,
                 COALESCE(SUM(d.jumlah * h.harga_konsinyasi), 0) AS total
             FROM {$this->nota_konsinyasi} n
-            INNER JOIN {$this->nota_konsinyasi_detail} d ON n.notajual = d.notajual
+            INNER JOIN {$this->nota_konsinyasi_detail} d 
+                ON n.notajual = d.notajual
             INNER JOIN {$this->do_konsinyasi} doo 
                 ON d.notakonsinyasi = doo.nonota 
             AND doo.is_void = 0
-            INNER JOIN {$this->partner_konsinyasi} p ON doo.id_partnerkonsinyasi = p.id
+            INNER JOIN {$this->partner_konsinyasi} p 
+                ON doo.id_partnerkonsinyasi = p.id
             INNER JOIN (
                 SELECT hh.barcode, hh.harga_konsinyasi, hh.tanggal
                 FROM {$this->harga} hh
@@ -189,8 +191,11 @@ class KonsinyasiModel extends Model
                     SELECT barcode, MAX(tanggal) AS maxtgl
                     FROM {$this->harga}
                     GROUP BY barcode
-                ) xx ON hh.barcode = xx.barcode AND hh.tanggal = xx.maxtgl
+                ) xx 
+                ON hh.barcode = xx.barcode 
+            AND hh.tanggal = xx.maxtgl
             ) h ON d.barcode = h.barcode
+            WHERE n.status = 'pending'
             GROUP BY n.notajual, n.tanggal, p.nama
             ORDER BY n.tanggal DESC
         ";
@@ -198,6 +203,36 @@ class KonsinyasiModel extends Model
         $query = $this->db->query($sql);
         return $query->getResultArray();
     }
+    // public function listNotaKonsinyasi()
+    // {
+    //     $sql = "
+    //         SELECT 
+    //             n.notajual,
+    //             n.tanggal,
+    //             p.nama AS partner,
+    //             COALESCE(SUM(d.jumlah * h.harga_konsinyasi), 0) AS total
+    //         FROM {$this->nota_konsinyasi} n
+    //         INNER JOIN {$this->nota_konsinyasi_detail} d ON n.notajual = d.notajual
+    //         INNER JOIN {$this->do_konsinyasi} doo 
+    //             ON d.notakonsinyasi = doo.nonota 
+    //         AND doo.is_void = 0
+    //         INNER JOIN {$this->partner_konsinyasi} p ON doo.id_partnerkonsinyasi = p.id
+    //         INNER JOIN (
+    //             SELECT hh.barcode, hh.harga_konsinyasi, hh.tanggal
+    //             FROM {$this->harga} hh
+    //             INNER JOIN (
+    //                 SELECT barcode, MAX(tanggal) AS maxtgl
+    //                 FROM {$this->harga}
+    //                 GROUP BY barcode
+    //             ) xx ON hh.barcode = xx.barcode AND hh.tanggal = xx.maxtgl
+    //         ) h ON d.barcode = h.barcode
+    //         GROUP BY n.notajual, n.tanggal, p.nama
+    //         ORDER BY n.tanggal DESC
+    //     ";
+
+    //     $query = $this->db->query($sql);
+    //     return $query->getResultArray();
+    // }
 
     // === Nota Konsinyasi: Tambah ===
 
@@ -205,12 +240,22 @@ class KonsinyasiModel extends Model
     {
         $this->db->transStart();
 
+        // Auto-generate No. Nota Konsinyasi
+        $sql = "SELECT LPAD(
+                    COALESCE(CAST(MAX(notajual) AS UNSIGNED), 0) + 1,
+                    6,
+                    '0'
+                ) AS next_notajual
+                FROM nota_konsinyasi";
+
+        $notajual = $this->db->query($sql)->getRow()->next_notajual;
+
         // Insert ke master nota_konsinyasi
         $notaData = [
-            "notajual" => $data["notajual"],
+            "notajual" => $notajual,
             "tanggal"  => date("Y-m-d H:i:s"),
-            "diskon"   => $data["diskon"],
-            "ppn"      => $data["ppn"],
+            "diskon"   => $data["diskon"] ?? 0,
+            "ppn"      => $data["ppn"] ?? 0,
             "userid"   => $data["userid"],
             // kolom status default 'pending' (di DB)
         ];
@@ -220,7 +265,7 @@ class KonsinyasiModel extends Model
         // Insert detail ke nota_konsinyasi_detail
         foreach ($data["detail"] as $row) {
             $detailData = [
-                "notajual"       => $data["notajual"],
+                "notajual"       => $notajual,
                 "notakonsinyasi" => $row["notakonsinyasi"],
                 "barcode"        => $row["barcode"],
                 "jumlah"         => $row["jumlah"]
@@ -242,6 +287,64 @@ class KonsinyasiModel extends Model
                 "status"  => true,
                 "message" => "Nota Konsinyasi berhasil disimpan"
             ];
+        }
+    }
+    // public function insertNotaKonsinyasi($data)
+    // {
+    //     $this->db->transStart();
+
+    //     // Insert ke master nota_konsinyasi
+    //     $notaData = [
+    //         "notajual" => $data["notajual"],
+    //         "tanggal"  => date("Y-m-d H:i:s"),
+    //         "diskon"   => $data["diskon"],
+    //         "ppn"      => $data["ppn"],
+    //         "userid"   => $data["userid"],
+    //         // kolom status default 'pending' (di DB)
+    //     ];
+
+    //     $this->db->table($this->nota_konsinyasi)->insert($notaData);
+
+    //     // Insert detail ke nota_konsinyasi_detail
+    //     foreach ($data["detail"] as $row) {
+    //         $detailData = [
+    //             "notajual"       => $data["notajual"],
+    //             "notakonsinyasi" => $row["notakonsinyasi"],
+    //             "barcode"        => $row["barcode"],
+    //             "jumlah"         => $row["jumlah"]
+    //         ];
+    //         $this->db->table($this->nota_konsinyasi_detail)->insert($detailData);
+    //     }
+
+    //     $this->db->transComplete();
+
+    //     if ($this->db->transStatus() === false) {
+    //         $this->db->transRollback();
+    //         return [
+    //             "status"  => false,
+    //             "message" => "DB Error: " . $this->db->error()["message"]
+    //         ];
+    //     } else {
+    //         $this->db->transCommit();
+    //         return [
+    //             "status"  => true,
+    //             "message" => "Nota Konsinyasi berhasil disimpan"
+    //         ];
+    //     }
+    // }
+
+
+    // === Nota Konsinyasi: Hapus ===
+
+    public function hapusNotaKonsinyasi($data, $notajual)
+    {
+        $builder = $this->db->table($this->nota_konsinyasi)->where('notajual', $notajual);
+        $query = $builder->update($data);
+
+        if ($query) {
+            return ["code" => 0, "message" => ""];
+        } else {
+            return $this->db->error();
         }
     }
 
@@ -339,22 +442,45 @@ class KonsinyasiModel extends Model
         return $this->db->query($sql)->getResultArray();
     }
 
+    // public function getProdukByDo($do_id)
+    // {
+    //     $sql = "
+    //         SELECT 
+    //             d.barcode,
+    //             p.namaproduk AS nama,
+    //             d.jumlah - IFNULL(SUM(n.jumlah), 0) AS sisa
+    //         FROM do_konsinyasi_detail d
+    //         JOIN do_konsinyasi dox ON dox.nonota = d.nonota
+    //         JOIN produk p ON p.barcode = d.barcode
+    //         LEFT JOIN nota_konsinyasi_detail n 
+    //             ON n.notakonsinyasi = d.nonota 
+    //             AND n.barcode = d.barcode
+    //         WHERE d.nonota = ?
+    //         AND dox.is_void = 0
+    //         GROUP BY d.nonota, d.barcode, d.jumlah, p.namaproduk
+    //         HAVING sisa > 0
+    //     ";
+
+    //     return $this->db->query($sql, [$do_id])->getResultArray();
+    // }
     public function getProdukByDo($do_id)
     {
         $sql = "
             SELECT 
                 d.barcode,
                 p.namaproduk AS nama,
+                h.harga_konsinyasi AS harga,
                 d.jumlah - IFNULL(SUM(n.jumlah), 0) AS sisa
             FROM do_konsinyasi_detail d
             JOIN do_konsinyasi dox ON dox.nonota = d.nonota
             JOIN produk p ON p.barcode = d.barcode
+            JOIN harga h ON h.barcode = d.barcode
             LEFT JOIN nota_konsinyasi_detail n 
                 ON n.notakonsinyasi = d.nonota 
                 AND n.barcode = d.barcode
             WHERE d.nonota = ?
             AND dox.is_void = 0
-            GROUP BY d.nonota, d.barcode, d.jumlah, p.namaproduk
+            GROUP BY d.nonota, d.barcode, d.jumlah, p.namaproduk, h.harga_konsinyasi
             HAVING sisa > 0
         ";
 
