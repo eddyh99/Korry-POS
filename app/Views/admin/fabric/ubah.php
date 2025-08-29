@@ -9,16 +9,17 @@
                 <?php } ?>
                 <div class="card-content">
         	        <form id="form_input" method="post" action="<?=base_url()?>admin/fabric/update-data">
-    		        <div class="col-lg-6">
-            			<div class="card-body">
-            			  <div class="form-group row">
-            				<label class="col-sm-3 col-form-label">Nama Fabric</label>
-            				<div class="col-sm-7">
-            				  <input type="hidden" name="fabricid" value="<?=$detail[0]->id?>">
-            				  <input type="text" class="form-control" id="fabric" name="fabric" maxlength="50" value="<?=$detail[0]->nama?>">
-            				</div>
-            			  </div>
-            			</div>
+        		        <div class="col-lg-7">
+                			<div class="card-body">
+                			  <div class="form-group row">
+                				<label class="col-sm-4 col-form-label">Nama Fabric</label>
+                				<div class="col-sm-7">
+                				  <input type="hidden" name="oldfabric" value="<?=$detail[0]->namafabric?>">
+                				  <input type="text" class="form-control" id="fabric" name="fabric" maxlength="50" value="<?=$detail[0]->namafabric?>">
+                				</div>
+                			  </div>
+                			</div>
+        		        </div>
         		        <div class="col-lg-12">
             			    <div class="col-lg-6">
                     		    <button id="btnSimpan" name="btnSimpan"  class="btn btn-primary">Simpan</button>

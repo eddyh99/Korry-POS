@@ -17,19 +17,15 @@ class Warna extends BaseApiController
 
     public function getIndex()
     {
-        if (!$this->session->get('logged_status')) {
-            return redirect()->to(base_url());
-        }
-
         $data = [
             'title'      => 'Data Warna',
             'content'    => 'admin/warna/index',
-            'extra'      => 'admin/warna/js/js_index', 
+            'extra'      => 'admin/warna/js/js_index',
             'mn_setting' => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side11'     => 'active',
+            'side4'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -42,129 +38,125 @@ class Warna extends BaseApiController
 
     public function getTambah()
     {
-        if (!$this->session->get('logged_status')) {
-            return redirect()->to(base_url());
-        }
-
         $data = [
-            'title'      => 'Tambah Warna',
+            'title'      => 'Tambah Data Warna',
             'content'    => 'admin/warna/tambah',
-            'mn_master'  => 'active',
+            'mn_setting' => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side11'      => 'active',
+            'side4'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }
 
-    public function getUbah($warnaid)
+    public function getUbah($warna)
     {
-        $warnaid = base64_decode(esc($warnaid));
-        $result  = $this->warnaModel->getWarna($warnaid);
+        $warna = base64_decode($warna);
+        $result   = $this->warnaModel->getWarna($warna);
 
         $data = [
-            'title'      => 'Ubah Warna',
+            'title'      => 'Ubah Data Warna',
             'content'    => 'admin/warna/ubah',
             'detail'     => $result,
-            'mn_master'  => 'active',
+            'mn_setting' => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side2'      => 'active',
+            'side4'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }
 
-    public function getHapus($warnaid)
+    public function getHapus($warna)
     {
-        $warnaid = base64_decode(esc($warnaid));
+        $warna = base64_decode($warna);
 
-        $data = [
-            "status" => 1
-        ];
+        $data = ['status' => 1];
+        $result = $this->warnaModel->hapusData($data, $warna);
 
-        $result = $this->warnaModel->hapusData($data, $warnaid);
-
-        if ($result["code"] == 0) {
+        if ($result['code'] == 0) {
             $this->session->setFlashdata('message', 'Data berhasil dihapus.');
         } else {
             $this->session->setFlashdata('message', 'Data gagal dihapus.');
         }
-        return redirect()->to(base_url("admin/warna"));
+
+        return redirect()->to('/admin/warna');
     }
 
-    // Handle Post Tambah & Ubah
+    // Handle Post Tambah & Ubah    
 
     public function postAddData()
     {
         $rules = [
             'warna' => [
-                'label' => 'Nama Warna',
-                'rules' => 'required|trim|max_length[30]|alpha_numeric_space|is_unique[warna.nama]',
+                'label' => 'Warna',
+                'rules' => 'required|alpha_numeric_space|max_length[50]|is_unique[warna.namawarna]',
                 'errors' => [
                     'required' => '{field} wajib diisi.',
-                    'max_length' => '{field} maksimal 30 karakter.',
-                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.',
-                    'is_unique'     => '{field} sudah digunakan.'
+                    'alpha_numeric_space' => '{field} hanya boleh huruf, angka, dan spasi.',
+                    'max_length' => '{field} maksimal 50 karakter.',
+                    'is_unique' => '{field} sudah digunakan.'
                 ]
             ]
         ];
 
-        if (!$this->validate($rules)) {
+        if (! $this->validate($rules)) {
             $this->session->setFlashdata('message', implode('<br>', $this->validator->getErrors()));
-            return redirect()->to(base_url("admin/warna/tambah"));
+            return redirect()->to('/admin/warna/tambah');
         }
 
+        $warna = ucfirst(trim($this->request->getPost('warna')));
+        $userid   = $this->session->get('logged_status')['username'] ?? '';
+
         $data = [
-            "nama"       => esc($this->request->getPost('warna'))
+            'namawarna' => $warna,
+            'userid'       => $userid
         ];
 
         $result = $this->warnaModel->insertData($data);
 
-        if ($result["code"] == 0) {
-            $this->session->setFlashdata('message', 'Data berhasil disimpan.');
-            return redirect()->to(base_url("admin/warna"));
-        } else {
-            $this->session->setFlashdata('message', 'Data gagal disimpan.');
-            return redirect()->to(base_url("admin/warna/tambah"));
-        }
+        $msg = ($result['code'] == 0) ? 'Data berhasil disimpan.' : 'Data gagal disimpan.';
+        $this->session->setFlashdata('message', $msg);
+
+        return redirect()->to('/admin/warna');
     }
 
     public function postUpdateData()
     {
         $rules = [
             'warna' => [
-                'label' => 'Nama Warna',
-                'rules' => 'required|trim|max_length[30]|alpha_numeric_space|is_unique[warna.nama]',
+                'label' => 'Warna',
+                'rules' => 'required|alpha_numeric_space|max_length[50]|is_unique[warna.namawarna]',
                 'errors' => [
                     'required' => '{field} wajib diisi.',
-                    'max_length' => '{field} maksimal 30 karakter.',
-                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.',
-                    'is_unique'     => '{field} sudah digunakan.'
+                    'alpha_numeric_space' => '{field} hanya boleh huruf, angka, dan spasi.',
+                    'max_length' => '{field} maksimal 50 karakter.',
+                    'is_unique' => '{field} sudah digunakan.'
                 ]
             ]
         ];
 
-        $warnaid = esc($this->request->getPost('warnaid'));
+        $oldWarna = $this->request->getPost('oldwarna');
 
-        if (!$this->validate($rules)) {
+        if (! $this->validate($rules)) {
             $this->session->setFlashdata('message', implode('<br>', $this->validator->getErrors()));
-            return redirect()->to(base_url("admin/warna/ubah/" . base64_encode($warnaid)));
+            return redirect()->to('/admin/warna/ubah/' . base64_encode($oldWarna));
         }
+
+        $warna = ucfirst(trim($this->request->getPost('warna')));
+        $userid   = $this->session->get('logged_status')['username'] ?? '';
 
         $data = [
-            "nama"      => esc($this->request->getPost('warna'))
+            'namawarna' => $warna,
+            'userid'       => $userid
         ];
 
-        $result = $this->warnaModel->updateData($data, $warnaid);
+        $result = $this->warnaModel->updateData($data, $oldWarna);
 
-        if ($result["code"] == 0) {
-            $this->session->setFlashdata('message', 'Data berhasil diubah.');
-            return redirect()->to(base_url("admin/warna"));
-        } else {
-            $this->session->setFlashdata('message', 'Data gagal diubah.');
-            return redirect()->to(base_url("admin/warna/ubah/" . base64_encode($warnaid)));
-        }
+        $msg = ($result['code'] == 0) ? 'Data berhasil diubah.' : 'Data gagal diubah.';
+        $this->session->setFlashdata('message', $msg);
+
+        return redirect()->to('/admin/warna');
     }
 }

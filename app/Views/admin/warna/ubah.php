@@ -9,16 +9,17 @@
                 <?php } ?>
                 <div class="card-content">
         	        <form id="form_input" method="post" action="<?=base_url()?>admin/warna/update-data">
-    		        <div class="col-lg-6">
-            			<div class="card-body">
-            			  <div class="form-group row">
-            				<label class="col-sm-3 col-form-label">Nama Warna</label>
-            				<div class="col-sm-7">
-            				  <input type="hidden" name="warnaid" value="<?=$detail[0]->id?>">
-            				  <input type="text" class="form-control" id="warna" name="warna" maxlength="50" value="<?=$detail[0]->nama?>">
-            				</div>
-            			  </div>
-            			</div>
+        		        <div class="col-lg-7">
+                			<div class="card-body">
+                			  <div class="form-group row">
+                				<label class="col-sm-4 col-form-label">Nama Warna</label>
+                				<div class="col-sm-7">
+                				  <input type="hidden" name="oldwarna" value="<?=$detail[0]->namawarna?>">
+                				  <input type="text" class="form-control" id="warna" name="warna" maxlength="50" value="<?=$detail[0]->namawarna?>">
+                				</div>
+                			  </div>
+                			</div>
+        		        </div>
         		        <div class="col-lg-12">
             			    <div class="col-lg-6">
                     		    <button id="btnSimpan" name="btnSimpan"  class="btn btn-primary">Simpan</button>

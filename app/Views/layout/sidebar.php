@@ -62,7 +62,7 @@
                                 <a href="<?=base_url()?>admin/bahanbaku">Bahan Baku</a>
                             </li>
                             <li class="<?=@$side7?>">
-                                <a href="<?=base_url()?>admin/fabric">Kain</a>
+                                <a href="<?=base_url()?>admin/fabric">Fabric</a>
                             </li>
                             <li class="<?=@$side8?>">
                                 <a href="<?=base_url()?>admin/warna">Warna</a>
