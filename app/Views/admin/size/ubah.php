@@ -15,7 +15,7 @@
                 				<label class="col-sm-4 col-form-label">Size</label>
                 				<div class="col-sm-7">
                 				  <input type="hidden" name="oldsize" value="<?=$detail[0]->nama?>">
-                				  <input type="text" class="form-control" id="size" name="size" maxlength="50" value="<?=$detail[0]->nama?>">
+                				  <input type="text" class="form-control" id="size" name="size" maxlength="20" value="<?=$detail[0]->nama?>">
                 				</div>
                 			  </div>
                 			</div>

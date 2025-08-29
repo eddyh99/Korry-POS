@@ -91,13 +91,23 @@ class Size extends BaseApiController
     // }
     public function postAddData()
     {
+        // $rules = [
+        //     'size' => [
+        //         'label' => 'Size',
+        //         'rules' => 'required|regex_match[/^(XS|S|M|L|XL|XXL|XXXL|4XL|5XL|6XL|7XL)$/]',
+        //         'errors' => [
+        //             'required'    => '{field} wajib diisi.',
+        //             'regex_match' => '{field} harus berupa ukuran baju yang valid (misal: S, M, L, XL, XXL, 3XL).'
+        //         ]
+        //     ]
+        // ];
         $rules = [
             'size' => [
                 'label' => 'Size',
-                'rules' => 'required|regex_match[/^(XS|S|M|L|XL|XXL|XXXL|4XL|5XL|6XL|7XL)$/]',
+                'rules' => 'required|regex_match[/^[A-Za-z0-9\s\-\/]{1,20}$/]',
                 'errors' => [
                     'required'    => '{field} wajib diisi.',
-                    'regex_match' => '{field} harus berupa ukuran baju yang valid (misal: S, M, L, XL, XXL, 3XL).'
+                    'regex_match' => '{field} hanya boleh berisi huruf, angka, spasi, tanda minus (-), atau slash (/).',
                 ]
             ]
         ];
@@ -177,13 +187,23 @@ class Size extends BaseApiController
     // }
     public function postUpdateData()
     {
+        // $rules = [
+        //     'size' => [
+        //         'label' => 'Size',
+        //         'rules' => 'required|regex_match[/^(XS|S|M|L|XL|XXL|XXXL|4XL|5XL|6XL|7XL)$/]',
+        //         'errors' => [
+        //             'required'    => '{field} wajib diisi.',
+        //             'regex_match' => '{field} harus berupa ukuran baju yang valid (misal: S, M, L, XL, XXL, 3XL).'
+        //         ]
+        //     ]
+        // ];
         $rules = [
             'size' => [
                 'label' => 'Size',
-                'rules' => 'required|regex_match[/^(XS|S|M|L|XL|XXL|XXXL|4XL|5XL|6XL|7XL)$/]',
+                'rules' => 'required|regex_match[/^[A-Za-z0-9\s\-\/]{1,20}$/]',
                 'errors' => [
                     'required'    => '{field} wajib diisi.',
-                    'regex_match' => '{field} harus berupa ukuran baju yang valid (misal: S, M, L, XL, XXL, 3XL).'
+                    'regex_match' => '{field} hanya boleh berisi huruf, angka, spasi, tanda minus (-), atau slash (/).',
                 ]
             ]
         ];
