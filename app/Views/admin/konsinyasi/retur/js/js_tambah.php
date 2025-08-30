@@ -6,21 +6,20 @@
 $(document).ready(function(){
     $(".select2").select2();
 
-    // Init DataTable
     let table = $("#table_data").DataTable({
         paging: false,
         searching: false,
         info: false,
         ordering: false,
         columnDefs: [
-            { targets: [3,4], className: "text-center" }
+            { targets: [2,3,4,5], className: "text-center" }
         ]
     });
 
-    // === ketika DO dipilih, ambil produk by DO
+    // === ketika DO dipilih, load produk
     $("#do_konsinyasi").change(function(){
         let do_id = $(this).val();
-        $("#produk").html('<option value="" disabled selected>--Pilih Produk--</option>'); 
+        $("#produk").html('<option value="" disabled selected>--Pilih Produk--</option>');
         $("#jumlah").val("");
         $("#alasan").val("");
 
@@ -39,8 +38,10 @@ $(document).ready(function(){
 
                 res.forEach(function(item){
                     $("#produk").append(
-                        `<option value="${item.barcode}" data-sisa="${item.sisa}">
-                            ${item.nama} (Max: ${item.sisa})
+                        `<option value="${item.barcode}" 
+                                 data-sisa="${item.sisa}" 
+                                 data-size="${item.size}">
+                            ${item.nama} [Size: ${item.size}] (Max: ${item.sisa})
                         </option>`
                     );
                 });
@@ -51,7 +52,7 @@ $(document).ready(function(){
         });
     });
 
-    // === isi jumlah otomatis ketika pilih produk
+    // === isi jumlah otomatis saat produk dipilih
     $("#produk").change(function(){
         let selected = $(this).find(":selected");
         let maxJumlah = selected.data("sisa");
@@ -64,7 +65,7 @@ $(document).ready(function(){
         $("#jumlah").val(1).attr("max", maxJumlah);
     });
 
-    // === validasi jumlah
+    // === validasi jumlah input manual
     $("#jumlah").on("input", function(){
         let max = parseInt($(this).attr("max")) || 0;
         let val = parseInt($(this).val()) || 0;
@@ -78,32 +79,58 @@ $(document).ready(function(){
         }
     });
 
-    // === tambah ke grid
+    // === tombol Tambah ke tabel
     $("#btnAdd").click(function(){
         let do_no   = $("#do_konsinyasi").val();
         let barcode = $("#produk").val();
         let nama    = $("#produk option:selected").text();
+        let size    = $("#produk option:selected").data("size");
         let jumlah  = parseInt($("#jumlah").val());
         let alasan  = $("#alasan").val();
         let maxJumlah = parseInt($("#produk option:selected").data("sisa"));
 
-        if(!do_no || !barcode || !jumlah || !alasan){
-            alert("DO, Produk, jumlah & alasan wajib diisi!");
+        if(!do_no || !barcode || !jumlah || !alasan || !size){
+            alert("DO, Produk, size, jumlah & alasan wajib diisi!");
             return;
         }
 
-        // Cek duplikat barcode
+        // cek stok ke server dulu
+        let stok = 0;
+        $.ajax({
+            url: "<?=base_url()?>admin/konsinyasi/cekstokreturkonsinyasi",
+            async: false,
+            type: "POST",
+            data: { 
+                barcode: barcode, 
+                tujuan: $("#tujuan").val(), 
+                size: size 
+            },
+            success: function (data) {
+                stok = parseInt(data);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(textStatus, errorThrown);
+            }
+        });
+
+        if (stok <= 0) {
+            alert("Stok sudah habis");
+            return;
+        }
+
+        // cek duplikat berdasarkan barcode+size
         let rowFound = null;
         table.rows().every(function(){
             let row = this.data();
-            let existingBarcode = $(row[1]).filter("input").val();
-            if(existingBarcode === barcode){
+            let existingBarcode = $(row[0]).filter("input[name='barcode[]']").val();
+            let existingSize    = $(row[1]).filter("input[name='size[]']").val();
+            if(existingBarcode === barcode && existingSize === size){
                 rowFound = this;
             }
         });
 
         if(rowFound){
-            let oldJumlah = parseInt($(rowFound.data()[2]).filter("input").val());
+            let oldJumlah = parseInt($(rowFound.data()[3]).filter("input").val());
             let newJumlah = oldJumlah + jumlah;
 
             if(newJumlah > maxJumlah){
@@ -112,16 +139,18 @@ $(document).ready(function(){
             }
 
             rowFound.data([
-                do_no,
                 `<input type="hidden" name="barcode[]" value="${barcode}">${barcode}`,
+                `<input type="hidden" name="size[]" value="${size}">${size}`,
+                nama,
                 `<input type="hidden" name="jumlah[]" value="${newJumlah}">${newJumlah}`,
                 `<input type="hidden" name="alasan[]" value="${alasan}">${alasan}`,
                 `<button type="button" class="btn btn-danger btn-sm btnDelete">x</button>`
             ]).draw(false);
         }else{
             table.row.add([
-                do_no,
                 `<input type="hidden" name="barcode[]" value="${barcode}">${barcode}`,
+                `<input type="hidden" name="size[]" value="${size}">${size}`,
+                nama,
                 `<input type="hidden" name="jumlah[]" value="${jumlah}">${jumlah}`,
                 `<input type="hidden" name="alasan[]" value="${alasan}">${alasan}`,
                 `<button type="button" class="btn btn-danger btn-sm btnDelete">x</button>`
@@ -143,16 +172,16 @@ $(document).ready(function(){
     $("#form_retur").submit(function(e){
         e.preventDefault();
 
-        // Ambil data detail grid
         let details = [];
         table.rows().every(function(){
             let row = this.data();
-            let barcode = $(row[1]).filter("input").val();
-            let jumlah = $(row[2]).filter("input").val();
-            let alasan = $(row[3]).filter("input").val();
+            let barcode = $(row[0]).filter("input[name='barcode[]']").val();
+            let size    = $(row[1]).filter("input[name='size[]']").val();
+            let jumlah  = $(row[3]).filter("input").val();
+            let alasan  = $(row[4]).filter("input").val();
 
-            if(barcode && jumlah){
-                details.push({ barcode: barcode, jumlah: jumlah, alasan: alasan });
+            if(barcode && size && jumlah){
+                details.push({ barcode: barcode, size: size, jumlah: jumlah, alasan: alasan });
             }
         });
 
@@ -162,7 +191,6 @@ $(document).ready(function(){
         }
 
         let payload = {
-            noretur: $("#noretur").val(),
             do_konsinyasi: $("#do_konsinyasi").val(),
             details: details
         };

@@ -1,7 +1,7 @@
 <div class="content">
     <div class="container-fluid">
 <!-- Start -->
-
+        <input type="hidden" id="tujuan" value="<?=$_SESSION["logged_status"]["storeid"]?>">
 		<div class="row">
 			<div class="card">
 				<div class="card-body">
@@ -66,6 +66,7 @@
                                         <th>Nama Barang</th>
                                         <th>Jumlah</th>
                                         <th>Alasan</th>
+                                        <th>Size</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
