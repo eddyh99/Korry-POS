@@ -63,10 +63,10 @@
                                 <thead>
                                     <tr>
                                         <th>Barcode</th>
+                                        <th>Size</th>
                                         <th>Nama Barang</th>
                                         <th>Jumlah</th>
                                         <th>Alasan</th>
-                                        <th>Size</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
