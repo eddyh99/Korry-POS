@@ -16,6 +16,16 @@ class KonsinyasiModel extends Model
     protected $partner_konsinyasi = 'partner_konsinyasi';
     protected $harga = 'harga';
 
+    // Update Retur Konsinyasi
+    // protected $penyesuaian        = 'penyesuaian';
+    // protected $penjualan          = 'penjualan';
+    // protected $store              = 'store';
+    // protected $penjualan_detail   = 'penjualan_detail';
+    // protected $pindah             = 'pindah';
+    // protected $pindah_detail      = 'pindah_detail';
+    // protected $produk             = 'produk';
+    // protected $produksize         = 'produksize';
+
     // === DO Konsinyasi: Index ===
 
     // public function listDoKonsinyasi()
@@ -368,9 +378,19 @@ class KonsinyasiModel extends Model
     {
         $this->db->transStart();
 
+        // Auto-generate No. Retur Konsinyasi
+        $sql = "SELECT LPAD(
+                    COALESCE(CAST(MAX(noretur) AS UNSIGNED), 0) + 1,
+                    6,
+                    '0'
+                ) AS next_noretur
+                FROM retur_konsinyasi";
+
+        $noretur = $this->db->query($sql)->getRow()->next_noretur;
+
         // Insert ke master nota_konsinyasi (retur)
         $notaData = [
-            "noretur"      => $data["noretur"],
+            "noretur"      => $noretur,
             "tanggal"      => date("Y-m-d H:i:s"),
             "nokonsinyasi" => $data["nokonsinyasi"],
             "is_void"      => 0,
@@ -382,7 +402,7 @@ class KonsinyasiModel extends Model
         // Insert detail retur
         foreach ($data["detail"] as $row) {
             $detailData = [
-                "noretur" => $data["noretur"],
+                "noretur" => $noretur,
                 "barcode" => $row["barcode"],
                 "jumlah"  => $row["jumlah"],
                 "alasan"  => $row["alasan"]
@@ -463,6 +483,29 @@ class KonsinyasiModel extends Model
 
     //     return $this->db->query($sql, [$do_id])->getResultArray();
     // }
+    // public function getProdukByDo($do_id)
+    // {
+    //     $sql = "
+    //         SELECT 
+    //             d.barcode,
+    //             p.namaproduk AS nama,
+    //             h.harga_konsinyasi AS harga,
+    //             d.jumlah - IFNULL(SUM(n.jumlah), 0) AS sisa
+    //         FROM do_konsinyasi_detail d
+    //         JOIN do_konsinyasi dox ON dox.nonota = d.nonota
+    //         JOIN produk p ON p.barcode = d.barcode
+    //         JOIN harga h ON h.barcode = d.barcode
+    //         LEFT JOIN nota_konsinyasi_detail n 
+    //             ON n.notakonsinyasi = d.nonota 
+    //             AND n.barcode = d.barcode
+    //         WHERE d.nonota = ?
+    //         AND dox.is_void = 0
+    //         GROUP BY d.nonota, d.barcode, d.jumlah, p.namaproduk, h.harga_konsinyasi
+    //         HAVING sisa > 0
+    //     ";
+
+    //     return $this->db->query($sql, [$do_id])->getResultArray();
+    // }
     public function getProdukByDo($do_id)
     {
         $sql = "
@@ -470,14 +513,25 @@ class KonsinyasiModel extends Model
                 d.barcode,
                 p.namaproduk AS nama,
                 h.harga_konsinyasi AS harga,
-                d.jumlah - IFNULL(SUM(n.jumlah), 0) AS sisa
+                d.jumlah 
+                    - IFNULL(SUM(n.jumlah), 0) 
+                    - IFNULL(SUM(r.jumlah), 0) AS sisa
             FROM do_konsinyasi_detail d
-            JOIN do_konsinyasi dox ON dox.nonota = d.nonota
-            JOIN produk p ON p.barcode = d.barcode
-            JOIN harga h ON h.barcode = d.barcode
+            JOIN do_konsinyasi dox 
+                ON dox.nonota = d.nonota
+            JOIN produk p 
+                ON p.barcode = d.barcode
+            JOIN harga h 
+                ON h.barcode = d.barcode
             LEFT JOIN nota_konsinyasi_detail n 
                 ON n.notakonsinyasi = d.nonota 
                 AND n.barcode = d.barcode
+            LEFT JOIN retur_konsinyasi_detail r 
+                ON r.barcode = d.barcode
+            LEFT JOIN retur_konsinyasi rh 
+                ON rh.noretur = r.noretur
+                AND rh.nokonsinyasi = d.nonota
+                AND rh.is_void = 0
             WHERE d.nonota = ?
             AND dox.is_void = 0
             GROUP BY d.nonota, d.barcode, d.jumlah, p.namaproduk, h.harga_konsinyasi
