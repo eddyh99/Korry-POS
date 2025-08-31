@@ -31,7 +31,7 @@
 									  <datalist name="fabriclist" id="fabriclist">
 										<?php
 											foreach($fabric as $dt) {
-												echo "<option value='".$dt["nama"]."' />";
+												echo "<option value='".$dt["namafabric"]."' />";
 											}
 										?>
 										</datalist>
@@ -44,7 +44,7 @@
 									  <datalist name="warnalist" id="warnalist">
 										<?php
 											foreach($warna as $dt) {
-												echo "<option value='".$dt["nama"]."' />";
+												echo "<option value='".$dt["namawarna"]."' />";
 											}
 										?>
 										</datalist>

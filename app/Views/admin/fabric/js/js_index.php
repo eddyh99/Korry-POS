@@ -24,17 +24,17 @@
 				}
 			},
 			"columns": [
-				{ "data": "nama" },
+				{ "data": "namafabric" },
 				{ 
-					"data": "id",
+					"data": "namafabric",
 					"render": function (data, type, full, meta){
-						console.log("Render tombol aksi untuk id fabric:", data, "Row data:", full);
+						console.log("Render tombol aksi untuk namafabric:", data, "Row data:", full);
 						
 						let button = '';
-						button += '<a href="<?=base_url()?>admin/fabric/ubah/' + encodeURI(btoa(full.id)) + '" class="btn btn-simple btn-warning btn-icon" title="Ubah"><i class="material-icons">update</i></a>';
+						button += '<a href="<?=base_url()?>admin/fabric/ubah/' + encodeURI(btoa(full.namafabric)) + '" class="btn btn-simple btn-warning btn-icon" title="Ubah"><i class="material-icons">update</i></a>';
 						
 						if (full.role !== "Admin") {
-							button += '<a href="<?=base_url()?>admin/fabric/hapus/' + encodeURI(btoa(full.id)) + '" class="btn btn-simple btn-danger btn-icon" title="Hapus"><i class="material-icons">close</i></a>';
+							button += '<a href="<?=base_url()?>admin/fabric/hapus/' + encodeURI(btoa(full.namafabric)) + '" class="btn btn-simple btn-danger btn-icon" title="Hapus"><i class="material-icons">close</i></a>';
 						}
 						return button;
 					}

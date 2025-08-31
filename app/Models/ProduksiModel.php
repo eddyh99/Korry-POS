@@ -37,15 +37,19 @@ class ProduksiModel extends Model
 
     public function insertData($data)
     {
+        $this->db->transStart();
+
+        // Auto-generate No. Produksi
         $sql="SELECT LPAD(
-                CAST(MAX(nonota) AS UNSIGNED) + 1,
+                COALESCE(CAST(MAX(nonota) AS UNSIGNED), 0) + 1,
                 5,
                 '0'
             ) AS next_nonota
             FROM produksi";
+            
         $nonota = $this->db->query($sql)->getRow()->next_nonota;
 
-        // data utama untuk tabel produksi
+        // Data utama untuk tabel produksi
         $produksi = [
             'nonota'     => $nonota,
             'tanggal'    => date("Y-m-d H:i:s"),
@@ -57,29 +61,81 @@ class ProduksiModel extends Model
             'lastupdate' => date("Y-m-d H:i:s")
         ];
 
-        // data untuk tabel produksi detail
-        $produksi_detail = [
-            'nonota'  => $nonota,
-            'barcode' => $data["barcode"],
-            'jumlah'  => $data["jumlah"]
-        ];
+        $this->db->table($this->produksi)->insert($produksi);
 
-        $this->db->transStart();
+        // Insert detail produksi (loop multi item)
+        foreach ($data["detail"] as $row) {
+            $detail = [
+                'nonota'  => $nonota,
+                'barcode' => $row["barcode"],
+                'jumlah'  => $row["jumlah"],
+                'harga'   => $row["harga"]
+            ];
+            $this->db->table($this->produksi_detail)->insert($detail);
+        }
 
-            $this->db->table($this->produksi)->insert($produksi);
-
-            $this->db->table($this->produksi_detail)->insert($produksi_detail);
-
-            $this->db->transComplete();
+        $this->db->transComplete();
 
         if ($this->db->transStatus() === false) {
             $this->db->transRollback();
-            return ["code" => 511, "message" => "Data gagal disimpan"];
+            return [
+                "status"  => false,
+                "message" => "DB Error: " . $this->db->error()["message"]
+            ];
         } else {
             $this->db->transCommit();
-            return ["code" => 0, "message" => "Data berhasil disimpan"];
+            return [
+                "status"  => true,
+                "message" => "Data berhasil disimpan"
+            ];
         }
     }
+    // public function insertData($data)
+    // {
+    //     $sql="SELECT LPAD(
+    //             CAST(MAX(nonota) AS UNSIGNED) + 1,
+    //             5,
+    //             '0'
+    //         ) AS next_nonota
+    //         FROM produksi";
+
+    //     $nonota = $this->db->query($sql)->getRow()->next_nonota;
+
+    //     // data utama untuk tabel produksi
+    //     $produksi = [
+    //         'nonota'     => $nonota,
+    //         'tanggal'    => date("Y-m-d H:i:s"),
+    //         'idvendor'   => $data["idvendor"],
+    //         'estimasi'   => $data["estimasi"],
+    //         'dp'         => $data["dp"],
+    //         'total'      => $data["total"],
+    //         'user_id'    => $data["user_id"],
+    //         'lastupdate' => date("Y-m-d H:i:s")
+    //     ];
+
+    //     // data untuk tabel produksi detail
+    //     $produksi_detail = [
+    //         'nonota'  => $nonota,
+    //         'barcode' => $data["barcode"],
+    //         'jumlah'  => $data["jumlah"]
+    //     ];
+
+    //     $this->db->transStart();
+
+    //         $this->db->table($this->produksi)->insert($produksi);
+
+    //         $this->db->table($this->produksi_detail)->insert($produksi_detail);
+
+    //         $this->db->transComplete();
+
+    //     if ($this->db->transStatus() === false) {
+    //         $this->db->transRollback();
+    //         return ["code" => 511, "message" => "Data gagal disimpan"];
+    //     } else {
+    //         $this->db->transCommit();
+    //         return ["code" => 0, "message" => "Data berhasil disimpan"];
+    //     }
+    // }
 
     public function hapusData($data, $nonota)
     {

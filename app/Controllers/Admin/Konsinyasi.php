@@ -27,7 +27,7 @@ class Konsinyasi extends BaseApiController
     }
 
 
-    // === DO Konsinyasi: Index ===
+    // === DO Konsinyasi : Index ===
 
     public function getDo()
     {
@@ -54,23 +54,20 @@ class Konsinyasi extends BaseApiController
         return $this->response->setJSON($result);
     }
 
-    // === DO Konsinyasi: Tambah ===
+    // === DO Konsinyasi : Tambah ===
 
     public function getDotambah()
     {
-        $store = $this->storeModel->Liststore();
-        $produk = $this->produkModel->ListProdukDoKonsinyasi();
-
         $partner = $this->partnerModel->listPartner();
+        $produk  = $this->produkModel->ListProdukDoKonsinyasi();
 
         $data = [
             'title'    => 'Tambah Data',
             'content'  => 'admin/konsinyasi/do/tambah',
             'extra'    => 'admin/konsinyasi/do/js/js_tambah',
             'extracss' => 'admin/konsinyasi/do/css/css_tambah',
-            'store'    => $store,
+            'partner'  => $partner,
             'produk'   => $produk,
-            'partner'   => $partner,
             'mn_req'   => 'active',
             'colmas'   => 'collapse',
             'colset'   => 'collapse',
@@ -80,7 +77,7 @@ class Konsinyasi extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
-    // === DO Konsinyasi: Hapus ===
+    // === DO Konsinyasi : Hapus ===
 
     public function getDohapus($nonota_do)
     {
@@ -146,6 +143,26 @@ class Konsinyasi extends BaseApiController
         ];
 
         return view('layout/wrapper', $data);
+    }
+
+    // === Nota Konsinyasi : Hapus ===
+
+    public function getNotahapus($notajual)
+    {
+        $notajual = base64_decode(esc($notajual));
+
+        $data = [
+            "status" => 'void'
+        ];
+
+        $result = $this->konsinyasiModel->hapusNotaKonsinyasi($data, $notajual);
+
+        if ($result["code"] == 0) {
+            $this->session->setFlashdata('message', 'Data berhasil dihapus.');
+        } else {
+            $this->session->setFlashdata('message', 'Data gagal dihapus.');
+        }
+        return redirect()->to(base_url("admin/konsinyasi/nota"));
     }
 
     // === Retur Konsinyasi : Index ===
@@ -222,16 +239,6 @@ class Konsinyasi extends BaseApiController
     {
         // Rules validasi
         $rules = [
-            "nonota" => [
-                "label"  => "No Nota",
-                "rules"  => "required|exact_length[6]|numeric|is_unique[do_konsinyasi.nonota]",
-                "errors" => [
-                    "required"     => "{field} wajib diisi",
-                    "exact_length" => "{field} harus 6 digit",
-                    "numeric"      => "{field} hanya boleh angka",
-                    "is_unique"    => "{field} sudah digunakan."
-                ]
-            ],
             "partner" => [
                 "label"  => "Partner Konsinyasi",
                 "rules"  => "required|integer",
@@ -273,13 +280,11 @@ class Konsinyasi extends BaseApiController
         }
 
         // Ambil data setelah validasi
-        $nonota   = esc($this->request->getPost("nonota"));
         $partner  = esc($this->request->getPost("partner"));
         $barcodes = $this->request->getPost("barcode");
         $jumlahs  = $this->request->getPost("jumlah");
 
         $data = [
-            "nonota"  => $nonota,
             "partner" => $partner,
             "userid"  => session()->get("logged_status")["username"],
             "detail"  => []
@@ -296,21 +301,89 @@ class Konsinyasi extends BaseApiController
 
         return $this->response->setJSON($result);
     }
+    // public function postAddDataDo()
+    // {
+    //     // Rules validasi
+    //     $rules = [
+    //         "nonota" => [
+    //             "label"  => "No Nota",
+    //             "rules"  => "required|exact_length[6]|numeric|is_unique[do_konsinyasi.nonota]",
+    //             "errors" => [
+    //                 "required"     => "{field} wajib diisi",
+    //                 "exact_length" => "{field} harus 6 digit",
+    //                 "numeric"      => "{field} hanya boleh angka",
+    //                 "is_unique"    => "{field} sudah digunakan."
+    //             ]
+    //         ],
+    //         "partner" => [
+    //             "label"  => "Partner Konsinyasi",
+    //             "rules"  => "required|integer",
+    //             "errors" => [
+    //                 "required" => "{field} wajib dipilih",
+    //                 "integer"  => "{field} tidak valid"
+    //             ]
+    //         ],
+    //         "barcode" => [
+    //             "label"  => "Produk",
+    //             "rules"  => "required",
+    //             "errors" => [
+    //                 "required" => "{field} wajib dipilih"
+    //             ]
+    //         ],
+    //         "jumlah.*" => [ // validasi tiap elemen array jumlah
+    //             "label"  => "Jumlah Produk",
+    //             "rules"  => "required|integer|greater_than[0]",
+    //             "errors" => [
+    //                 "required"     => "{field} wajib diisi",
+    //                 "integer"      => "{field} harus berupa angka",
+    //                 "greater_than" => "{field} harus lebih dari 0"
+    //             ]
+    //         ],
+    //     ];
+
+    //     // Jalankan rules validasi
+    //     if (! $this->validate($rules)) {
+    //         if ($this->request->isAJAX()) {
+    //             return $this->response->setJSON([
+    //                 "status"  => false,
+    //                 "message" => implode("\n", $this->validator->getErrors()),
+    //                 "errors"  => $this->validator->getErrors()
+    //             ]);
+    //         } else {
+    //             $this->session->setFlashdata('message', $this->validator->listErrors());
+    //             return redirect()->to('/admin/konsinyasi/dotambah')->withInput();
+    //         }
+    //     }
+
+    //     // Ambil data setelah validasi
+    //     $nonota   = esc($this->request->getPost("nonota"));
+    //     $partner  = esc($this->request->getPost("partner"));
+    //     $barcodes = $this->request->getPost("barcode");
+    //     $jumlahs  = $this->request->getPost("jumlah");
+
+    //     $data = [
+    //         "nonota"  => $nonota,
+    //         "partner" => $partner,
+    //         "userid"  => session()->get("logged_status")["username"],
+    //         "detail"  => []
+    //     ];
+
+    //     foreach ($barcodes as $i => $barcode) {
+    //         $data["detail"][] = [
+    //             "barcode" => esc($barcode),
+    //             "jumlah"  => (int) $jumlahs[$i]
+    //         ];
+    //     }
+
+    //     $result = $this->konsinyasiModel->insertDoKonsinyasi($data);
+
+    //     return $this->response->setJSON($result);
+    // }
 
     public function postAddDataNota()
     {
         // Rules validasi
         $rules = [
-            "notajual" => [
-                "label"  => "Nota Jual",
-                "rules"  => "required|numeric|max_length[6]|is_unique[nota_konsinyasi.notajual]",
-                "errors" => [
-                    "required"   => "{field} wajib diisi",
-                    "numeric"    => "{field} harus berupa angka",
-                    "max_length" => "{field} maksimal 6 digit",
-                    "is_unique"  => "{field} sudah digunakan."
-                ]
-            ],
             "diskon" => [
                 "label"  => "Diskon",
                 "rules"  => "permit_empty|numeric|max_length[6]",
@@ -327,14 +400,15 @@ class Konsinyasi extends BaseApiController
                     "max_length" => "{field} maksimal 6 digit"
                 ]
             ],
-            // minimal 1 detail harus dikirim (array)
-            "do_id" => [
+            // minimal 1 DO harus ada
+            "do_konsinyasi" => [
                 "label"  => "No. DO Konsinyasi",
                 "rules"  => "required",
                 "errors" => [
                     "required" => "{field} wajib dipilih minimal 1"
                 ]
             ],
+            // minimal 1 produk harus ada
             "barcode" => [
                 "label"  => "Produk",
                 "rules"  => "required",
@@ -342,13 +416,13 @@ class Konsinyasi extends BaseApiController
                     "required" => "{field} wajib dipilih minimal 1"
                 ]
             ],
-            "jumlah" => [
+            "jumlah.*" => [
                 "label"  => "Jumlah",
                 "rules"  => "required|numeric|greater_than_equal_to[1]",
                 "errors" => [
-                    "required"                => "{field} wajib diisi",
-                    "numeric"                 => "{field} harus berupa angka",
-                    "greater_than_equal_to"   => "{field} minimal 1"
+                    "required"              => "{field} wajib diisi",
+                    "numeric"               => "{field} harus berupa angka",
+                    "greater_than_equal_to" => "{field} minimal 1"
                 ]
             ],
         ];
@@ -368,24 +442,21 @@ class Konsinyasi extends BaseApiController
         }
 
         // Ambil input utama
-        $notajual = esc($this->request->getPost("notajual"));
-        $diskon   = (float) $this->request->getPost("diskon");
-        $ppn      = (float) $this->request->getPost("ppn");
+        $diskon        = (float) $this->request->getPost("diskon");
+        $ppn           = (float) $this->request->getPost("ppn");
+        $do_konsinyasi = $this->request->getPost("do_konsinyasi");  // single value
+        $barcodes      = $this->request->getPost("barcode");        // array
+        $jumlahs       = $this->request->getPost("jumlah");         // array
 
-        // Array detail
-        $do_ids   = $this->request->getPost("do_id");     // array notakonsinyasi
-        $barcodes = $this->request->getPost("barcode");   // array barcode
-        $jumlahs  = $this->request->getPost("jumlah");    // array jumlah
-
-        if (!$notajual || empty($do_ids) || empty($barcodes) || empty($jumlahs)) {
+        if (empty($do_konsinyasi) || empty($barcodes) || empty($jumlahs)) {
             return $this->response->setJSON([
                 "status"  => false,
                 "message" => "Data tidak lengkap"
             ]);
         }
 
+        // Susun data header + detail
         $data = [
-            "notajual" => $notajual,
             "diskon"   => $diskon,
             "ppn"      => $ppn,
             "userid"   => session()->get("logged_status")["username"],
@@ -394,18 +465,126 @@ class Konsinyasi extends BaseApiController
 
         foreach ($barcodes as $i => $barcode) {
             $data["detail"][] = [
-                "notakonsinyasi" => esc($do_ids[$i]),
+                "notakonsinyasi" => esc($do_konsinyasi),
                 "barcode"        => esc($barcode),
                 "jumlah"         => (int) $jumlahs[$i],
             ];
         }
 
+        // Simpan data via Model
         $result = $this->konsinyasiModel->insertNotaKonsinyasi($data);
 
         return $this->response->setJSON($result);
     }
+    // public function postAddDataNota()
+    // {
+    //     // Rules validasi
+    //     $rules = [
+    //         "notajual" => [
+    //             "label"  => "Nota Jual",
+    //             "rules"  => "required|numeric|max_length[6]|is_unique[nota_konsinyasi.notajual]",
+    //             "errors" => [
+    //                 "required"   => "{field} wajib diisi",
+    //                 "numeric"    => "{field} harus berupa angka",
+    //                 "max_length" => "{field} maksimal 6 digit",
+    //                 "is_unique"  => "{field} sudah digunakan."
+    //             ]
+    //         ],
+    //         "diskon" => [
+    //             "label"  => "Diskon",
+    //             "rules"  => "permit_empty|numeric|max_length[6]",
+    //             "errors" => [
+    //                 "numeric"    => "{field} harus berupa angka",
+    //                 "max_length" => "{field} maksimal 6 digit"
+    //             ]
+    //         ],
+    //         "ppn" => [
+    //             "label"  => "PPN",
+    //             "rules"  => "permit_empty|numeric|max_length[6]",
+    //             "errors" => [
+    //                 "numeric"    => "{field} harus berupa angka",
+    //                 "max_length" => "{field} maksimal 6 digit"
+    //             ]
+    //         ],
+    //         // minimal 1 detail harus dikirim (array)
+    //         "do_id" => [
+    //             "label"  => "No. DO Konsinyasi",
+    //             "rules"  => "required",
+    //             "errors" => [
+    //                 "required" => "{field} wajib dipilih minimal 1"
+    //             ]
+    //         ],
+    //         "barcode" => [
+    //             "label"  => "Produk",
+    //             "rules"  => "required",
+    //             "errors" => [
+    //                 "required" => "{field} wajib dipilih minimal 1"
+    //             ]
+    //         ],
+    //         "jumlah" => [
+    //             "label"  => "Jumlah",
+    //             "rules"  => "required|numeric|greater_than_equal_to[1]",
+    //             "errors" => [
+    //                 "required"                => "{field} wajib diisi",
+    //                 "numeric"                 => "{field} harus berupa angka",
+    //                 "greater_than_equal_to"   => "{field} minimal 1"
+    //             ]
+    //         ],
+    //     ];
 
-    public function postAddDataRetur()
+    //     // Jalankan rules validasi
+    //     if (! $this->validate($rules)) {
+    //         if ($this->request->isAJAX()) {
+    //             return $this->response->setJSON([
+    //                 "status"  => false,
+    //                 "message" => implode("\n", $this->validator->getErrors()),
+    //                 "errors"  => $this->validator->getErrors()
+    //             ]);
+    //         } else {
+    //             $this->session->setFlashdata('message', $this->validator->listErrors());
+    //             return redirect()->to('/admin/konsinyasi/notatambah')->withInput();
+    //         }
+    //     }
+
+    //     // Ambil input utama
+    //     $notajual = esc($this->request->getPost("notajual"));
+    //     $diskon   = (float) $this->request->getPost("diskon");
+    //     $ppn      = (float) $this->request->getPost("ppn");
+
+    //     // Array detail
+    //     $do_ids   = $this->request->getPost("do_id");     // array notakonsinyasi
+    //     $barcodes = $this->request->getPost("barcode");   // array barcode
+    //     $jumlahs  = $this->request->getPost("jumlah");    // array jumlah
+
+    //     if (!$notajual || empty($do_ids) || empty($barcodes) || empty($jumlahs)) {
+    //         return $this->response->setJSON([
+    //             "status"  => false,
+    //             "message" => "Data tidak lengkap"
+    //         ]);
+    //     }
+
+    //     $data = [
+    //         "notajual" => $notajual,
+    //         "diskon"   => $diskon,
+    //         "ppn"      => $ppn,
+    //         "userid"   => session()->get("logged_status")["username"],
+    //         "detail"   => []
+    //     ];
+
+    //     foreach ($barcodes as $i => $barcode) {
+    //         $data["detail"][] = [
+    //             "notakonsinyasi" => esc($do_ids[$i]),
+    //             "barcode"        => esc($barcode),
+    //             "jumlah"         => (int) $jumlahs[$i],
+    //         ];
+    //     }
+
+    //     $result = $this->konsinyasiModel->insertNotaKonsinyasi($data);
+
+    //     return $this->response->setJSON($result);
+    // }
+
+    public function postAddDataRetur1()
     {
         // Rules validasi
         $rules = [
@@ -416,16 +595,16 @@ class Konsinyasi extends BaseApiController
                     "required" => "{field} wajib dipilih"
                 ]
             ],
-            "noretur" => [
-                "label"  => "No. Retur",
-                "rules"  => "required|numeric|max_length[6]|is_unique[retur_konsinyasi.noretur]",
-                "errors" => [
-                    "required"   => "{field} wajib diisi",
-                    "numeric"    => "{field} harus berupa angka",
-                    "max_length" => "{field} maksimal 6 digit",
-                    "is_unique"  => "{field} sudah digunakan."
-                ]
-            ],
+            // "noretur" => [
+            //     "label"  => "No. Retur",
+            //     "rules"  => "required|numeric|max_length[6]|is_unique[retur_konsinyasi.noretur]",
+            //     "errors" => [
+            //         "required"   => "{field} wajib diisi",
+            //         "numeric"    => "{field} harus berupa angka",
+            //         "max_length" => "{field} maksimal 6 digit",
+            //         "is_unique"  => "{field} sudah digunakan."
+            //     ]
+            // ],
         ];
 
         // Jalankan rules validasi
@@ -443,7 +622,7 @@ class Konsinyasi extends BaseApiController
         }
 
         // Ambil input
-        $noretur      = esc($this->request->getPost("noretur"));
+        // $noretur      = esc($this->request->getPost("noretur"));
         $nokonsinyasi = esc($this->request->getPost("do_konsinyasi"));
         $details      = $this->request->getPost("details"); // array dari JS
 
@@ -466,7 +645,7 @@ class Konsinyasi extends BaseApiController
 
         // Siapkan data untuk disimpan
         $data = [
-            "noretur"      => $noretur,
+            // "noretur"      => $noretur,
             "nokonsinyasi" => $nokonsinyasi,
             "userid"       => session()->get("logged_status")["username"],
             "detail"       => []
@@ -481,6 +660,74 @@ class Konsinyasi extends BaseApiController
         }
 
         // Simpan ke model
+        $result = $this->konsinyasiModel->insertReturKonsinyasi($data);
+
+        return $this->response->setJSON($result);
+    }
+
+    public function postAddDataRetur()
+    {
+        // Rules validasi
+        $rules = [
+            "do_konsinyasi" => [
+                "label"  => "No. DO Konsinyasi",
+                "rules"  => "required",
+                "errors" => [
+                    "required" => "{field} wajib dipilih"
+                ]
+            ],
+        ];
+
+        if (! $this->validate($rules)) {
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    "status"  => false,
+                    "message" => implode("\n", $this->validator->getErrors()),
+                    "errors"  => $this->validator->getErrors()
+                ]);
+            } else {
+                $this->session->setFlashdata('message', $this->validator->listErrors());
+                return redirect()->to('/admin/konsinyasi/returtambah')->withInput();
+            }
+        }
+
+        // Ambil input
+        $nokonsinyasi = esc($this->request->getPost("do_konsinyasi"));
+        $details      = $this->request->getPost("details"); // array dari JS
+
+        if (empty($details) || !is_array($details)) {
+            return $this->response->setJSON([
+                "status"  => false,
+                "message" => "Detail retur belum diisi"
+            ]);
+        }
+
+        foreach ($details as $row) {
+            if (empty($row["barcode"]) || empty($row["size"]) || (int)$row["jumlah"] <= 0) {
+                return $this->response->setJSON([
+                    "status"  => false,
+                    "message" => "Detail retur tidak valid. Pastikan produk, size, jumlah, dan alasan diisi."
+                ]);
+            }
+        }
+
+        // Siapkan data
+        $data = [
+            "nokonsinyasi" => $nokonsinyasi,
+            "userid"       => session()->get("logged_status")["username"],
+            "detail"       => []
+        ];
+
+        foreach ($details as $row) {
+            $data["detail"][] = [
+                "barcode" => esc($row["barcode"]),
+                "size"    => esc($row["size"]),
+                "jumlah"  => (int) $row["jumlah"],
+                "alasan"  => esc($row["alasan"])
+            ];
+        }
+
+        // Simpan via model
         $result = $this->konsinyasiModel->insertReturKonsinyasi($data);
 
         return $this->response->setJSON($result);
@@ -504,5 +751,16 @@ class Konsinyasi extends BaseApiController
         $produk = $this->konsinyasiModel->getProdukByDo($do_id);
 
         return $this->response->setJSON($produk);
+    }
+
+    public function postCekstokreturkonsinyasi()
+    {
+        $barcode = $this->request->getPost('barcode');
+        $size    = $this->request->getPost('size');
+        $storeid = $this->request->getPost('tujuan');
+
+        $stok = $this->konsinyasiModel->getStokReturKonsinyasi($barcode, $storeid, $size);
+
+        return $this->response->setBody($stok);
     }
 }

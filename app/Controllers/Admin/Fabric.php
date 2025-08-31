@@ -17,19 +17,15 @@ class Fabric extends BaseApiController
 
     public function getIndex()
     {
-        if (!$this->session->get('logged_status')) {
-            return redirect()->to(base_url());
-        }
-
         $data = [
             'title'      => 'Data Fabric',
             'content'    => 'admin/fabric/index',
-            'extra'      => 'admin/fabric/js/js_index', 
+            'extra'      => 'admin/fabric/js/js_index',
             'mn_setting' => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side11'     => 'active',
+            'side4'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -42,129 +38,125 @@ class Fabric extends BaseApiController
 
     public function getTambah()
     {
-        if (!$this->session->get('logged_status')) {
-            return redirect()->to(base_url());
-        }
-
         $data = [
-            'title'      => 'Tambah Fabric',
+            'title'      => 'Tambah Data Fabric',
             'content'    => 'admin/fabric/tambah',
-            'mn_master'  => 'active',
+            'mn_setting' => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side11'      => 'active',
+            'side4'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }
 
-    public function getUbah($fabricid)
+    public function getUbah($fabric)
     {
-        $fabricid = base64_decode(esc($fabricid));
-        $result  = $this->fabricModel->getFabric($fabricid);
+        $fabric = base64_decode($fabric);
+        $result   = $this->fabricModel->getFabric($fabric);
 
         $data = [
-            'title'      => 'Ubah Fabric',
+            'title'      => 'Ubah Data Fabric',
             'content'    => 'admin/fabric/ubah',
             'detail'     => $result,
-            'mn_master'  => 'active',
+            'mn_setting' => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side2'      => 'active',
+            'side4'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }
 
-    public function getHapus($fabricid)
+    public function getHapus($fabric)
     {
-        $fabricid = base64_decode(esc($fabricid));
+        $fabric = base64_decode($fabric);
 
-        $data = [
-            "status" => 1
-        ];
+        $data = ['status' => 1];
+        $result = $this->fabricModel->hapusData($data, $fabric);
 
-        $result = $this->fabricModel->hapusData($data, $fabricid);
-
-        if ($result["code"] == 0) {
+        if ($result['code'] == 0) {
             $this->session->setFlashdata('message', 'Data berhasil dihapus.');
         } else {
             $this->session->setFlashdata('message', 'Data gagal dihapus.');
         }
-        return redirect()->to(base_url("admin/fabric"));
+
+        return redirect()->to('/admin/fabric');
     }
 
-    // Handle Post Tambah & Ubah
+    // Handle Post Tambah & Ubah    
 
     public function postAddData()
     {
         $rules = [
             'fabric' => [
-                'label' => 'Nama Fabric',
-                'rules' => 'required|trim|max_length[30]|alpha_numeric_space|is_unique[fabric.nama]',
+                'label' => 'Fabric',
+                'rules' => 'required|alpha_numeric_space|max_length[50]|is_unique[fabric.namafabric]',
                 'errors' => [
                     'required' => '{field} wajib diisi.',
-                    'max_length' => '{field} maksimal 30 karakter.',
-                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.',
-                    'is_unique'     => '{field} sudah digunakan.'
+                    'alpha_numeric_space' => '{field} hanya boleh huruf, angka, dan spasi.',
+                    'max_length' => '{field} maksimal 50 karakter.',
+                    'is_unique' => '{field} sudah digunakan.'
                 ]
             ]
         ];
 
-        if (!$this->validate($rules)) {
+        if (! $this->validate($rules)) {
             $this->session->setFlashdata('message', implode('<br>', $this->validator->getErrors()));
-            return redirect()->to(base_url("admin/fabric/tambah"));
+            return redirect()->to('/admin/fabric/tambah');
         }
 
+        $fabric = ucfirst(trim($this->request->getPost('fabric')));
+        $userid   = $this->session->get('logged_status')['username'] ?? '';
+
         $data = [
-            "nama"       => esc($this->request->getPost('fabric'))
+            'namafabric' => $fabric,
+            'userid'       => $userid
         ];
 
         $result = $this->fabricModel->insertData($data);
 
-        if ($result["code"] == 0) {
-            $this->session->setFlashdata('message', 'Data berhasil disimpan.');
-            return redirect()->to(base_url("admin/fabric"));
-        } else {
-            $this->session->setFlashdata('message', 'Data gagal disimpan.');
-            return redirect()->to(base_url("admin/fabric/tambah"));
-        }
+        $msg = ($result['code'] == 0) ? 'Data berhasil disimpan.' : 'Data gagal disimpan.';
+        $this->session->setFlashdata('message', $msg);
+
+        return redirect()->to('/admin/fabric');
     }
 
     public function postUpdateData()
     {
         $rules = [
             'fabric' => [
-                'label' => 'Nama Fabric',
-                'rules' => 'required|trim|max_length[30]|alpha_numeric_space|is_unique[fabric.nama]',
+                'label' => 'Fabric',
+                'rules' => 'required|alpha_numeric_space|max_length[50]|is_unique[fabric.namafabric]',
                 'errors' => [
                     'required' => '{field} wajib diisi.',
-                    'max_length' => '{field} maksimal 30 karakter.',
-                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.',
-                    'is_unique'     => '{field} sudah digunakan.'
+                    'alpha_numeric_space' => '{field} hanya boleh huruf, angka, dan spasi.',
+                    'max_length' => '{field} maksimal 50 karakter.',
+                    'is_unique' => '{field} sudah digunakan.'
                 ]
             ]
         ];
 
-        $fabricid = esc($this->request->getPost('fabricid'));
+        $oldFabric = $this->request->getPost('oldfabric');
 
-        if (!$this->validate($rules)) {
+        if (! $this->validate($rules)) {
             $this->session->setFlashdata('message', implode('<br>', $this->validator->getErrors()));
-            return redirect()->to(base_url("admin/fabric/ubah/" . base64_encode($fabricid)));
+            return redirect()->to('/admin/fabric/ubah/' . base64_encode($oldFabric));
         }
+
+        $fabric = ucfirst(trim($this->request->getPost('fabric')));
+        $userid   = $this->session->get('logged_status')['username'] ?? '';
 
         $data = [
-            "nama"      => esc($this->request->getPost('fabric'))
+            'namafabric' => $fabric,
+            'userid'       => $userid
         ];
 
-        $result = $this->fabricModel->updateData($data, $fabricid);
+        $result = $this->fabricModel->updateData($data, $oldFabric);
 
-        if ($result["code"] == 0) {
-            $this->session->setFlashdata('message', 'Data berhasil diubah.');
-            return redirect()->to(base_url("admin/fabric"));
-        } else {
-            $this->session->setFlashdata('message', 'Data gagal diubah.');
-            return redirect()->to(base_url("admin/fabric/ubah/" . base64_encode($fabricid)));
-        }
+        $msg = ($result['code'] == 0) ? 'Data berhasil diubah.' : 'Data gagal diubah.';
+        $this->session->setFlashdata('message', $msg);
+
+        return redirect()->to('/admin/fabric');
     }
 }

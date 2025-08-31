@@ -37,28 +37,29 @@
     </div>
 </div>
 
-<!-- Modal Confirm Delete DO Konsinyasi -->
-<div class="modal fade" id="modal_deleteDo" tabindex="-1" role="dialog" aria-labelledby="deleteDoLabel" aria-hidden="true">
+<!-- Modal Confirm Delete Nota Jual Konsinyasi -->
+<div class="modal fade" id="modal_deleteNotajual" tabindex="-1" role="dialog" aria-labelledby="deleteNotajualLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <!-- Header -->
       <div class="modal-header">
-        <h5 class="modal-title" id="deleteDoLabel">Konfirmasi Hapus</h5>
+        <h5 class="modal-title" id="deleteNotajualLabel">Konfirmasi Hapus</h5>
       </div>
       <!-- Body -->
       <div class="modal-body">
         <p>
-          Apakah Anda yakin ingin menghapus Nota Konsinyasi dengan No. Nota Jual:
-          <strong id="notajualoToDelete"></strong>?
+          Apakah Anda yakin ingin menghapus Nota Jual Konsinyasi dengan No. Nota:
+          <strong id="notajualToDelete"></strong>?
         </p>
-        <input type="hidden" id="nonotaDoHidden">
+        <input type="hidden" id="notajualHidden">
       </div>
       <!-- Footer -->
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Ya, Hapus</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteNotajualBtn">Ya, Hapus</button>
       </div>
     </div>
   </div>
 </div>
+
 

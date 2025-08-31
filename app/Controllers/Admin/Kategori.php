@@ -50,45 +50,53 @@ class Kategori extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
-    // public function postAddData()
-    // {
-    //     $rules = [
-    //         'kategori' => 'trim|required'
-    //     ];
+    public function getUbah($kategori)
+    {
+        $kategori = base64_decode($kategori);
+        $result   = $this->kategoriModel->getKategori($kategori);
 
-    //     if (! $this->validate($rules)) {
-    //         session()->setFlashdata('message', $this->message->error_msg($this->validator->listErrors()));
-    //         return redirect()->to('/admin/kategori/tambah');
-    //     }
+        $data = [
+            'title'      => 'Ubah Data Kategori',
+            'content'    => 'admin/kategori/ubah',
+            'detail'     => $result,
+            'mn_setting' => 'active',
+            'colmas'     => 'collapse',
+            'colset'     => 'collapse in',
+            'collap'     => 'collapse',
+            'side4'      => 'active',
+        ];
+        return view('layout/wrapper', $data);
+    }
 
-    //     $kategori = ucfirst($this->request->getPost('kategori'));
-    //     $userid   = session()->get('logged_status')['username'] ?? '';
+    public function getHapus($kategori)
+    {
+        $kategori = base64_decode($kategori);
 
-    //     $data = [
-    //         'namakategori' => $kategori,
-    //         'userid'       => $userid
-    //     ];
+        $data = ['status' => 1];
+        $result = $this->kategoriModel->hapusData($data, $kategori);
 
-    //     $result = $this->kategoriModel->insertData($data);
+        if ($result['code'] == 0) {
+            $this->session->setFlashdata('message', 'Data berhasil dihapus.');
+        } else {
+            $this->session->setFlashdata('message', 'Data gagal dihapus.');
+        }
 
-    //     if ($result['code'] == 0) {
-    //         $this->session->setFlashdata('message', 'Data berhasil disimpan.');
-    //         return redirect()->to('/admin/kategori');
-    //     } else {
-    //         $this->session->setFlashdata('message', 'Data gagal disimpan.');
-    //         return redirect()->to('/admin/kategori/tambah');
-    //     }
-    // }
+        return redirect()->to('/admin/kategori');
+    }
+
+    // Handle Post Tambah & Ubah    
+
     public function postAddData()
     {
         $rules = [
             'kategori' => [
                 'label' => 'Kategori',
-                'rules' => 'required|alpha_numeric_space|max_length[20]',
+                'rules' => 'required|alpha_numeric_space|max_length[50]|is_unique[kategori.namakategori]',
                 'errors' => [
                     'required' => '{field} wajib diisi.',
                     'alpha_numeric_space' => '{field} hanya boleh huruf, angka, dan spasi.',
-                    'max_length' => '{field} maksimal 20 karakter.'
+                    'max_length' => '{field} maksimal 50 karakter.',
+                    'is_unique' => '{field} sudah digunakan.'
                 ]
             ]
         ];
@@ -114,65 +122,17 @@ class Kategori extends BaseApiController
         return redirect()->to('/admin/kategori');
     }
 
-    public function getUbah($kategori)
-    {
-        $kategori = base64_decode($kategori);
-        $result   = $this->kategoriModel->getKategori($kategori);
-
-        $data = [
-            'title'      => 'Ubah Data Kategori',
-            'content'    => 'admin/kategori/ubah',
-            'detail'     => $result,
-            'mn_setting' => 'active',
-            'colmas'     => 'collapse',
-            'colset'     => 'collapse in',
-            'collap'     => 'collapse',
-            'side4'      => 'active',
-        ];
-        return view('layout/wrapper', $data);
-    }
-
-    // public function postUpdateData()
-    // {
-    //     $rules = [
-    //         'kategori' => 'trim|required'
-    //     ];
-
-    //     $oldKategori = $this->request->getPost('oldkategori');
-
-    //     if (! $this->validate($rules)) {
-    //         session()->setFlashdata('message', $this->message->error_msg($this->validator->listErrors()));
-    //         return redirect()->to('/admin/kategori/ubah/' . base64_encode($oldkategori));
-    //     }
-
-    //     $kategori = ucfirst($this->request->getPost('kategori'));
-    //     $userid   = session()->get('logged_status')['username'] ?? '';
-
-    //     $data = [
-    //         'namakategori' => $kategori,
-    //         'userid'       => $userid
-    //     ];
-
-    //     $result = $this->kategoriModel->updateData($data, $oldKategori);
-
-    //     if ($result['code'] == 0) {
-    //         $this->session->setFlashdata('message', 'Data berhasil diubah.');
-    //         return redirect()->to('/admin/kategori');
-    //     } else {
-    //         $this->session->setFlashdata('message', 'Data gagal diubah.');
-    //         return redirect()->to('/admin/kategori/ubah/' . base64_encode($oldKategori));
-    //     }
-    // }
     public function postUpdateData()
     {
         $rules = [
             'kategori' => [
                 'label' => 'Kategori',
-                'rules' => 'required|alpha_numeric_space|max_length[20]',
+                'rules' => 'required|alpha_numeric_space|max_length[50]|is_unique[kategori.namakategori]',
                 'errors' => [
                     'required' => '{field} wajib diisi.',
                     'alpha_numeric_space' => '{field} hanya boleh huruf, angka, dan spasi.',
-                    'max_length' => '{field} maksimal 20 karakter.'
+                    'max_length' => '{field} maksimal 50 karakter.',
+                    'is_unique' => '{field} sudah digunakan.'
                 ]
             ]
         ];
@@ -196,22 +156,6 @@ class Kategori extends BaseApiController
 
         $msg = ($result['code'] == 0) ? 'Data berhasil diubah.' : 'Data gagal diubah.';
         $this->session->setFlashdata('message', $msg);
-
-        return redirect()->to('/admin/kategori');
-    }
-
-    public function getHapus($kategori)
-    {
-        $kategori = base64_decode($kategori);
-
-        $data = ['status' => 1];
-        $result = $this->kategoriModel->hapusData($data, $kategori);
-
-        if ($result['code'] == 0) {
-            $this->session->setFlashdata('message', 'Data berhasil dihapus.');
-        } else {
-            $this->session->setFlashdata('message', 'Data gagal dihapus.');
-        }
 
         return redirect()->to('/admin/kategori');
     }

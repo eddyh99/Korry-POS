@@ -7,73 +7,46 @@ use CodeIgniter\Model;
 class FabricModel extends Model
 {
     protected $table      = 'fabric';
-    protected $primaryKey = 'id';
-    protected $allowedFields = [
-        'nama',
-        'status'
-    ];
+    protected $primaryKey = 'namafabric';
+    protected $allowedFields = ['namafabric', 'userid', 'status'];
 
     public function listFabric()
     {
-        $sql = "SELECT * FROM {$this->table} WHERE status='0'";
+        $sql = "SELECT namafabric FROM {$this->table} WHERE status = '0'";
         $query = $this->db->query($sql);
-
-        if ($query) {
-            return $query->getResultArray();
-        } else {
-            return $this->db->error();
-        }
+        return $query->getResultArray();
     }
 
-    public function getFabric($fabricid)
+    public function getFabric($fabric)
     {
-        $sql = "SELECT * FROM {$this->table} WHERE status='0' AND id=?";
-        $query = $this->db->query($sql, [$fabricid]);
-
-        if ($query) {
-            return $query->getResult();
-        } else {
-            return $this->db->error();
-        }
+        $sql = "SELECT namafabric FROM {$this->table} WHERE status='0' AND namafabric=?";
+        $query = $this->db->query($sql, [$fabric]);
+        return $query->getResult();
     }
 
     public function insertData($data)
     {
-        // compile insert
-        $sql = $this->db->table($this->table)->set($data)->getCompiledInsert()
-            . " ON DUPLICATE KEY UPDATE nama=?, status=0";
-
-        // jalankan query, isi param sesuai kolom yg ada
-        $query = $this->db->query($sql, [
-            $data['nama']
-        ]);
-
-        if ($query) {
-            return ["code" => 0, "message" => ""];
+        $sql = $this->db->table($this->table)->set($data)->getCompiledInsert() . " ON DUPLICATE KEY UPDATE status='0', namafabric=?";
+        if ($this->db->query($sql, [$data['namafabric']])) {
+            return ['code' => 0, 'message' => ''];
         } else {
             return $this->db->error();
         }
     }
 
-    public function updateData($data, $fabricid)
+    public function updateData($data, $oldFabric)
     {
-        $builder = $this->db->table($this->table)->where('id', $fabricid);
-        $query = $builder->update($data);
-
-        if ($query) {
-            return ["code" => 0, "message" => ""];
+        if ($this->db->table($this->table)->where('namafabric', $oldFabric)->update($data)) {
+            return ['code' => 0, 'message' => ''];
         } else {
             return $this->db->error();
         }
     }
 
-    public function hapusData($data, $fabricid)
+    public function hapusData($data, $fabric)
     {
-        $builder = $this->db->table($this->table)->where('id', $fabricid);
-        $query = $builder->update($data);
-
-        if ($query) {
-            return ["code" => 0, "message" => ""];
+        if ($this->db->table($this->table)->where('namafabric', $fabric)->update($data)) {
+            return ['code' => 0, 'message' => ''];
         } else {
             return $this->db->error();
         }

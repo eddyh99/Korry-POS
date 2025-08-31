@@ -12,16 +12,12 @@
                             <!-- Bagian Header Nota Konsinyasi -->
                             <div class="row form-group">
                                 <div class="col-sm-2">
-                                    <label class="col-form-label">Nota Jual</label>
-                                    <input type="text" id="notajual" name="notajual" class="form-control input-lg" maxlength="6" required onkeypress="return isNumber(event)">
-                                </div>
-                                <div class="col-sm-2">
                                     <label class="col-form-label">Diskon</label>
-                                    <input type="text" id="diskon" name="diskon" class="form-control input-lg" maxlength="6" required onkeypress="return isNumber(event)">
+                                    <input type="text" id="diskon" name="diskon" class="form-control input-lg" maxlength="6" onkeypress="return isNumber(event)">
                                 </div>         
                                 <div class="col-sm-2">
                                     <label class="col-form-label">PPN</label>
-                                    <input type="text" id="ppn" name="ppn" class="form-control input-lg" maxlength="6" required onkeypress="return isNumber(event)">
+                                    <input type="text" id="ppn" name="ppn" class="form-control input-lg" maxlength="6" onkeypress="return isNumber(event)">
                                 </div>
                             </div>
 
@@ -67,17 +63,29 @@
                                         <th>Barcode</th>
                                         <th>Nama Barang</th>
                                         <th>Jumlah</th>
+                                        <th>Harga</th>
+                                        <th>Total</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="4"></th>
+                                        <th class="text-right">Sub Total</th>
+                                        <th id="subtotal">0</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
                             </table>
 
                             <!-- Tombol Simpan -->
                             <div class="row mt-3">
                                 <div class="col-sm-6">
                                     <button type="submit" class="btn btn-primary">Simpan Nota Konsinyasi</button>
-                                    <a name="btnBack" href="<?=base_url()?>admin/konsinyasi/nota" class="btn btn-warning">Back</a>
+                                </div>
+                                <div class="col-sm-6 text-right">
+                                    <a name="btnBack" href="<?=base_url()?>admin/konsinyasi/nota" class="btn btn-warning"><i class="material-icons">reply</i>Kembali</a>
                                 </div>
                             </div>
                             

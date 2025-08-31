@@ -21,11 +21,9 @@
                 				<label class="col-sm-3 col-form-label">Jenis</label>
                 				<div class="col-sm-7">
                 				    <select name="jenis" class="form-control" required>
-                				        <option value="Kas Awal">Kas Awal</option>
-                				        <option value="Keluar">Kas Keluar</option>
-                				        <?php if ($_SESSION["logged_status"]["role"]=="Store Manager"){?>
-                				        <option value="Masuk">Kas Masuk</option>
-                				        <?php }?>
+										<?php foreach ($pengeluaran as $dt){?>
+                                        	<option value="<?=$dt["namapengeluaran"]?>"><?=$dt["namapengeluaran"]?></option>
+                                        <?php } ?>
                 				    </select>
                 				</div>
                 			  </div>

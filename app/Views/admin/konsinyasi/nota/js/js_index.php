@@ -53,18 +53,21 @@
 			const notajual = $(this).data("notajual");
 			const encoded = btoa(notajual); // base64 encode
 
+			console.log("Klik hapus nota:", notajual, "Encoded:", encoded);
+
 			// set ke modal
-			$("#notajualDoToDelete").text(notajual);
-			$("#notajualDoHidden").val(encoded);
+			$("#notajualToDelete").text(notajual);
+			$("#notajualHidden").val(encoded);
 
 			// munculkan modal
-			$("#modal_deleteDo").modal("show");
+			$("#modal_deleteNotajual").modal("show");
 		});
 
 		// Saat konfirmasi hapus ditekan
-		$("#confirmDeleteBtn").on("click", function () {
-			const encodedNota = $("#notajualDoHidden").val();
+		$("#confirmDeleteNotajualBtn").on("click", function () {
+			const encodedNota = $("#notajualHidden").val();
 			if (encodedNota) {
+				console.log("Konfirmasi hapus, redirect ke:", "<?=base_url()?>admin/konsinyasi/notahapus/" + encodedNota);
 				window.location.href = "<?=base_url()?>admin/konsinyasi/notahapus/" + encodedNota;
 			}
 		});

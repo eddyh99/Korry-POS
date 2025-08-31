@@ -12,14 +12,8 @@
         		        <div class="col-lg-6">
                 			<div class="card-body">
                 			  <div class="form-group row">
-                				<label class="col-sm-3 col-form-label">Barcode</label>
-                				<div class="col-sm-4">
-                				  <input type="text" class="form-control" id="barcode" name="barcode">
-                				</div>
-                			  </div>
-                			  <div class="form-group row">
                 				<label class="col-sm-3 col-form-label">Nama Produk</label>
-                				<div class="col-sm-7">
+                				<div class="col-sm-6">
                 				    <input type="text" class="form-control" id="namaproduk" name="namaproduk" list="dataproduk">
                 				    <datalist id="dataproduk">
                 				        <?php foreach ($produk as $dt){?>
@@ -29,8 +23,14 @@
                 				</div>
                 			  </div>
                 			  <div class="form-group row">
+                				<label class="col-sm-3 col-form-label">Barcode</label>
+                				<div class="col-sm-3">
+                				  <input type="text" class="form-control" id="barcode" name="barcode">
+                				</div>
+                			  </div>
+                			  <div class="form-group row">
                 				<label class="col-sm-3 col-form-label">Size</label>
-                				<div class="col-sm-7">
+                				<div class="col-sm-3">
                 				    <select name="size" class="form-control" id="size">
     									<?php
     										foreach($size as $dt) {

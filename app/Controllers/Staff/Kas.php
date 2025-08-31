@@ -4,6 +4,7 @@ namespace App\Controllers\Staff;
 
 use App\Models\Staff\KasModel;
 use App\Models\Admin\StoreModel;
+use App\Models\Admin\PengeluaranModel;
 
 use App\Controllers\BaseApiController;
 
@@ -14,8 +15,9 @@ class Kas extends BaseApiController
 
     public function __construct()
     {
-        $this->kasModel = new KasModel();
-        $this->storeModel = new StoreModel();
+        $this->kasModel         = new KasModel();
+        $this->storeModel       = new StoreModel();
+        $this->pengeluaranModel = new PengeluaranModel();
     }
 
     public function getIndex()
@@ -40,9 +42,12 @@ class Kas extends BaseApiController
 
     public function getTambah()
     {
+        $pengeluaran = $this->pengeluaranModel->listPengeluaran();
+
         $data = [
             'title'   => 'Tambah Data Kas',
             'content' => 'staff/kas/tambah',
+            'pengeluaran' => $pengeluaran,
             'mn_cash' => 'active',
             'colmas'  => 'collapse',
             'colset'  => 'collapse',

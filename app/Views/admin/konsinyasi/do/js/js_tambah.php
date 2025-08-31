@@ -3,108 +3,184 @@
 <script src="//cdn.datatables.net/plug-ins/1.10.25/api/sum().js"></script>
 
 <script>
-$(document).ready(function(){
-    $(".select2").select2();
+    $(document).ready(function(){
+        $(".select2").select2();
 
-    let table = $("#table_data tbody");
+        // Init DataTable
+        let table = $("#table_data").DataTable({
+            paging: false,
+            searching: false,
+            info: false,
+            ordering: false,
+            columnDefs: [
+                { targets: [0,2,3,4], className: "text-center" }
+            ]
+        });
 
-    // isi harga otomatis saat pilih produk
-    $("#produk").change(function(){
-        let harga = $(this).find(':selected').data('harga') || 0;
-        $("#harga").val(harga);
-    });
-
-    function checkBtnVisibility() {
-        if ($("#produk option").length <= 1) {
-            // hanya tersisa --Pilih Produk--
-            $("#btnAdd").hide();
-        } else {
-            $("#btnAdd").show();
-        }
-    }
-
-    // Tambah ke grid sementara
-    $("#btnAdd").click(function(){
-        let barcode = $("#produk").val();
-        let nama    = $("#produk option:selected").text();
-        let jumlah  = $("#jumlah").val();
-        let harga   = $("#harga").val();
-
-        if(!barcode || !jumlah){
-            alert("Produk & jumlah wajib diisi!");
-            return;
+        // === fungsi format angka dengan ribuan (Indonesia pakai ".")
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
 
-        // Tambah baris ke tabel
+        // === fungsi cek apakah produk tersedia (kalau tidak, sembunyikan tombol +Tambah)
+        function checkProdukAvailable() {
+            let selected = $("#produk").find(":selected");
+            let harga = selected.data("harga");
+            let maxJumlah = selected.data("jumlah");
 
-		// Button Hapus spt index: <td><button type="button" class="btn btn-simple btn-danger btn-icon btnDelete" title="Hapus"><i class="material-icons">close</i></button></td>
+            if (!harga || !maxJumlah || maxJumlah <= 0) {
+                $("#btnAdd").hide();   // sembunyikan tombol
+            } else {
+                $("#btnAdd").show();   // tampilkan tombol
+            }
+        }
 
-        let row = `
-            <tr data-barcode="${barcode}">
-                <td><input type="hidden" name="barcode[]" value="${barcode}">${barcode}</td>
-                <td>${nama}</td>
-                <td><input type="hidden" name="jumlah[]" value="${jumlah}">${jumlah}</td>
-                <td>${harga}</td>
-                <td><button type="button" class="btn btn-danger btn-sm btnDelete">x</button></td>
-            </tr>`;
-        table.append(row);
+        // === Isi harga & jumlah otomatis saat pilih produk
+        $("#produk").change(function(){
+            let selected = $(this).find(":selected");
+            let harga = selected.data("harga");
+            let maxJumlah = selected.data("jumlah");
 
-        // Hapus produk dari pilihan select
-        $("#produk option[value='"+barcode+"']").remove();
+            // kalau bukan produk valid, jangan apa-apa
+            if (!harga || !maxJumlah) {
+                $("#jumlah").val(1).removeAttr("max");
+                $("#harga").val("");
+                checkProdukAvailable();
+                return;
+            }
 
-        // reset input
-        $("#produk").val("").trigger("change");
-        $("#jumlah").val(1);
-        $("#harga").val("");
+            $("#jumlah").val(maxJumlah);
+            $("#harga").val(harga);
 
-        checkBtnVisibility();
-    });
+            $("#jumlah").attr("max", maxJumlah); // set max attribute
 
-    // Hapus baris
-    $(document).on("click", ".btnDelete", function(){
-        let tr = $(this).closest("tr");
-        let barcode = tr.data("barcode");
-        let nama    = tr.find("td:eq(1)").text();
-        let harga   = tr.find("td:eq(3)").text();
+            checkProdukAvailable(); // cek tombol +Tambah
+        });
 
-        // kembalikan ke dropdown
-        $("#produk").append(
-            `<option value="${barcode}" data-harga="${harga}">${nama}</option>`
-        );
+        // === Validasi jumlah ketika user ubah manual
+        $("#jumlah").on("input", function(){
+            let max = parseInt($(this).attr("max")) || 0;
+            let val = parseInt($(this).val()) || 0;
+            let namaProduk = $("#produk option:selected").text();
 
-        tr.remove();
-
-        checkBtnVisibility();
-    });
-
-    // cek saat load awal
-    checkBtnVisibility();
-
-    // Submit form
-    $("#form_do").submit(function(e){
-        e.preventDefault();
-
-        let formData = $(this).serialize();
-
-        $.ajax({
-            url: "<?=base_url('admin/konsinyasi/add-data-do')?>",
-            type: "POST",
-            data: formData,
-            dataType: "json",
-            success: function(res){
-                if(res.status){
-                    alert("DO Konsinyasi berhasil disimpan!");
-                    window.location.href = "<?=base_url('admin/konsinyasi/do')?>";
-                }else{
-                    alert(res.message);
-                }
-            },
-            error: function(xhr){
-                alert("Terjadi kesalahan server!\n" + xhr.responseText);
+            if(val > max){
+                alert("Hanya boleh input jumlah " + namaProduk + " sebanyak " + max);
+                $(this).val(max); // kembalikan ke max
+            } else if(val < 1){
+                $(this).val(1); // biar ga bisa nol/negatif
             }
         });
+
+        // === Tambah ke grid
+        $("#btnAdd").click(function(){
+            let barcode = $("#produk").val();
+            let nama    = $("#produk option:selected").text();
+            let jumlah  = parseInt($("#jumlah").val());
+            let harga   = parseInt($("#harga").val());
+            let maxJumlah = parseInt($("#produk option:selected").data("jumlah"));
+
+            if(!barcode || !jumlah || !harga){
+                alert("Produk, jumlah & harga wajib diisi!");
+                return;
+            }
+
+            // cek apakah produk sudah ada di DataTable
+            let rowFound = null;
+            table.rows().every(function(){
+                let row = this.data();
+                let existingBarcode = $(row[0]).filter("input").val();
+                if(existingBarcode === barcode){
+                    rowFound = this;
+                }
+            });
+
+            if(rowFound){
+                // update jumlah lama
+                let oldJumlah = parseInt($(rowFound.data()[2]).filter("input").val());
+                let newJumlah = oldJumlah + jumlah;
+
+                if(newJumlah > maxJumlah){
+                    alert("Jumlah melebihi stok, dibatasi " + maxJumlah);
+                    newJumlah = maxJumlah;
+                }
+
+                let total = newJumlah * harga;
+
+                // update row di DataTable
+                rowFound.data([
+                    `<input type="hidden" name="barcode[]" value="${barcode}">${barcode}`,
+                    nama,
+                    `<input type="hidden" name="jumlah[]" value="${newJumlah}">${newJumlah}`,
+                    `<input type="hidden" name="harga[]" value="${harga}">${formatNumber(harga)}`,
+                    `<input type="hidden" name="total[]" value="${total}">${formatNumber(total)}`,
+                    `<button type="button" class="btn btn-danger btn-sm btnDelete">x</button>`
+                ]).draw(false);
+
+            }else{
+                // insert row baru
+                let total = jumlah * harga;
+                table.row.add([
+                    `<input type="hidden" name="barcode[]" value="${barcode}">${barcode}`,
+                    nama,
+                    `<input type="hidden" name="jumlah[]" value="${jumlah}">${jumlah}`,
+                    `<input type="hidden" name="harga[]" value="${harga}">${formatNumber(harga)}`,
+                    `<input type="hidden" name="total[]" value="${total}">${formatNumber(total)}`,
+                    `<button type="button" class="btn btn-danger btn-sm btnDelete">x</button>`
+                ]).draw(false);
+            }
+
+            // Reset input
+            $("#produk").val("").trigger("change");
+            $("#jumlah").val(1);
+            $("#harga").val("");
+
+            updateSubtotal();
+            checkProdukAvailable(); // cek lagi setelah reset
+        });
+
+        // === Hapus baris
+        $("#table_data tbody").on("click", ".btnDelete", function(){
+            let row    = $(this).closest("tr");
+            table.row(row).remove().draw(false);
+            updateSubtotal();
+        });
+
+        // === Hitung subtotal
+        function updateSubtotal(){
+            let subtotal = 0;
+            // ambil semua hidden input total[]
+            $("input[name='total[]']").each(function(){
+                subtotal += parseFloat($(this).val());
+            });
+            $("#subtotal").text(formatNumber(subtotal));
+        }
+
+        // === Submit form
+        $("#form_do").submit(function(e){
+            e.preventDefault();
+
+            let formData = $(this).serialize();
+
+            $.ajax({
+                url: "<?=base_url('admin/konsinyasi/add-data-do')?>",
+                type: "POST",
+                data: formData,
+                dataType: "json",
+                success: function(res){
+                    if(res.status){
+                        alert("DO Konsinyasi berhasil disimpan!");
+                        window.location.href = "<?=base_url('admin/konsinyasi/do')?>";
+                    }else{
+                        alert(res.message);
+                    }
+                },
+                error: function(xhr){
+                    alert("Terjadi kesalahan server!\n" + xhr.responseText);
+                }
+            });
+        });
+
+        // jalankan sekali di awal
+        checkProdukAvailable();
     });
-
-});
 </script>
-

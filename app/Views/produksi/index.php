@@ -33,3 +33,28 @@
 <!-- End Container -->
     </div>
 </div>
+
+<!-- Modal Confirm Delete Produksi -->
+<div class="modal fade" id="modal_deleteProduksi" tabindex="-1" role="dialog" aria-labelledby="deleteProduksiLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteProduksiLabel">Konfirmasi Hapus</h5>
+      </div>
+      <!-- Body -->
+      <div class="modal-body">
+        <p>
+          Apakah Anda yakin ingin menghapus Produksi dengan No. Nota:
+          <strong id="nonotaProduksiToDelete"></strong>?
+        </p>
+        <input type="hidden" id="nonotaProduksiHidden">
+      </div>
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteProduksiBtn">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+</div>

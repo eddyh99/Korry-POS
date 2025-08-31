@@ -14,7 +14,7 @@
                 			  <div class="form-group row">
                 				<label class="col-sm-4 col-form-label">Size</label>
                 				<div class="col-sm-7">
-                				  <input type="text" class="form-control" id="size" name="size" maxlength="5">
+                				  <input type="text" class="form-control" id="size" name="size" maxlength="20">
                 				</div>
                 			  </div>
                 			</div>
