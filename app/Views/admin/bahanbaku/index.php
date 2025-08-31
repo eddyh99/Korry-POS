@@ -16,7 +16,6 @@
                     		<tr>
                     			<th>Nama Bahan</th>
                     			<th>Stok Minimal</th>
-                                <th>Stok</th>
                     			<th>Aksi</th>
                     		</tr>
                     	    </thead>

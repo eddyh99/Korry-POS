@@ -1,120 +1,144 @@
 <div class="content">
     <div class="container-fluid">
 <!-- Start -->
-
-		<div class="row">
-			<div class="card">
-				<div class="card-body">
-
-                    <div class="col-sm-12">
-
-						<form id="form_produksi">
-
-							<div class="row form-group">
-								<div class="col-sm-3">
-									<label class="col-form-label">Vendor</label>
-									<select id="idvendor" name="idvendor" class="form-control select2" required>
-										<option value="" disabled selected>-- Pilih Vendor --</option>
-										<?php foreach ($vendor as $dt){?>
-											<option value="<?=$dt["id"]?>"><?=$dt["nama"]?></option>
-										<?php } ?>
-									</select>
-								</div>
-
-								<div class="col-sm-2">
-									<label class="col-form-label">Estimasi (Hari)</label>
-									<div class="input-group">
-										<input type="number" id="estimasi" name="estimasi" class="form-control" min="0" required>
-									</div>
-								</div>
-
-								<div class="col-sm-2">
-									<label class="col-form-label">DP</label>
-									<input type="number" id="dp" name="dp" class="form-control" min="0">
-								</div>
-
-								<div class="col-sm-2">
-									<label class="col-form-label">Total</label>
-									<input type="number" id="totalproduksi" name="totalproduksi" class="form-control" min="0">
+    <form id="form_produksi" class="form-horizontal">
+        <div class="row">
+            <div class="card">
+                <?php if (isset($_SESSION["message"])){?>
+                <div class="alert alert-warning"><?=$_SESSION["message"]?></div>
+                <?php } ?>
+				<div class="card-header">
+					<h5 class="card-title">PRODUCTION DETAILS</h5>
+				</div>
+                <div class="card-content">
+						<div class="col-lg-6">
+							<div class="form-group">
+								<label for="idvendor" class="col-sm-4 control-label">Vendor</label>
+								<div class="col-sm-8">
+								<select id="idvendor" name="idvendor" class="form-control select2" required>
+									<option value="" disabled selected>-- Pilih Vendor --</option>
+									<?php foreach ($vendor as $dt){ ?>
+									<option value="<?=$dt["id"]?>"><?=$dt["nama"]?></option>
+									<?php } ?>
+								</select>
 								</div>
 							</div>
 
-							<hr>
-
-							<!-- Detail Produksi -->
-							<div class="row form-group">
-
-								<div class="col-sm-3">
-									<label class="col-form-label">Produk</label>
-									<select id="produk" class="form-control select2">
-										<option value="" disabled selected>-- Pilih Produk --</option>
-										<?php foreach ($produk as $dt){ ?>
-											<option value="<?= $dt["barcode"] ?>" 
-													data-nama="<?= $dt["namaproduk"] ?>" 
-													data-harga="<?= $dt["harga"] ?>" 
-													data-bahan='<?= json_encode($dt["bahan"], JSON_HEX_APOS | JSON_HEX_QUOT) ?>'>
-												<?= $dt['barcode']; ?> - <?= $dt['namaproduk']; ?>
-											</option>
-										<?php } ?>
-									</select>
-								</div>
-
-								<div class="col-sm-2">
-									<label class="col-form-label">Jumlah</label>
-									<input type="number" id="jumlah" class="form-control" min="1" value="1">
-								</div>
-								<div class="col-sm-2">
-									<label class="col-form-label">Harga</label>
-									<input type="text" id="harga" class="form-control" readonly>
-								</div>
-								<div class="col-sm-2 d-flex align-items-end">
-									<button type="button" id="btnAdd" class="btn btn-success">+ Tambah</button>
-								</div>
-								
-							</div>
-
-							<hr>
-
-							<!-- Tabel Detail -->
-							<table id="table_data" class="table table-striped nowrap" width="100%">
-								<thead>
-									<tr>
-										<th>Barcode</th>
-										<th>Nama Produk</th>
-										<th>Jumlah</th>
-										<th>Harga</th>
-										<th>Total</th>
-										<th>Aksi</th>
-									</tr>
-								</thead>
-								<tbody></tbody>
-								<tfoot>
-									<tr>
-										<th colspan="3"></th>
-										<th class="text-right">Sub Total</th>
-										<th id="subtotal">0</th>
-										<th></th>
-									</tr>
-								</tfoot>
-							</table>
-
-							<div class="row mt-3">
-								<div class="col-sm-6">
-									<button type="submit" class="btn btn-primary">Simpan Produksi</button>
-								</div>
-								<div class="col-sm-6 text-right">
-									<a name="btnBack" href="<?=base_url()?>produksi" class="btn btn-warning">
-										<i class="material-icons">reply</i>Kembali</a>
+							<!-- Estimasi (Hari) -->
+							<div class="form-group">
+								<label for="estimasi" class="col-sm-4 control-label">Estimasi (Hari)</label>
+								<div class="col-sm-8">
+								<input type="number" id="estimasi" name="estimasi" class="form-control" min="0" required>
 								</div>
 							</div>
 
-						</form>
+							<!-- DP -->
+							<div class="form-group">
+								<label for="dp" class="col-sm-4 control-label">DP</label>
+								<div class="col-sm-8">
+								<input type="number" id="dp" name="dp" class="form-control" min="0">
+								</div>
+							</div>
 
-                    </div>
+							<!-- Total -->
+							<div class="form-group">
+								<label for="totalproduksi" class="col-sm-4 control-label">Total</label>
+								<div class="col-sm-8">
+								<input type="number" id="totalproduksi" name="totalproduksi" class="form-control" min="0" readonly>
+								</div>
+							</div>
 
+						</div>
+                </div>
+            </div>
+            <div class="card">
+				<div class="card-header">
+					<h5 class="card-title">ADD PRODUCT</h5>
+				</div>
+                <div class="card-content">
+					<div class="form-group">
+						<label for="produk" class="col-sm-2 control-label">Produk</label>
+						<div class="col-sm-4">
+						<select id="produk" class="form-control select2">
+							<option value="" disabled selected>-- Pilih Produk --</option>
+							<?php foreach ($produk as $dt){ ?>
+							<option value="<?= $dt["barcode"] ?>"
+									data-nama="<?= $dt["namaproduk"] ?>"
+									data-harga="<?= $dt["harga"] ?>"
+									data-bahan='<?= json_encode($dt["bahan"], JSON_HEX_APOS | JSON_HEX_QUOT) ?>'>
+								<?= $dt['barcode']; ?> - <?= $dt['namaproduk']; ?>
+							</option>
+							<?php } ?>
+						</select>
+						</div>
+					</div>
+
+					<!-- jumlah + harga + button -->
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Jumlah</label>
+						<div class="col-sm-2">
+						<input type="number" id="jumlah" class="form-control" min="1" value="1">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label text-right" style="padding-left:10px;">Harga</label>
+						<div class="col-sm-3">
+						<input type="text" id="harga" class="form-control">
+						</div>
+					</div>
+					<div class="form-group">
+						<button type="button" id="btnAdd" class="btn btn-success btn-block">
+							<i class="material-icons" style="font-size: 18px; vertical-align: middle;">add</i>
+							&nbsp;TAMBAH
+						</button>
+					</div>
 				</div>
 			</div>
+            <div class="card">
+				<div class="card-header">
+					<h5 class="card-title">PRODUCT LIST</h5>
+				</div>
+                <div class="card-content">
+					<div class="table-responsive">
+						<table id="table_data" class="table table-striped table-bordered">
+						<thead>
+							<tr>
+							<th>Barcode</th>
+							<th>Nama Produk</th>
+							<th>Jumlah</th>
+							<th>Harga</th>
+							<th>Total</th>
+							<th>Aksi</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+						<tfoot>
+							<tr>
+							<th colspan="4" class="text-right">Sub Total:</th>
+							<th id="subtotal">0</th>
+							<th></th>
+							</tr>
+						</tfoot>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-6">
+				<button type="submit" class="btn btn-primary btn-lg btn-block">
+				<i class="material-icons" style="font-size: 18px; vertical-align: middle;">save</i>
+				&nbsp;SIMPAN PRODUKSI
+				</button>
+			</div>
+			<div class="col-xs-6">
+				<a href="<?=base_url()?>produksi" class="btn btn-default btn-lg btn-block">
+				<i class="material-icons" style="font-size: 18px; vertical-align: middle;">reply</i>
+				&nbsp;KEMBALI
+				</a>
+			</div>			
 		</div>
+	</form>
+
+
 <!-- End Container -->
     </div>
 </div>
