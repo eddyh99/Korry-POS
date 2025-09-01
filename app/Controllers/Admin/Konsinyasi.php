@@ -779,18 +779,18 @@ class Konsinyasi extends BaseApiController
         return view('admin/konsinyasi/do/print', $nota);
     }
 
-    // public function getCetaknotakonsinyasi($id)
-    // {
-    //     $store = $this->storeModel->getStore($_SESSION['logged_status']['storeid']);
-    //     $data  = $this->konsinyasiModel->getallnotado($...);
+    public function getCetaknotajualnota($notajual_nota)
+    {
+        $store = $this->storeModel->getStore($_SESSION['logged_status']['storeid']);
+        $data  = $this->konsinyasiModel->getAllNotajualNota($notajual_nota);
 
-    //     $nota = [
-    //         'store' => $store[0],
-    //         'data'  => $data
-    //     ];
+        $nota = [
+            'store' => $store[0],
+            'data'  => $data
+        ];
 
-    //     return view('staff/cashier/print', $nota);
-    // }
+        return view('admin/konsinyasi/nota/print', $nota);
+    }
 
     // public function getCetaknotaretur($id)
     // {

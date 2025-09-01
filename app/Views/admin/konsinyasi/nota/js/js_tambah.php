@@ -195,6 +195,8 @@ $(document).ready(function(){
             success: function(res){
                 if(res.status){
                     alert("Nota Konsinyasi berhasil disimpan!");
+                    // buka cetak
+                    window.open("<?=base_url('admin/konsinyasi/cetaknotajualnota')?>/" + res.notajual, "_blank");
                     window.location.href = "<?=base_url('admin/konsinyasi/nota')?>";
                 }else{
                     alert(res.message);
