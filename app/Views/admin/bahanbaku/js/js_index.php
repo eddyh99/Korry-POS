@@ -27,16 +27,6 @@
 				{ "data": "namabahan" },
 				{ "data": "min" },
 				{ 
-					"data": "stok",
-					"render": function (data, type, full, meta){
-						if (parseInt(data) < parseInt(full.min)) {
-							return '<span style="color:red;font-weight:bold;">' + data + '</span>';
-						} else {
-							return data;
-						}
-					}
-				},
-				{ 
 					"data": "id",
 					"render": function (data, type, full, meta){
 						console.log("Render tombol aksi untuk id bahanbaku:", data, "Row data:", full);

@@ -17,7 +17,8 @@
                     			<th>Bahan Baku</th> 
                     			<th>Jumlah</th>
                     			<th>Satuan</th> 
-                    			<th>Harga</th>
+                    			<th>Harga Rata-rata</th>
+                    			<th>Harga Terakhir</th>
                     		</tr>
                     	    </thead>
                     	    <tbody>

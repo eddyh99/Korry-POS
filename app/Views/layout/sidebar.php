@@ -2,12 +2,12 @@
 <div class="sidebar" data-active-color="rose" style="background-color: #7F9192 !important;" data-image="<?=base_url()?>assets/img/sidebar-1.jpg"> 
     <div class="logo">
         <a href="#" class="simple-text">
-            Clothing
+            Korry Studio
         </a>
     </div>
     <div class="logo logo-mini">
         <a href="#" class="simple-text">
-            C
+            KS
         </a>
     </div>
     <div class="sidebar-wrapper">
