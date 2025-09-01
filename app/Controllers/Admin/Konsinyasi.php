@@ -403,10 +403,7 @@ class Konsinyasi extends BaseApiController
             // minimal 1 DO harus ada
             "do_konsinyasi" => [
                 "label"  => "No. DO Konsinyasi",
-                "rules"  => "required",
-                "errors" => [
-                    "required" => "{field} wajib dipilih minimal 1"
-                ]
+                "rules"  => "permit_empty"
             ],
             // minimal 1 produk harus ada
             "barcode" => [
@@ -448,7 +445,7 @@ class Konsinyasi extends BaseApiController
         $barcodes      = $this->request->getPost("barcode");        // array
         $jumlahs       = $this->request->getPost("jumlah");         // array
 
-        if (empty($do_konsinyasi) || empty($barcodes) || empty($jumlahs)) {
+        if (empty($barcodes) || empty($jumlahs)) {
             return $this->response->setJSON([
                 "status"  => false,
                 "message" => "Data tidak lengkap"
@@ -749,6 +746,14 @@ class Konsinyasi extends BaseApiController
         }
 
         $produk = $this->konsinyasiModel->getProdukByDo($do_id);
+
+        return $this->response->setJSON($produk);
+    }
+
+    public function getListproduktanpado()
+    {
+        // kalau gak ada DO, load produk master
+        $produk = $this->konsinyasiModel->getAllProdukTanpaDo();
 
         return $this->response->setJSON($produk);
     }

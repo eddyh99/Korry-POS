@@ -27,8 +27,8 @@
                             <div class="row form-group">
                                 <div class="col-sm-2">
                                     <label class="col-form-label">No. DO Konsinyasi</label>
-                                    <select id="do_konsinyasi" name="do_konsinyasi" class="form-control select2" required>
-                                        <option value="" disabled selected>--Pilih No. Nota--</option>
+                                    <select id="do_konsinyasi" name="do_konsinyasi" class="form-control select2">
+                                        <option value="" selected>--Tanpa DO--</option>
                                         <?php foreach ($do_konsinyasi as $dt){?>
                                             <option value="<?=$dt["nonota"]?>"><?=$dt["nonota"]?></option>
                                         <?php } ?>
@@ -46,7 +46,7 @@
                                 </div>
                                 <div class="col-sm-2">
                                     <label class="col-form-label">Harga</label>
-                                    <input type="text" id="harga" class="form-control" readonly>
+                                    <input type="text" id="harga" class="form-control"><!-- readonly dihapus -->
                                 </div>
                                 <div class="col-sm-2 d-flex align-items-end">
                                     <button type="button" id="btnAdd" class="btn btn-success">+ Tambah</button>
