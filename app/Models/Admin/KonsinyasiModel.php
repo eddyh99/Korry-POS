@@ -16,7 +16,6 @@ class KonsinyasiModel extends Model
     protected $partner_konsinyasi = 'partner_konsinyasi';
     protected $harga = 'harga';
 
-    // Update Retur Konsinyasi
     protected $penyesuaian        = 'penyesuaian';
     protected $store              = 'store';
     protected $penjualan          = 'penjualan';
@@ -25,6 +24,8 @@ class KonsinyasiModel extends Model
     protected $pindah_detail      = 'pindah_detail';
     protected $produk             = 'produk';
     protected $produksize         = 'produksize';
+
+    protected $pengguna = 'pengguna';
 
     public function getStokReturKonsinyasi($barcode, $storeid, $size)
     {
@@ -175,7 +176,8 @@ class KonsinyasiModel extends Model
             $this->db->transCommit();
             return [
                 "status"  => true,
-                "message" => "Data berhasil disimpan"
+                "message" => "Data berhasil disimpan",
+                "nonota"  => $nonota   // <== ini buat dipakai ke JS cetak
             ];
         }
     }
@@ -703,4 +705,77 @@ class KonsinyasiModel extends Model
 
         return $this->db->query($sql, [$do_id])->getResultArray();
     }
+
+    // DO, Nota, Retur : Print
+
+    public function getAllNotaDo($nonota_do)
+    {
+        $mdata = [
+            "header" => null,
+            "detail" => []
+        ];
+
+        // === Ambil header DO Konsinyasi
+        $sql = "SELECT a.nonota, a.tanggal, a.userid, b.nama AS nama_user, 
+                    c.nama AS nama_partner, c.alamat AS alamat_partner, c.kontak AS kontak_partner
+                FROM {$this->do_konsinyasi} a
+                INNER JOIN {$this->pengguna} b ON a.userid = b.username
+                INNER JOIN {$this->partner_konsinyasi} c ON a.id_partnerkonsinyasi = c.id
+                WHERE a.nonota = ? AND a.is_void = 0 AND c.status = 0
+                LIMIT 1";
+
+        $header = $this->db->query($sql, [$nonota_do])->getRow();
+        if ($header) {
+            $mdata["header"] = $header;
+        } else {
+            // Kalau DO tidak ditemukan, return tetap ada structure kosong supaya view aman
+            $mdata["header"] = (object) [
+                "nonota"        => $nonota_do,
+                "tanggal"       => null,
+                "userid"        => null,
+                "nama_user"     => "-",
+                "nama_partner"  => "-",
+                "alamat_partner"=> "-",
+                "kontak_partner"=> "-"
+            ];
+        }
+
+        // === Ambil detail DO Konsinyasi (join produk, size, harga)
+        $sql = "SELECT a.barcode, a.jumlah, 
+                    b.namaproduk, b.namabrand, b.namakategori, b.namafabric, 
+                    b.namawarna, b.sku,
+                    s.size,
+                    h.harga_konsinyasi
+                FROM {$this->do_konsinyasi_detail} a
+                INNER JOIN {$this->produk} b ON a.barcode = b.barcode
+                LEFT JOIN {$this->produksize} s ON a.barcode = s.barcode AND s.status = 0
+                LEFT JOIN {$this->harga} h 
+                    ON h.barcode = a.barcode 
+                    AND h.tanggal = (
+                        SELECT MAX(h2.tanggal) 
+                        FROM {$this->harga} h2 
+                        WHERE h2.barcode = a.barcode
+                    )
+                WHERE a.nonota = ?";
+
+        $detail = $this->db->query($sql, [$nonota_do])->getResultArray();
+
+        foreach ($detail as $i => $det) {
+            $mdata["detail"][$i] = [
+                "barcode"    => $det["barcode"],
+                "namaproduk" => $det["namaproduk"],
+                "sku"        => $det["sku"],
+                "jumlah"     => $det["jumlah"],
+                "brand"      => $det["namabrand"],
+                "kategori"   => $det["namakategori"],
+                "fabric"     => $det["namafabric"],
+                "warna"      => $det["namawarna"],
+                "size"       => $det["size"],
+                "harga"      => $det["harga_konsinyasi"]
+            ];
+        }
+
+        return $mdata;
+    }
+
 }

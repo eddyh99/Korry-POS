@@ -169,6 +169,9 @@
                 success: function(res){
                     if(res.status){
                         alert("DO Konsinyasi berhasil disimpan!");
+                        // buka cetak
+                        window.open("<?=base_url('admin/konsinyasi/cetaknotado')?>/" + res.nonota, "_blank");
+                        // kembali ke index
                         window.location.href = "<?=base_url('admin/konsinyasi/do')?>";
                     }else{
                         alert(res.message);

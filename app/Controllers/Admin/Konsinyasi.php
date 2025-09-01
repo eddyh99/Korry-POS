@@ -763,4 +763,45 @@ class Konsinyasi extends BaseApiController
 
         return $this->response->setBody($stok);
     }
+
+    // DO, Nota, Retur : Print
+
+    public function getCetaknotado($nonota_do)
+    {
+        $store = $this->storeModel->getStore($_SESSION['logged_status']['storeid']);
+        $data  = $this->konsinyasiModel->getAllNotaDo($nonota_do);
+
+        $nota = [
+            'store' => $store[0],
+            'data'  => $data
+        ];
+
+        return view('admin/konsinyasi/do/print', $nota);
+    }
+
+    // public function getCetaknotakonsinyasi($id)
+    // {
+    //     $store = $this->storeModel->getStore($_SESSION['logged_status']['storeid']);
+    //     $data  = $this->konsinyasiModel->getallnotado($...);
+
+    //     $nota = [
+    //         'store' => $store[0],
+    //         'data'  => $data
+    //     ];
+
+    //     return view('staff/cashier/print', $nota);
+    // }
+
+    // public function getCetaknotaretur($id)
+    // {
+    //     $store = $this->storeModel->getStore($_SESSION['logged_status']['storeid']);
+    //     $data  = $this->cashierModel->getallnota($id);
+
+    //     $nota = [
+    //         'store' => $store[0],
+    //         'data'  => $data
+    //     ];
+
+    //     return view('staff/cashier/print', $nota);
+    // }
 }
