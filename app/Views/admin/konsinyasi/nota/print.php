@@ -1,6 +1,4 @@
-<!-- Ini sudah oke... -->
-
-<html>
+<html> 
 <head>
   <style>
     /* === Fonts (via base_url) === */
@@ -45,24 +43,11 @@
     .summary .underline .value{border-bottom:1px solid #000;}
 
     /* bank info */
-    .bank-info {border-collapse: collapse; margin-top: 5px; width: auto; /* biar lebarnya ikut isi, bukan full halaman */}
-    .bank-info td { 
-      border: none; 
-      padding: 2px 6px; 
-      font-size: 12px; 
-    }
-    .bank-info .label { 
-      white-space: nowrap; 
-      padding-right: 2px; 
-    }
-    .bank-info .sep { 
-      text-align:center; 
-      padding: 0 4px; 
-    }
-    .bank-info .value { 
-      white-space: nowrap; 
-      padding-left: 2px; 
-    }
+    .bank-info {border-collapse: collapse; margin-top: 5px; width: auto;}
+    .bank-info td {border: none; padding: 2px 6px; font-size: 12px;}
+    .bank-info .label {white-space: nowrap; padding-right: 2px;}
+    .bank-info .sep {text-align:center; padding: 0 4px;}
+    .bank-info .value {white-space: nowrap; padding-left: 2px;}
   </style>
 </head>
 <body>
@@ -77,39 +62,64 @@
     </td>
     <td align="right">
       <div class="invoice-title bold-wide">INVOICE</div>
-      <div class="regular">#<?=$data["header"]->nonota?></div>
+      <div class="regular">#<?=$data["header"]->notajual?></div>
       <div class="regular-bold"><?=date("d-M-Y", strtotime($data["header"]->tanggal))?></div>
     </td>
   </tr>
 </table>
 
 <div class="bold-wide" style="margin:10px 0 5px;">BILL TO</div>
-<div class="regular"><?=$data["header"]->nama?></div>
+<div class="regular"><?=$data["header"]->nama_partner?></div>
+
 <br>
 
 <table>
   <tr class="regular">
-    <th>No</th><th>Item</th><th>Size</th><th>Colour</th><th>SKU</th>
-    <th class="num">Qty</th><th class="num">Price</th><th class="num">Total</th>
+    <th>No</th>
+    <th>Item</th>
+    <th>Size</th>
+    <th>Colour</th>
+    <th>SKU</th>
+    <th class="num">Qty</th>
+    <th class="num">Price</th>
+    <th class="num">Total</th>
   </tr>
   <?php 
     $i=1; $subtotal=0;
     foreach ($data["detail"] as $dt) {
-      $lineTotal = $dt["jumlah"]*$dt["harga"];
+      $lineTotal = $dt["jumlah"] * $dt["harga"];
       $subtotal += $lineTotal;
   ?>
   <tr class="regular">
     <td><?=$i++?></td>
     <td><?=$dt["namaproduk"]?></td>
     <td><?=$dt["size"]?></td>
-    <td>-</td>
-    <td><?=$dt["barcode"]?></td>
+    <td><?=$dt["warna"]?></td>
+    <td><?=$dt["sku"]?></td>
     <td class="num"><?=$dt["jumlah"]?></td>
     <td class="num"><?=number_format($dt["harga"])?></td>
     <td class="num"><?=number_format($lineTotal)?></td>
   </tr>
   <?php } ?>
 </table>
+
+<?php 
+  // Ambil diskon & ppn dari header
+  $diskonPersen = floatval($data["header"]->diskon);
+  $ppnPersen    = floatval($data["header"]->ppn);
+
+  // Hitung potongan diskon
+  $diskonNominal = ($diskonPersen/100) * $subtotal;
+
+  // Hitung subtotal setelah diskon
+  $afterDiskon = $subtotal - $diskonNominal;
+
+  // Hitung PPN
+  $ppnNominal = ($ppnPersen/100) * $afterDiskon;
+
+  // Grand total
+  $grandTotal = $afterDiskon + $ppnNominal;
+?>
 
 <!-- summary -->
 <table class="summary" align="right">
@@ -118,36 +128,20 @@
     <td class="value"><?=number_format($subtotal)?></td>
   </tr>
   <tr class="regular">
-    <td class="label">Discount (%)</td>
-    <td class="value">0</td>
+    <td class="label">Discount (<?=$diskonPersen?>%)</td>
+    <td class="value">-<?=number_format($diskonNominal)?></td>
   </tr>
   <tr class="regular underline">
-    <td class="label">VAT (%)</td>
-    <td class="value">0</td>
+    <td class="label">VAT (<?=$ppnPersen?>%)</td>
+    <td class="value">+<?=number_format($ppnNominal)?></td>
   </tr>
-  <tr class="regular">
+  <tr class="regular bold-wide">
     <td class="label">Total</td>
-    <td class="value">IDR <?=number_format($subtotal)?></td>
-  </tr>
-  <tr class="regular underline">
-    <td class="label">Down Payment</td>
-    <td class="value">IDR <?=number_format($subtotal/2)?></td>
-  </tr>
-  <tr>
-    <td class="label regular-bold">Amount Due</td>
-    <td class="value regular-bold">IDR <?=number_format($subtotal/2)?></td>
+    <td class="value">IDR <?=number_format($grandTotal)?></td>
   </tr>
 </table>
 
 <br><br><br>
-
-<div class="bold-wide">TERMS</div>
-<div class="regular">
-  Please settle the remaining balance to proceed with shipment.<br>
-  Payment is due within 15 days.
-</div>
-
-<br>
 
 <div class="bold-wide">PAYMENT METHOD VIA BANK TRANSFER</div>
 <table class="bank-info regular">

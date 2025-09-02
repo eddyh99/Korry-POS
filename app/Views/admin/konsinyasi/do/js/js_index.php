@@ -36,7 +36,7 @@
 					"data": "nonota",
 					"render": function (data, type, full, meta){
 						let button = '';
-						// button += '<a href="<?=base_url()?>admin/konsinyasi/dohapus/' + encodeURI(btoa(data)) + '" class="btn btn-simple btn-danger btn-icon" title="Hapus"><i class="material-icons">close</i></a>';
+						button += '<button type="button" class="btn btn-simple btn-info btn-icon btnPrint" title="Print Ulang" data-nonota="' + data + '"><i class="material-icons">print</i></button>';
 						button += '<button type="button" class="btn btn-simple btn-danger btn-icon btnDelete" title="Hapus" data-nonota="' + data + '"><i class="material-icons">close</i></button>';
 						return button;
 					}
@@ -48,7 +48,16 @@
 			console.error("DataTables error:", message);
 		});
 
-				// === Handle Hapus Modal (Bootstrap 4) ===
+		// === Handle Print Ulang ===
+		$('#table_data').on("click", ".btnPrint", function () {
+			const nonota = $(this).data("nonota");
+			if (nonota) {
+				// langsung buka jendela cetak
+				window.open("<?=base_url('admin/konsinyasi/cetaknotado')?>/" + nonota, "_blank");
+			}
+		});
+
+		// === Handle Hapus Modal (Bootstrap 4) ===
 		$('#table_data').on("click", ".btnDelete", function () {
 			const nonota = $(this).data("nonota");
 			const encoded = btoa(nonota); // base64 encode

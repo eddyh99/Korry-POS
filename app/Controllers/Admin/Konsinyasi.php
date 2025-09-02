@@ -403,10 +403,7 @@ class Konsinyasi extends BaseApiController
             // minimal 1 DO harus ada
             "do_konsinyasi" => [
                 "label"  => "No. DO Konsinyasi",
-                "rules"  => "required",
-                "errors" => [
-                    "required" => "{field} wajib dipilih minimal 1"
-                ]
+                "rules"  => "permit_empty"
             ],
             // minimal 1 produk harus ada
             "barcode" => [
@@ -448,7 +445,7 @@ class Konsinyasi extends BaseApiController
         $barcodes      = $this->request->getPost("barcode");        // array
         $jumlahs       = $this->request->getPost("jumlah");         // array
 
-        if (empty($do_konsinyasi) || empty($barcodes) || empty($jumlahs)) {
+        if (empty($barcodes) || empty($jumlahs)) {
             return $this->response->setJSON([
                 "status"  => false,
                 "message" => "Data tidak lengkap"
@@ -753,6 +750,14 @@ class Konsinyasi extends BaseApiController
         return $this->response->setJSON($produk);
     }
 
+    public function getListproduktanpado()
+    {
+        // kalau gak ada DO, load produk master
+        $produk = $this->konsinyasiModel->getAllProdukTanpaDo();
+
+        return $this->response->setJSON($produk);
+    }
+
     public function postCekstokreturkonsinyasi()
     {
         $barcode = $this->request->getPost('barcode');
@@ -763,4 +768,45 @@ class Konsinyasi extends BaseApiController
 
         return $this->response->setBody($stok);
     }
+
+    // DO, Nota, Retur : Print
+
+    public function getCetaknotado($nonota_do)
+    {
+        $store = $this->storeModel->getStore($_SESSION['logged_status']['storeid']);
+        $data  = $this->konsinyasiModel->getAllNotaDo($nonota_do);
+
+        $nota = [
+            'store' => $store[0],
+            'data'  => $data
+        ];
+
+        return view('admin/konsinyasi/do/print', $nota);
+    }
+
+    public function getCetaknotajualnota($notajual_nota)
+    {
+        $store = $this->storeModel->getStore($_SESSION['logged_status']['storeid']);
+        $data  = $this->konsinyasiModel->getAllNotajualNota($notajual_nota);
+
+        $nota = [
+            'store' => $store[0],
+            'data'  => $data
+        ];
+
+        return view('admin/konsinyasi/nota/print', $nota);
+    }
+
+    // public function getCetaknotaretur($id)
+    // {
+    //     $store = $this->storeModel->getStore($_SESSION['logged_status']['storeid']);
+    //     $data  = $this->cashierModel->getallnota($id);
+
+    //     $nota = [
+    //         'store' => $store[0],
+    //         'data'  => $data
+    //     ];
+
+    //     return view('staff/cashier/print', $nota);
+    // }
 }

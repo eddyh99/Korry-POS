@@ -37,6 +37,7 @@
 					"render": function (data, type, full, meta){
 						let button = '';
 						// button += '<a href="<?=base_url()?>admin/konsinyasi/dohapus/' + encodeURI(btoa(data)) + '" class="btn btn-simple btn-danger btn-icon" title="Hapus"><i class="material-icons">close</i></a>';
+						button += '<button type="button" class="btn btn-simple btn-info btn-icon btnPrint" title="Print Ulang" data-notajual="' + data + '"><i class="material-icons">print</i></button>';
 						button += '<button type="button" class="btn btn-simple btn-danger btn-icon btnDelete" title="Hapus" data-notajual="' + data + '"><i class="material-icons">close</i></button>';
 						return button;
 					}
@@ -46,6 +47,15 @@
 
 		table.on('error.dt', function(e, settings, techNote, message) {
 			console.error("DataTables error:", message);
+		});
+
+		// === Handle Print Ulang ===
+		$('#table_data').on("click", ".btnPrint", function () {
+			const notajual = $(this).data("notajual");
+			if (notajual) {
+				// langsung buka jendela cetak
+				window.open("<?=base_url('admin/konsinyasi/cetaknotajualnota')?>/" + notajual, "_blank");
+			}
 		});
 
 		// === Handle Hapus Modal (Bootstrap 4) ===

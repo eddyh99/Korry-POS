@@ -22,15 +22,36 @@ $(document).ready(function(){
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 
-    // === ketika DO dipilih, ambil produk by DO
+    // === ketika DO dipilih / kosong
     $("#do_konsinyasi").change(function(){
         let do_id = $(this).val();
         $("#produk").html('<option value="" disabled selected>--Pilih Produk--</option>'); 
         $("#jumlah").val("");
         $("#harga").val("");
 
-        if(!do_id) return;
+        if(!do_id){
+            // === fallback tanpa DO → load semua produk master
+            $.ajax({
+                url: "<?=base_url('admin/konsinyasi/listproduktanpado')?>",
+                type: "GET",
+                dataType: "json",
+                success: function(res){
+                    res.forEach(function(item){
+                        $("#produk").append(
+                            `<option value="${item.barcode}" data-harga="${item.harga}">
+                                ${item.nama}
+                            </option>`
+                        );
+                    });
+                },
+                error: function(xhr){
+                    alert("Gagal load produk!\n" + xhr.responseText);
+                }
+            });
+            return;
+        }
 
+        // === kalau ada DO → load produk by DO
         $.ajax({
             url: "<?=base_url('admin/konsinyasi/listprodukbydo')?>",
             type: "POST",
@@ -41,7 +62,6 @@ $(document).ready(function(){
                     alert("Produk untuk DO ini tidak tersedia / sudah habis.");
                     return;
                 }
-
                 res.forEach(function(item){
                     $("#produk").append(
                         `<option value="${item.barcode}" 
@@ -58,36 +78,19 @@ $(document).ready(function(){
         });
     });
 
-    // === cek tombol tambah bisa dipakai atau tidak
-    function checkProdukAvailable() {
-        let selected = $("#produk").find(":selected");
-        let harga = selected.data("harga");
-        let maxJumlah = selected.data("sisa");
-
-        if (!harga || !maxJumlah || maxJumlah <= 0) {
-            $("#btnAdd").hide();
-        } else {
-            $("#btnAdd").show();
-        }
-    }
-
-    // === isi jumlah & harga otomatis ketika pilih produk
+    // === isi jumlah & harga otomatis
     $("#produk").change(function(){
         let selected = $(this).find(":selected");
-        let harga = selected.data("harga");
+        let harga = selected.data("harga") || "";
         let maxJumlah = selected.data("sisa");
 
-        if (!harga || !maxJumlah) {
-            $("#jumlah").val("").removeAttr("max");
-            $("#harga").val("");
-            checkProdukAvailable();
-            return;
-        }
-
-        $("#jumlah").val(1).attr("max", maxJumlah);
         $("#harga").val(harga);
 
-        checkProdukAvailable();
+        if(maxJumlah){
+            $("#jumlah").val(1).attr("max", maxJumlah);
+        } else {
+            $("#jumlah").val(1).removeAttr("max");
+        }
     });
 
     // === validasi jumlah
@@ -96,7 +99,7 @@ $(document).ready(function(){
         let val = parseInt($(this).val()) || 0;
         let namaProduk = $("#produk option:selected").text();
 
-        if(val > max){
+        if(max > 0 && val > max){
             alert("Maksimal " + namaProduk + " hanya " + max);
             $(this).val(max);
         } else if(val < 1){
@@ -106,16 +109,22 @@ $(document).ready(function(){
 
     // === tambah ke grid
     $("#btnAdd").click(function(){
-        let do_no   = $("#do_konsinyasi").val();
+        let do_no   = $("#do_konsinyasi").val() || "-"; 
         let barcode = $("#produk").val();
         let nama    = $("#produk option:selected").text();
         let jumlah  = parseInt($("#jumlah").val());
         let harga   = parseInt($("#harga").val());
-        let maxJumlah = parseInt($("#produk option:selected").data("sisa"));
+        let maxJumlah = parseInt($("#produk option:selected").data("sisa")) || null;
 
-        if(!do_no || !barcode || !jumlah || !harga){
-            alert("DO, Produk, jumlah & harga wajib diisi!");
+        if(!barcode || !jumlah || !harga){
+            alert("Produk, jumlah & harga wajib diisi!");
             return;
+        }
+
+        // validasi batas DO
+        if(maxJumlah && jumlah > maxJumlah){
+            alert("Jumlah melebihi sisa, dibatasi " + maxJumlah);
+            jumlah = maxJumlah;
         }
 
         let rowFound = null;
@@ -130,12 +139,10 @@ $(document).ready(function(){
         if(rowFound){
             let oldJumlah = parseInt($(rowFound.data()[3]).filter("input").val());
             let newJumlah = oldJumlah + jumlah;
-
-            if(newJumlah > maxJumlah){
+            if(maxJumlah && newJumlah > maxJumlah){
                 alert("Jumlah melebihi sisa, dibatasi " + maxJumlah);
                 newJumlah = maxJumlah;
             }
-
             let total = newJumlah * harga;
             rowFound.data([
                 do_no,
@@ -163,7 +170,6 @@ $(document).ready(function(){
         $("#jumlah").val("");
         $("#harga").val("");
         updateSubtotal();
-        checkProdukAvailable();
     });
 
     // === hapus baris
@@ -182,6 +188,9 @@ $(document).ready(function(){
         $("#subtotal").text(formatNumber(subtotal));
     }
 
+    // === trigger change sekali pas halaman pertama kali dibuka
+    $("#do_konsinyasi").trigger("change");
+
     // === submit form
     $("#form_nota").submit(function(e){
         e.preventDefault();
@@ -195,6 +204,7 @@ $(document).ready(function(){
             success: function(res){
                 if(res.status){
                     alert("Nota Konsinyasi berhasil disimpan!");
+                    window.open("<?=base_url('admin/konsinyasi/cetaknotajualnota')?>/" + res.notajual, "_blank");
                     window.location.href = "<?=base_url('admin/konsinyasi/nota')?>";
                 }else{
                     alert(res.message);
@@ -205,7 +215,5 @@ $(document).ready(function(){
             }
         });
     });
-
-    checkProdukAvailable();
 });
 </script>

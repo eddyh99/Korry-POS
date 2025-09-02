@@ -1,6 +1,4 @@
-<!-- Ini sudah oke... -->
-
-<html>
+<html> 
 <head>
   <style>
     /* === Fonts (via base_url) === */
@@ -45,24 +43,11 @@
     .summary .underline .value{border-bottom:1px solid #000;}
 
     /* bank info */
-    .bank-info {border-collapse: collapse; margin-top: 5px; width: auto; /* biar lebarnya ikut isi, bukan full halaman */}
-    .bank-info td { 
-      border: none; 
-      padding: 2px 6px; 
-      font-size: 12px; 
-    }
-    .bank-info .label { 
-      white-space: nowrap; 
-      padding-right: 2px; 
-    }
-    .bank-info .sep { 
-      text-align:center; 
-      padding: 0 4px; 
-    }
-    .bank-info .value { 
-      white-space: nowrap; 
-      padding-left: 2px; 
-    }
+    .bank-info {border-collapse: collapse; margin-top: 5px; width: auto;}
+    .bank-info td {border: none; padding: 2px 6px; font-size: 12px;}
+    .bank-info .label {white-space: nowrap; padding-right: 2px;}
+    .bank-info .sep {text-align:center; padding: 0 4px;}
+    .bank-info .value {white-space: nowrap; padding-left: 2px;}
   </style>
 </head>
 <body>
@@ -76,7 +61,7 @@
       <div class="regular"><?=$store->kontak?></div>
     </td>
     <td align="right">
-      <div class="invoice-title bold-wide">INVOICE</div>
+      <div class="invoice-title bold-wide">PROFORMA INVOICE</div>
       <div class="regular">#<?=$data["header"]->nonota?></div>
       <div class="regular-bold"><?=date("d-M-Y", strtotime($data["header"]->tanggal))?></div>
     </td>
@@ -84,13 +69,20 @@
 </table>
 
 <div class="bold-wide" style="margin:10px 0 5px;">BILL TO</div>
-<div class="regular"><?=$data["header"]->nama?></div>
+<div class="regular"><?=$data["header"]->nama_partner?></div>
+
 <br>
 
 <table>
   <tr class="regular">
-    <th>No</th><th>Item</th><th>Size</th><th>Colour</th><th>SKU</th>
-    <th class="num">Qty</th><th class="num">Price</th><th class="num">Total</th>
+    <th>No</th>
+    <th>Item</th>
+    <th>Size</th>
+    <th>Colour</th>
+    <th>SKU</th>
+    <th class="num">Qty</th>
+    <th class="num">Price</th>
+    <th class="num">Total</th>
   </tr>
   <?php 
     $i=1; $subtotal=0;
@@ -101,9 +93,9 @@
   <tr class="regular">
     <td><?=$i++?></td>
     <td><?=$dt["namaproduk"]?></td>
-    <td><?=$dt["size"]?></td>
-    <td>-</td>
-    <td><?=$dt["barcode"]?></td>
+    <td><?=$dt["size"] ?? '-'?></td>
+    <td><?=$dt["warna"] ?? '-'?></td>
+    <td><?=$dt["sku"]?></td>
     <td class="num"><?=$dt["jumlah"]?></td>
     <td class="num"><?=number_format($dt["harga"])?></td>
     <td class="num"><?=number_format($lineTotal)?></td>
@@ -129,25 +121,9 @@
     <td class="label">Total</td>
     <td class="value">IDR <?=number_format($subtotal)?></td>
   </tr>
-  <tr class="regular underline">
-    <td class="label">Down Payment</td>
-    <td class="value">IDR <?=number_format($subtotal/2)?></td>
-  </tr>
-  <tr>
-    <td class="label regular-bold">Amount Due</td>
-    <td class="value regular-bold">IDR <?=number_format($subtotal/2)?></td>
-  </tr>
 </table>
 
 <br><br><br>
-
-<div class="bold-wide">TERMS</div>
-<div class="regular">
-  Please settle the remaining balance to proceed with shipment.<br>
-  Payment is due within 15 days.
-</div>
-
-<br>
 
 <div class="bold-wide">PAYMENT METHOD VIA BANK TRANSFER</div>
 <table class="bank-info regular">
@@ -159,6 +135,11 @@
   <tr><td class="label">CURRENCY</td><td class="sep">:</td><td class="value">XXXXXXXX</td></tr>
   <tr><td class="label">COUNTRY</td><td class="sep">:</td><td class="value">XXXXXXXX</td></tr>
 </table>
+
+<br>
+
+<div class="bold-wide" style="margin:10px 0 5px;">CHECKED & RECEIVED BY</div>
+<div class="regular"><?=$data["header"]->nama_user?></div>
 
 <script>
   window.onafterprint = window.close;
