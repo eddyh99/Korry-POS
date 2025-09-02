@@ -22,29 +22,53 @@ $(document).ready(function(){
         }
     }
 
+    // === fungsi format angka dengan ribuan (Indonesia pakai ".")
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // fungsi update subtotal
+    function updateSubtotal() {
+        let subtotal = 0;
+        $("input[name='total[]']").each(function(){
+            subtotal += parseFloat($(this).val()) || 0;
+        });
+        $("#subtotal").text(formatNumber(subtotal));
+    }
+
     // Tambah ke grid sementara
     $("#btnAdd").click(function(){
         let barcode  = $("#produk").val();
         let nama     = $("#produk option:selected").text();
-        let jumlah   = $("#jumlah").val();
-        let harga    = $("#harga").val();
-        let potongan = $("#potongan").val();
+        let jumlah   = parseFloat($("#jumlah").val());
+        let harga    = parseFloat($("#harga").val());
+        let potongan = parseFloat($("#potongan").val());
 
         if(!barcode || !jumlah){
             alert("Produk & jumlah wajib diisi!");
             return;
         }
 
+        // hitung total per baris
+        let total = jumlah * harga * (1 - (potongan/100));
+
         let row = `
             <tr data-barcode="${barcode}">
                 <td><input type="hidden" name="barcode[]" value="${barcode}">${barcode}</td>
                 <td>${nama}</td>
                 <td><input type="hidden" name="jumlah[]" value="${jumlah}">${jumlah}</td>
-                <td><input type="hidden" name="harga[]" value="${harga}">${harga}</td>
-                <td><input type="hidden" name="potongan[]" value="${potongan}">${potongan}</td>
+                <td><input type="hidden" name="harga[]" value="${harga}">${formatNumber(harga)}</td>
+                <td><input type="hidden" name="potongan[]" value="${potongan}">${potongan}%</td>
+                <td>
+                    <input type="hidden" name="total[]" value="${total}">
+                    ${formatNumber(total)}
+                </td>
                 <td><button type="button" class="btn btn-danger btn-sm btnDelete">x</button></td>
             </tr>`;
         table.append(row);
+
+        // update subtotal
+        updateSubtotal();
 
         // hapus produk dari pilihan select
         $("#produk option[value='"+barcode+"']").remove();
@@ -71,6 +95,7 @@ $(document).ready(function(){
         );
 
         tr.remove();
+        updateSubtotal();
         checkBtnVisibility();
     });
 

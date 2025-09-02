@@ -30,12 +30,22 @@ class WholesaleModel extends Model
     {
         $this->db->transStart();
 
+        // Auto-generate No. Nota Order Wholesale
+        $sql = "SELECT LPAD(
+                    COALESCE(CAST(MAX(notaorder) AS UNSIGNED), 0) + 1,
+                    6,
+                    '0'
+                ) AS next_notaorder
+                FROM wholesale_order";
+
+        $notaorder = $this->db->query($sql)->getRow()->next_notaorder;
+
         // Insert master (wholesale_order)
         $wholesale_order = [
-            'notaorder'     => $data["notaorder"],
+            'notaorder'     => $notaorder,
             'id_wholesaler' => $data["id_wholesaler"],
             'tanggal'       => date("Y-m-d H:i:s"),
-            'lama'          => !empty($data["lama"])   ? (int)$data["lama"]   : 0,   // default 0 hari
+            'lama'          => !empty($data["lama"])   ? (int)$data["lama"]   : 0,    // default 0 hari
             'diskon'        => !empty($data["diskon"]) ? (int)$data["diskon"] : 0,    // default 0
             'ppn'           => !empty($data["ppn"])    ? (float)$data["ppn"]  : 0.00, // default 0.00
             'userid'        => $data["userid"],
@@ -47,7 +57,7 @@ class WholesaleModel extends Model
         // Insert detail (wholesale_order_detail)
         foreach ($data["detail"] as $row) {
             $detail = [
-                'notaorder' => $data["notaorder"],
+                'notaorder' => $notaorder,
                 'barcode'   => $row["barcode"],
                 'jumlah'    => $row["jumlah"],
                 'potongan'  => $row["potongan"]

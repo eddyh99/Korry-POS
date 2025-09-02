@@ -78,16 +78,16 @@ class Wholesale extends BaseApiController
     {
         // Rules validasi
         $rules = [
-            "nonota" => [
-                "label"  => "No Nota",
-                "rules"  => "required|exact_length[6]|numeric|is_unique[wholesale_order.notaorder]",
-                "errors" => [
-                    "required"     => "{field} wajib diisi",
-                    "exact_length" => "{field} harus 6 digit",
-                    "numeric"      => "{field} hanya boleh angka",
-                    "is_unique"    => "{field} sudah digunakan."
-                ]
-            ],
+            // "nonota" => [
+            //     "label"  => "No Nota",
+            //     "rules"  => "required|exact_length[6]|numeric|is_unique[wholesale_order.notaorder]",
+            //     "errors" => [
+            //         "required"     => "{field} wajib diisi",
+            //         "exact_length" => "{field} harus 6 digit",
+            //         "numeric"      => "{field} hanya boleh angka",
+            //         "is_unique"    => "{field} sudah digunakan."
+            //     ]
+            // ],
             "wholesaler" => [
                 "label"  => "Wholesaler",
                 "rules"  => "required|integer",
@@ -154,7 +154,7 @@ class Wholesale extends BaseApiController
         }
 
         // Ambil data setelah validasi
-        $nonota   = esc($this->request->getPost("nonota"));
+        // $nonota   = esc($this->request->getPost("nonota"));
         $wholesaler  = esc($this->request->getPost("wholesaler"));
         $lama     = $this->request->getPost("lama");
         $diskon   = $this->request->getPost("diskon");
@@ -164,7 +164,7 @@ class Wholesale extends BaseApiController
         $potongans  = $this->request->getPost("potongan");
 
         $data = [
-            "notaorder" => $nonota,
+            // "notaorder" => $nonota,
             "id_wholesaler" => $wholesaler,
             "lama"     => ($lama   !== null && $lama   !== "") ? (int) $lama   : 0,
             "diskon"   => ($diskon !== null && $diskon !== "") ? (int) $diskon : 0,
