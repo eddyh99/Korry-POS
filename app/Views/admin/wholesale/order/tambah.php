@@ -20,23 +20,39 @@
                                         <?php } ?>
                                     </select>
                                 </div>
-
-                                <!-- <div class="col-sm-4">
-                                    <label class="col-form-label">No. Nota Order</label>
-                                    <input type="text" id="nonota" name="nonota" class="form-control input-lg" maxlength="6" required onkeypress="return isNumber(event)">
-                                </div> -->
-
                                 <div class="col-sm-2">
                                     <label class="col-form-label">Lama</label>
                                     <input type="text" id="lama" name="lama" class="form-control input-lg" maxlength="6" onkeypress="return isNumber(event)">
+                                    <small class="form-text text-muted">Hari (contoh: 15)</small>
                                 </div>      
-                                <div class="col-sm-2">
+                                <!-- <div class="col-sm-2">
                                     <label class="col-form-label">Diskon</label>
                                     <input type="text" id="diskon" name="diskon" class="form-control input-lg" maxlength="6" onkeypress="return isNumber(event)">
-                                </div>         
+                                </div>          -->
                                 <div class="col-sm-2">
+                                    <label class="col-form-label">Diskon</label>
+                                    <input type="text" id="diskon" name="diskon"
+                                        class="form-control input-lg" maxlength="10">
+                                    <small class="form-text text-muted">Contoh: 1000 atau 10%</small>
+                                </div>
+                                <!-- <div class="col-sm-2">
                                     <label class="col-form-label">PPN</label>
                                     <input type="text" id="ppn" name="ppn" class="form-control input-lg" maxlength="6" onkeypress="return isNumber(event)">
+                                </div> -->
+                                <div class="col-sm-2">
+                                    <label class="col-form-label">PPN</label>
+                                    <input type="text" id="ppn" name="ppn"
+                                        class="form-control input-lg" maxlength="5">
+                                    <small class="form-text text-muted">Persen (contoh: 11)</small>
+                                </div>
+                                <!-- <div class="col-sm-2">
+                                    <label class="col-form-label">DP</label>
+                                    <input type="text" id="dp" name="dp" class="form-control input-lg" maxlength="11" onkeypress="return isNumber(event)" required>
+                                </div> -->
+                                <div class="col-sm-2">
+                                    <label class="col-form-label">DP</label>
+                                    <input type="text" id="dp" name="dp"
+                                        class="form-control input-lg" maxlength="11" required>
                                 </div>
                             </div>
 
@@ -62,10 +78,16 @@
                                     <label class="col-form-label">Harga</label>
                                     <input type="text" id="harga" class="form-control" readonly>
                                 </div>
-                                <div class="col-sm-1">
+                                <!-- <div class="col-sm-1">
                                     <label class="col-form-label">Potongan</label>
                                     <input type="number" id="potongan" class="form-control" min="0" value="0">
+                                </div> -->
+                                <div class="col-sm-2">
+                                    <label class="col-form-label">Potongan</label>
+                                    <input type="text" id="potongan" class="form-control" value="0">
+                                    <small class="form-text text-muted">Contoh: 500 atau 5%</small>
                                 </div>
+
 
                                 <div class="col-sm-2 d-flex align-items-end">
                                     <button type="button" id="btnAdd" class="btn btn-success">+ Tambah</button>

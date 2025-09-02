@@ -6,9 +6,16 @@ use CodeIgniter\Model;
 
 class WholesaleModel extends Model
 {
+    protected $wholesaler               = 'wholesaler';
+
     protected $wholesale_order          = 'wholesale_order';
     protected $wholesale_order_detail   = 'wholesale_order_detail';
     protected $wholesale_cicilan        = 'wholesale_cicilan';
+
+    protected $harga        = 'harga';
+    protected $pengguna     = 'pengguna';
+    protected $produk       = 'produk';
+    protected $produksize   = 'produksize';
 
     // === Wholesale Order : Index ===
 
@@ -48,6 +55,7 @@ class WholesaleModel extends Model
             'lama'          => !empty($data["lama"])   ? (int)$data["lama"]   : 0,    // default 0 hari
             'diskon'        => !empty($data["diskon"]) ? (int)$data["diskon"] : 0,    // default 0
             'ppn'           => !empty($data["ppn"])    ? (float)$data["ppn"]  : 0.00, // default 0.00
+            'dp'            => $data["dp"],
             'userid'        => $data["userid"],
             'is_void'       => 0
         ];
@@ -77,7 +85,8 @@ class WholesaleModel extends Model
             $this->db->transCommit();
             return [
                 "status"  => true,
-                "message" => "Data berhasil disimpan"
+                "message" => "Data berhasil disimpan",
+                "notaorder" => $notaorder   // <== ini buat dipakai ke JS cetak
             ];
         }
     }
@@ -144,5 +153,82 @@ class WholesaleModel extends Model
         } else {
             return $this->db->error();
         }
+    }
+
+    // Order & Cicilan : Print
+
+    public function getAllNotaOrder($notaorder)
+    {
+        $mdata = [
+            "header" => null,
+            "detail" => []
+        ];
+
+        // === Ambil header Wholesale Order
+        $sql = "SELECT a.notaorder, a.tanggal, a.lama, a.userid, a.diskon, a.ppn, a.dp,
+                    b.nama AS nama_user, 
+                    c.nama AS nama_wholesaler, c.alamat AS alamat_wholesaler, c.kontak AS kontak_wholesaler
+                FROM {$this->wholesale_order} a
+                INNER JOIN {$this->pengguna} b ON a.userid = b.username
+                INNER JOIN {$this->wholesaler} c ON a.id_wholesaler = c.id
+                WHERE a.notaorder = ? AND a.is_void = 0 AND c.status = 0
+                LIMIT 1";
+
+        $header = $this->db->query($sql, [$notaorder])->getRow();
+        if ($header) {
+            $mdata["header"] = $header;
+        } else {
+            // Kalau DO tidak ditemukan, return tetap ada structure kosong supaya view aman
+            $mdata["header"] = (object) [
+                "notaorder"     => $notaorder,
+                "tanggal"       => null,
+                "userid"        => null,
+                "diskon"        => 0,
+                "ppn"           => 0,
+                "dp"            => 0,
+                "nama_user"     => "-",
+                "nama_wholesaler"  => "-",
+                "alamat_wholesaler"=> "-",
+                "kontak_wholesaler"=> "-"
+            ];
+        }
+
+        // === Ambil detail Wholesale Order (join produk, size, harga)
+        $sql = "SELECT a.barcode, a.jumlah, a.potongan,
+                    b.namaproduk, b.namabrand, b.namakategori, b.namafabric, 
+                    b.namawarna, b.sku,
+                    s.size,
+                    h.harga_wholesale
+                FROM {$this->wholesale_order_detail} a
+                INNER JOIN {$this->produk} b ON a.barcode = b.barcode
+                LEFT JOIN {$this->produksize} s ON a.barcode = s.barcode AND s.status = 0
+                LEFT JOIN {$this->harga} h 
+                    ON h.barcode = a.barcode 
+                    AND h.tanggal = (
+                        SELECT MAX(h2.tanggal) 
+                        FROM {$this->harga} h2 
+                        WHERE h2.barcode = a.barcode
+                    )
+                WHERE a.notaorder = ?";
+
+        $detail = $this->db->query($sql, [$notaorder])->getResultArray();
+
+        foreach ($detail as $i => $det) {
+            $mdata["detail"][$i] = [
+                "barcode"    => $det["barcode"],
+                "namaproduk" => $det["namaproduk"],
+                "sku"        => $det["sku"],
+                "jumlah"     => $det["jumlah"],
+                "potongan"   => $det["potongan"],
+                "brand"      => $det["namabrand"],
+                "kategori"   => $det["namakategori"],
+                "fabric"     => $det["namafabric"],
+                "warna"      => $det["namawarna"],
+                "size"       => $det["size"],
+                "harga"      => $det["harga_wholesale"]
+            ];
+        }
+
+        return $mdata;
     }
 }
