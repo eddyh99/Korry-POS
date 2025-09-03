@@ -123,14 +123,6 @@ class Produksi extends BaseApiController
                     "greater_than_equal_to" => "{field} minimal 0"
                 ]
             ],
-            "totalproduksi" => [
-                "label"  => "Total Produksi",
-                "rules"  => "permit_empty|integer|greater_than_equal_to[0]", // bisa kosong
-                "errors" => [
-                    "integer"  => "{field} hanya angka",
-                    "greater_than_equal_to" => "{field} minimal 0"
-                ]
-            ],
             "barcode.*" => [
                 "label"  => "Produk",
                 "rules"  => "required|exact_length[13]|numeric",

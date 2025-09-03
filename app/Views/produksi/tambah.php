@@ -39,15 +39,6 @@
 								<input type="number" id="dp" name="dp" class="form-control" min="0">
 								</div>
 							</div>
-
-							<!-- Total -->
-							<div class="form-group">
-								<label for="totalproduksi" class="col-sm-4 control-label">Total</label>
-								<div class="col-sm-8">
-								<input type="number" id="totalproduksi" name="totalproduksi" class="form-control" min="0" readonly>
-								</div>
-							</div>
-
 						</div>
                 </div>
             </div>
@@ -66,7 +57,7 @@
 									data-nama="<?= $dt["namaproduk"] ?>"
 									data-harga="<?= $dt["harga"] ?>"
 									data-bahan='<?= json_encode($dt["bahan"], JSON_HEX_APOS | JSON_HEX_QUOT) ?>'>
-								<?= $dt['barcode']; ?> - <?= $dt['namaproduk']; ?>
+								<?=$dt['namaproduk']; ?>
 							</option>
 							<?php } ?>
 						</select>
