@@ -27,6 +27,8 @@ class KonsinyasiModel extends Model
 
     protected $pengguna = 'pengguna';
 
+    protected $metode_bayar       = 'metode_bayar';
+
     public function getStokReturKonsinyasi($barcode, $storeid, $size)
     {
         $where = [
@@ -774,11 +776,12 @@ class KonsinyasiModel extends Model
     {
         $mdata = [
             "header" => null,
-            "detail" => []
+            "detail" => [],
+            "footer" => null,
         ];
 
         // === Ambil header DO Konsinyasi
-        $sql = "SELECT a.nonota, a.tanggal, a.userid, b.nama AS nama_user, 
+        $sql1 = "SELECT a.nonota, a.tanggal, a.userid, b.nama AS nama_user, 
                     c.nama AS nama_partner, c.alamat AS alamat_partner, c.kontak AS kontak_partner
                 FROM {$this->do_konsinyasi} a
                 INNER JOIN {$this->pengguna} b ON a.userid = b.username
@@ -786,7 +789,8 @@ class KonsinyasiModel extends Model
                 WHERE a.nonota = ? AND a.is_void = 0 AND c.status = 0
                 LIMIT 1";
 
-        $header = $this->db->query($sql, [$nonota_do])->getRow();
+        $header = $this->db->query($sql1, [$nonota_do])->getRow();
+
         if ($header) {
             $mdata["header"] = $header;
         } else {
@@ -803,7 +807,7 @@ class KonsinyasiModel extends Model
         }
 
         // === Ambil detail DO Konsinyasi (join produk, size, harga)
-        $sql = "SELECT a.barcode, a.jumlah, 
+        $sql2 = "SELECT a.barcode, a.jumlah, 
                     b.namaproduk, b.namabrand, b.namakategori, b.namafabric, 
                     b.namawarna, b.sku,
                     s.size,
@@ -820,7 +824,7 @@ class KonsinyasiModel extends Model
                     )
                 WHERE a.nonota = ?";
 
-        $detail = $this->db->query($sql, [$nonota_do])->getResultArray();
+        $detail = $this->db->query($sql2, [$nonota_do])->getResultArray();
 
         foreach ($detail as $i => $det) {
             $mdata["detail"][$i] = [
@@ -834,6 +838,26 @@ class KonsinyasiModel extends Model
                 "warna"      => $det["namawarna"],
                 "size"       => $det["size"],
                 "harga"      => $det["harga_konsinyasi"]
+            ];
+        }
+
+        // === Ambil footer payment method
+        $sql3 = "SELECT * FROM {$this->metode_bayar}";
+
+        $footer = $this->db->query($sql3)->getRow();
+
+        if ($footer) {
+            $mdata["footer"] = $footer;
+        } else {
+            // Kalau tidak ditemukan, return tetap ada structure kosong supaya view aman
+            $mdata["footer"] = (object) [
+                "namaakun"   => "XXXXXXXX",
+                "noakun"     => "XXXXXXXX",
+                "namabank"   => "XXXXXXXX",
+                "cabangbank" => "XXXXXXXX",
+                "kodeswift"  => "XXXXXXXX",
+                "matauang"   => "XXXXXXXX",
+                "negara"     => "XXXXXXXX"
             ];
         }
 
@@ -842,82 +866,104 @@ class KonsinyasiModel extends Model
 
     // Tidak Bisa Tanpa DO
 
-    public function getAllNotajualNota1($notajual_nota)
-    {
-        $mdata = [
-            "header" => null,
-            "detail" => []
-        ];
+    // public function getAllNotajualNota1($notajual_nota)
+    // {
+    //     $mdata = [
+    //         "header" => null,
+    //         "detail" => [],
+    //         "footer" => null
+    //     ];
 
-        // === Ambil header Nota Konsinyasi + info partner via DO
-        $sql = "SELECT n.notajual, n.tanggal, n.userid, n.diskon, n.ppn, n.status,
-                    u.nama AS nama_user,
-                    p.nama AS nama_partner, p.alamat AS alamat_partner, p.kontak AS kontak_partner
-                FROM {$this->nota_konsinyasi} n
-                INNER JOIN {$this->pengguna} u ON n.userid = u.username
-                INNER JOIN {$this->nota_konsinyasi_detail} nd ON n.notajual = nd.notajual
-                INNER JOIN {$this->do_konsinyasi} d ON nd.notakonsinyasi = d.nonota AND d.is_void = 0
-                INNER JOIN {$this->partner_konsinyasi} p ON d.id_partnerkonsinyasi = p.id AND p.status = 0
-                WHERE n.notajual = ?
-                LIMIT 1";
+    //     // === Ambil header Nota Konsinyasi + info partner via DO
+    //     $sql1 = "SELECT n.notajual, n.tanggal, n.userid, n.diskon, n.ppn, n.status,
+    //                 u.nama AS nama_user,
+    //                 p.nama AS nama_partner, p.alamat AS alamat_partner, p.kontak AS kontak_partner
+    //             FROM {$this->nota_konsinyasi} n
+    //             INNER JOIN {$this->pengguna} u ON n.userid = u.username
+    //             INNER JOIN {$this->nota_konsinyasi_detail} nd ON n.notajual = nd.notajual
+    //             INNER JOIN {$this->do_konsinyasi} d ON nd.notakonsinyasi = d.nonota AND d.is_void = 0
+    //             INNER JOIN {$this->partner_konsinyasi} p ON d.id_partnerkonsinyasi = p.id AND p.status = 0
+    //             WHERE n.notajual = ?
+    //             LIMIT 1";
 
-        $header = $this->db->query($sql, [$notajual_nota])->getRow();
-        if ($header) {
-            $mdata["header"] = $header;
-        } else {
-            // Kalau Nota tidak ditemukan
-            $mdata["header"] = (object) [
-                "notajual"       => $notajual_nota,
-                "tanggal"        => null,
-                "userid"         => null,
-                "diskon"         => 0,
-                "ppn"            => 0,
-                "status"         => "pending",
-                "nama_user"      => "-",
-                "nama_partner"   => "-",
-                "alamat_partner" => "-",
-                "kontak_partner" => "-"
-            ];
-        }
+    //     $header = $this->db->query($sql1, [$notajual_nota])->getRow();
 
-        // === Ambil detail Nota Konsinyasi
-        $sql = "SELECT nd.barcode, nd.jumlah,
-                    pr.namaproduk, pr.namabrand, pr.namakategori, pr.namafabric, 
-                    pr.namawarna, pr.sku,
-                    sz.size,
-                    hg.harga_konsinyasi
-                FROM {$this->nota_konsinyasi_detail} nd
-                INNER JOIN {$this->produk} pr ON nd.barcode = pr.barcode
-                LEFT JOIN {$this->produksize} sz ON nd.barcode = sz.barcode AND sz.status = 0
-                LEFT JOIN {$this->harga} hg 
-                    ON hg.barcode = nd.barcode 
-                    AND hg.tanggal = (
-                        SELECT MAX(h2.tanggal) 
-                        FROM {$this->harga} h2 
-                        WHERE h2.barcode = nd.barcode
-                    )
-                INNER JOIN {$this->do_konsinyasi} d ON nd.notakonsinyasi = d.nonota AND d.is_void = 0
-                WHERE nd.notajual = ?";
+    //     if ($header) {
+    //         $mdata["header"] = $header;
+    //     } else {
+    //         // Kalau Nota tidak ditemukan
+    //         $mdata["header"] = (object) [
+    //             "notajual"       => $notajual_nota,
+    //             "tanggal"        => null,
+    //             "userid"         => null,
+    //             "diskon"         => 0,
+    //             "ppn"            => 0,
+    //             "status"         => "pending",
+    //             "nama_user"      => "-",
+    //             "nama_partner"   => "-",
+    //             "alamat_partner" => "-",
+    //             "kontak_partner" => "-"
+    //         ];
+    //     }
 
-        $detail = $this->db->query($sql, [$notajual_nota])->getResultArray();
+    //     // === Ambil detail Nota Konsinyasi
+    //     $sql2 = "SELECT nd.barcode, nd.jumlah,
+    //                 pr.namaproduk, pr.namabrand, pr.namakategori, pr.namafabric, 
+    //                 pr.namawarna, pr.sku,
+    //                 sz.size,
+    //                 hg.harga_konsinyasi
+    //             FROM {$this->nota_konsinyasi_detail} nd
+    //             INNER JOIN {$this->produk} pr ON nd.barcode = pr.barcode
+    //             LEFT JOIN {$this->produksize} sz ON nd.barcode = sz.barcode AND sz.status = 0
+    //             LEFT JOIN {$this->harga} hg 
+    //                 ON hg.barcode = nd.barcode 
+    //                 AND hg.tanggal = (
+    //                     SELECT MAX(h2.tanggal) 
+    //                     FROM {$this->harga} h2 
+    //                     WHERE h2.barcode = nd.barcode
+    //                 )
+    //             INNER JOIN {$this->do_konsinyasi} d ON nd.notakonsinyasi = d.nonota AND d.is_void = 0
+    //             WHERE nd.notajual = ?";
 
-        foreach ($detail as $i => $det) {
-            $mdata["detail"][$i] = [
-                "barcode"    => $det["barcode"],
-                "namaproduk" => $det["namaproduk"],
-                "sku"        => $det["sku"],
-                "jumlah"     => $det["jumlah"],
-                "brand"      => $det["namabrand"],
-                "kategori"   => $det["namakategori"],
-                "fabric"     => $det["namafabric"],
-                "warna"      => $det["namawarna"],
-                "size"       => $det["size"],
-                "harga"      => $det["harga_konsinyasi"]
-            ];
-        }
+    //     $detail = $this->db->query($sql2, [$notajual_nota])->getResultArray();
 
-        return $mdata;
-    }
+    //     foreach ($detail as $i => $det) {
+    //         $mdata["detail"][$i] = [
+    //             "barcode"    => $det["barcode"],
+    //             "namaproduk" => $det["namaproduk"],
+    //             "sku"        => $det["sku"],
+    //             "jumlah"     => $det["jumlah"],
+    //             "brand"      => $det["namabrand"],
+    //             "kategori"   => $det["namakategori"],
+    //             "fabric"     => $det["namafabric"],
+    //             "warna"      => $det["namawarna"],
+    //             "size"       => $det["size"],
+    //             "harga"      => $det["harga_konsinyasi"]
+    //         ];
+    //     }
+
+    //     // === Ambil footer payment method
+    //     $sql3 = "SELECT * FROM {$this->metode_bayar}";
+
+    //     $footer = $this->db->query($sql3)->getRow();
+
+    //     if ($footer) {
+    //         $mdata["footer"] = $footer;
+    //     } else {
+    //         // Kalau tidak ditemukan, return tetap ada structure kosong supaya view aman
+    //         $mdata["footer"] = (object) [
+    //             "namaakun"   => "XXXXXXXX",
+    //             "noakun"     => "XXXXXXXX",
+    //             "namabank"   => "XXXXXXXX",
+    //             "cabangbank" => "XXXXXXXX",
+    //             "kodeswift"  => "XXXXXXXX",
+    //             "matauang"   => "XXXXXXXX",
+    //             "negara"     => "XXXXXXXX"
+    //         ];
+    //     }
+        
+    //     return $mdata;
+    // }
 
     // Bisa Tanpa DO
 
@@ -925,11 +971,12 @@ class KonsinyasiModel extends Model
     {
         $mdata = [
             "header" => null,
-            "detail" => []
+            "detail" => [],
+            "footer" => null,
         ];
 
         // === Ambil header Nota Konsinyasi + info partner via DO
-        $sql = "SELECT n.notajual, n.tanggal, n.userid, n.diskon, n.ppn, n.status,
+        $sql1 = "SELECT n.notajual, n.tanggal, n.userid, n.diskon, n.ppn, n.status,
                     u.nama AS nama_user,
                     COALESCE(p.nama, '-')   AS nama_partner,
                     COALESCE(p.alamat, '-') AS alamat_partner,
@@ -944,7 +991,8 @@ class KonsinyasiModel extends Model
                 WHERE n.notajual = ?
                 LIMIT 1";
 
-        $header = $this->db->query($sql, [$notajual_nota])->getRow();
+        $header = $this->db->query($sql1, [$notajual_nota])->getRow();
+        
         if ($header) {
             $mdata["header"] = $header;
         } else {
@@ -964,7 +1012,7 @@ class KonsinyasiModel extends Model
         }
 
         // === Ambil detail Nota Konsinyasi
-        $sql = "SELECT nd.barcode, nd.jumlah,
+        $sql2 = "SELECT nd.barcode, nd.jumlah,
                     pr.namaproduk, pr.namabrand, pr.namakategori, pr.namafabric, 
                     pr.namawarna, pr.sku,
                     sz.size,
@@ -983,7 +1031,7 @@ class KonsinyasiModel extends Model
                     ON nd.notakonsinyasi = d.nonota AND d.is_void = 0
                 WHERE nd.notajual = ?";
 
-        $detail = $this->db->query($sql, [$notajual_nota])->getResultArray();
+        $detail = $this->db->query($sql2, [$notajual_nota])->getResultArray();
 
         foreach ($detail as $i => $det) {
             $mdata["detail"][$i] = [
@@ -997,6 +1045,26 @@ class KonsinyasiModel extends Model
                 "warna"      => $det["namawarna"],
                 "size"       => $det["size"],
                 "harga"      => $det["harga_konsinyasi"]
+            ];
+        }
+
+        // === Ambil footer payment method
+        $sql3 = "SELECT * FROM {$this->metode_bayar}";
+
+        $footer = $this->db->query($sql3)->getRow();
+
+        if ($footer) {
+            $mdata["footer"] = $footer;
+        } else {
+            // Kalau tidak ditemukan, return tetap ada structure kosong supaya view aman
+            $mdata["footer"] = (object) [
+                "namaakun"   => "XXXXXXXX",
+                "noakun"     => "XXXXXXXX",
+                "namabank"   => "XXXXXXXX",
+                "cabangbank" => "XXXXXXXX",
+                "kodeswift"  => "XXXXXXXX",
+                "matauang"   => "XXXXXXXX",
+                "negara"     => "XXXXXXXX"
             ];
         }
 

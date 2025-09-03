@@ -27,12 +27,12 @@
 				{ "data": "nonota" },
 				{ "data": "notaorder" },  
 				{ "data": "tanggal" },
-				{ "data": "bayar" },
+				{ "data": "bayar", "render": function(data){ return new Intl.NumberFormat('id-ID').format(data); }},
 				{ "data": "nonota",
 					"render": function (data, type, full, meta){
 						let button = '';
 						button += '<button type="button" class="btn btn-simple btn-info btn-icon btnBP" title="Cetak BP" data-nonota="' + data + '"><i class="material-icons">account_balance</i></button>';
-						button += '<button type="button" class="btn btn-simple btn-danger btn-icon btnDelete" title="Hapus" data-nonota="' + data + '"><i class="material-icons">close</i></button>';
+						// button += '<button type="button" class="btn btn-simple btn-danger btn-icon btnDelete" title="Hapus" data-nonota="' + data + '"><i class="material-icons">close</i></button>';
 						return button;
 					}
 				}

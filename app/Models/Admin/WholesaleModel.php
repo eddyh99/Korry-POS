@@ -17,6 +17,10 @@ class WholesaleModel extends Model
     protected $produk       = 'produk';
     protected $produksize   = 'produksize';
 
+    protected $metode_bayar        = 'metode_bayar';
+
+
+
     // === Wholesale Order : Index ===
 
     public function listOrderWholesale1()
@@ -234,6 +238,103 @@ class WholesaleModel extends Model
     {
         $mdata = [
             "header" => null,
+            "detail" => [],
+            "footer" => null
+        ];
+
+        // === Ambil header Wholesale Order
+        $sql1 = "SELECT a.notaorder, a.tanggal, a.lama, a.userid, a.diskon, a.ppn, a.dp,
+                    b.nama AS nama_user, 
+                    c.nama AS nama_wholesaler, c.alamat AS alamat_wholesaler, c.kontak AS kontak_wholesaler
+                FROM {$this->wholesale_order} a
+                INNER JOIN {$this->pengguna} b ON a.userid = b.username
+                INNER JOIN {$this->wholesaler} c ON a.id_wholesaler = c.id
+                WHERE a.notaorder = ? AND a.is_void = 0 AND c.status = 0
+                LIMIT 1";
+
+        $header = $this->db->query($sql1, [$notaorder])->getRow();
+
+        if ($header) {
+            $mdata["header"] = $header;
+        } else {
+            // Kalau DO tidak ditemukan, return tetap ada structure kosong supaya view aman
+            $mdata["header"] = (object) [
+                "notaorder"     => $notaorder,
+                "tanggal"       => null,
+                "userid"        => null,
+                "diskon"        => 0,
+                "ppn"           => 0,
+                "dp"            => 0,
+                "nama_user"     => "-",
+                "nama_wholesaler"  => "-",
+                "alamat_wholesaler"=> "-",
+                "kontak_wholesaler"=> "-"
+            ];
+        }
+
+        // === Ambil detail Wholesale Order (join produk, size, harga)
+        $sql2 = "SELECT a.barcode, a.jumlah, a.potongan,
+                    b.namaproduk, b.namabrand, b.namakategori, b.namafabric, 
+                    b.namawarna, b.sku,
+                    s.size,
+                    h.harga_wholesale
+                FROM {$this->wholesale_order_detail} a
+                INNER JOIN {$this->produk} b ON a.barcode = b.barcode
+                LEFT JOIN {$this->produksize} s ON a.barcode = s.barcode AND s.status = 0
+                LEFT JOIN {$this->harga} h 
+                    ON h.barcode = a.barcode 
+                    AND h.tanggal = (
+                        SELECT MAX(h2.tanggal) 
+                        FROM {$this->harga} h2 
+                        WHERE h2.barcode = a.barcode
+                    )
+                WHERE a.notaorder = ?";
+
+        $detail = $this->db->query($sql2, [$notaorder])->getResultArray();
+
+        foreach ($detail as $i => $det) {
+            $mdata["detail"][$i] = [
+                "barcode"    => $det["barcode"],
+                "namaproduk" => $det["namaproduk"],
+                "sku"        => $det["sku"],
+                "jumlah"     => $det["jumlah"],
+                "potongan"   => $det["potongan"],
+                "brand"      => $det["namabrand"],
+                "kategori"   => $det["namakategori"],
+                "fabric"     => $det["namafabric"],
+                "warna"      => $det["namawarna"],
+                "size"       => $det["size"],
+                "harga"      => $det["harga_wholesale"]
+            ];
+        }
+
+        // === Ambil footer payment method
+        $sql3 = "SELECT * FROM {$this->metode_bayar}";
+
+        $footer = $this->db->query($sql3)->getRow();
+
+        if ($footer) {
+            $mdata["footer"] = $footer;
+        } else {
+            // Kalau tidak ditemukan, return tetap ada structure kosong supaya view aman
+            $mdata["footer"] = (object) [
+                "namaakun"   => "XXXXXXXX",
+                "noakun"     => "XXXXXXXX",
+                "namabank"   => "XXXXXXXX",
+                "cabangbank" => "XXXXXXXX",
+                "kodeswift"  => "XXXXXXXX",
+                "matauang"   => "XXXXXXXX",
+                "negara"     => "XXXXXXXX"
+            ];
+        }
+
+        return $mdata;
+    }
+
+    public function getAllNotaOrder1($notaorder)
+    {
+        $mdata = [
+            "header" => null,
             "detail" => []
         ];
 
@@ -310,11 +411,12 @@ class WholesaleModel extends Model
         $mdata = [
             "header"  => null,
             "detail"  => [],
-            "cicilan" => []
+            "cicilan" => [],
+            "footer"  => null
         ];
 
         // === Ambil header Cicilan + Order (cicilan yang sedang dicetak)
-        $sql = "SELECT c.nonota, c.tanggal AS tgl_cicilan, c.bayar, c.status AS status_cicilan,
+        $sql1 = "SELECT c.nonota, c.tanggal AS tgl_cicilan, c.bayar, c.status AS status_cicilan,
                     o.notaorder, o.tanggal AS tgl_order, o.lama, o.diskon, o.ppn, o.userid AS order_userid, o.dp,
                     u.nama AS nama_user,
                     w.nama AS nama_wholesaler, w.alamat AS alamat_wholesaler, w.kontak AS kontak_wholesaler
@@ -325,7 +427,7 @@ class WholesaleModel extends Model
                 WHERE c.nonota = ? AND o.is_void = 0 AND w.status = 0
                 LIMIT 1";
 
-        $header = $this->db->query($sql, [$nonota])->getRow();
+        $header = $this->db->query($sql1, [$nonota])->getRow();
 
         // jika header/cicilan tidak ditemukan, kembalikan struktur aman (supaya view aman)
         if (!$header) {
@@ -392,6 +494,26 @@ class WholesaleModel extends Model
                 "warna"      => $det["namawarna"],
                 "size"       => $det["size"],
                 "harga"      => $det["harga_wholesale"]
+            ];
+        }
+
+        // === Ambil footer payment method
+        $sql2 = "SELECT * FROM {$this->metode_bayar}";
+
+        $footer = $this->db->query($sql2)->getRow();
+
+        if ($footer) {
+            $mdata["footer"] = $footer;
+        } else {
+            // Kalau tidak ditemukan, return tetap ada structure kosong supaya view aman
+            $mdata["footer"] = (object) [
+                "namaakun"   => "XXXXXXXX",
+                "noakun"     => "XXXXXXXX",
+                "namabank"   => "XXXXXXXX",
+                "cabangbank" => "XXXXXXXX",
+                "kodeswift"  => "XXXXXXXX",
+                "matauang"   => "XXXXXXXX",
+                "negara"     => "XXXXXXXX"
             ];
         }
 
