@@ -70,6 +70,9 @@
                             <li class="<?=@$side4?>">
                                 <a href="<?=base_url()?>admin/pengeluaran">Pengeluaran</a>
                             </li>
+                            <li class="<?=@$side4?>">
+                                <a href="<?=base_url()?>admin/metodebayar">Metode Bayar</a>
+                            </li>
                         </ul>
                     </div>
                 </li>
@@ -108,7 +111,6 @@
                             <li class="<?=@$side12?>">
                                 <a href="<?=base_url()?>admin/wholesaler">Wholesaler</a>
                             </li>
-
                         </ul>
                     </div>
                 </li>

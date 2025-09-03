@@ -191,13 +191,13 @@
 
 <div class="bold-wide">PAYMENT METHOD VIA BANK TRANSFER</div>
 <table class="bank-info regular">
-  <tr><td class="label">ACCOUNT NAME</td><td class="sep">:</td><td class="value">XXXXXXXX</td></tr>
-  <tr><td class="label">ACCOUNT NUMBER</td><td class="sep">:</td><td class="value">XXXXXXXX</td></tr>
-  <tr><td class="label">BANK NAME</td><td class="sep">:</td><td class="value">XXXXXXXX</td></tr>
-  <tr><td class="label">BRANCH</td><td class="sep">:</td><td class="value">XXXXXXXX</td></tr>
-  <tr><td class="label">SWIFT CODE (for international transfer)</td><td class="sep">:</td><td class="value">XXXXXXXX</td></tr>
-  <tr><td class="label">CURRENCY</td><td class="sep">:</td><td class="value">XXXXXXXX</td></tr>
-  <tr><td class="label">COUNTRY</td><td class="sep">:</td><td class="value">XXXXXXXX</td></tr>
+  <tr><td class="label">ACCOUNT NAME</td><td class="sep">:</td><td class="value"><?=$data["footer"]->namaakun?></td></tr>
+  <tr><td class="label">ACCOUNT NUMBER</td><td class="sep">:</td><td class="value"><?=$data["footer"]->noakun?></td></tr>
+  <tr><td class="label">BANK NAME</td><td class="sep">:</td><td class="value"><?=$data["footer"]->namabank?></td></tr>
+  <tr><td class="label">BRANCH</td><td class="sep">:</td><td class="value"><?=$data["footer"]->cabangbank?></td></tr>
+  <tr><td class="label">SWIFT CODE (for international transfer)</td><td class="sep">:</td><td class="value"><?=$data["footer"]->kodeswift?></td></tr>
+  <tr><td class="label">CURRENCY</td><td class="sep">:</td><td class="value"><?=$data["footer"]->matauang?></td></tr>
+  <tr><td class="label">COUNTRY</td><td class="sep">:</td><td class="value"><?=$data["footer"]->negara?></td></tr>
 </table>
 
 <br>

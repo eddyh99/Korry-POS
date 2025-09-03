@@ -47,7 +47,7 @@ class Wholesale extends BaseApiController
 
     public function postOrderlistdata()
     {
-        $result = $this->wholesaleModel->listOrderWholesale();
+        $result = $this->wholesaleModel->listOrderWholesale1();
         return $this->response->setJSON($result);
     }
 
