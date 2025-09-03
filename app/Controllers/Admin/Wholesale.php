@@ -384,15 +384,15 @@ class Wholesale extends BaseApiController
     public function postAddDataCicilan()
     {
         $rules = [
-            'nonota' => [
-                'label'  => 'Nomor Cicilan',
-                'rules'  => 'required|max_length[6]|is_unique[wholesale_cicilan.nonota]',
-                'errors' => [
-                    'required'   => '{field} wajib diisi',
-                    'max_length' => '{field} maksimal 6 karakter',
-                    'is_unique'  => '{field} sudah digunakan.'
-                ]
-            ],
+            // 'nonota' => [
+            //     'label'  => 'Nomor Cicilan',
+            //     'rules'  => 'required|max_length[6]|is_unique[wholesale_cicilan.nonota]',
+            //     'errors' => [
+            //         'required'   => '{field} wajib diisi',
+            //         'max_length' => '{field} maksimal 6 karakter',
+            //         'is_unique'  => '{field} sudah digunakan.'
+            //     ]
+            // ],
             'notaorder' => [
                 'label'  => 'Nota Order',
                 'rules'  => 'required',
@@ -416,7 +416,7 @@ class Wholesale extends BaseApiController
         }
 
         $data = [
-            'nonota'    => $this->request->getPost('nonota'),
+            // 'nonota'    => $this->request->getPost('nonota'),
             'notaorder' => $this->request->getPost('notaorder'),
             'bayar'     => $this->request->getPost('bayar'),
             'userid'    => session()->get("logged_status")["username"]
@@ -425,10 +425,15 @@ class Wholesale extends BaseApiController
         $result = $this->wholesaleModel->insertWholesaleCicilan($data);
 
         if ($result["code"] == 0) {
+            // simpan pesan untuk ditampilkan SETELAH kembali dari print
             $this->session->setFlashdata('message', 'Data cicilan berhasil disimpan.');
-            return redirect()->to(base_url("admin/wholesale/cicilan"));
+            // langsung redirect ke halaman print
+            return redirect()->to(base_url("admin/wholesale/cetakbalancepaymentcicilan/" . $result["nonota"]));
+
+            // $this->session->setFlashdata('message', 'Data cicilan berhasil disimpan.');
+            // return redirect()->to(base_url("admin/wholesale/cicilan"));
         } else {
-            $this->session->setFlashdata('message', 'Gagal menyimpan data cicilan: ' . $result["message"]);
+            $this->session->setFlashdata('message', 'Gagal menyimpan data cicilan.');
             return redirect()->to(base_url("admin/wholesale/cicilantambah"));
         }
     }
@@ -499,5 +504,18 @@ class Wholesale extends BaseApiController
         ];
 
         return view('admin/wholesale/order/balance_payment', $nota);
+    }
+
+    public function getCetakbalancepaymentcicilan($nonota)
+    {
+        $store = $this->storeModel->getStore($_SESSION['logged_status']['storeid']);
+        $data  = $this->wholesaleModel->getAllNotaCicilan($nonota);
+
+        $nota = [
+            'store' => $store[0],
+            'data'  => $data
+        ];
+
+        return view('admin/wholesale/cicilan/balance_payment', $nota);
     }
 }

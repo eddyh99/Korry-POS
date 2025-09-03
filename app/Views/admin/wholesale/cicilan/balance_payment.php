@@ -1,6 +1,6 @@
 <html> 
 <head>
-    <style>
+<style>
     /* === Fonts (via base_url) === */
     @font-face{
         font-family:'Agrandir';
@@ -36,11 +36,36 @@
     table.no-border td{border:none !important;padding:2px 5px;}
 
     /* summary */
-    .summary{border-collapse:collapse;margin-top:10px;}
-    .summary td{padding:4px 8px;border:none;font-size:12px;}
-    .summary .label{text-align:right;padding-right:10px;}
-    .summary .value{text-align:right;width:150px;white-space:nowrap;}
-    .summary .underline .value{border-bottom:1px solid #000;}
+    .summary {
+        border-collapse: collapse;
+        margin-top: 10px;
+        margin-left: auto;  /* supaya nempel ke kanan */
+        width: auto;        /* jangan full, cukup selebar konten */
+    }
+    .summary td {
+        padding: 4px 8px;
+        border: none;
+        font-size: 12px;
+    }
+    .summary .label {
+        text-align: right;
+        padding-right: 10px;
+    }
+    .summary .value {
+        text-align: right;
+        width: 150px;
+        white-space: nowrap;
+    }
+
+    /* underline untuk value saja (lama, masih bisa dipakai kalau perlu) */
+    .summary .underline .value {
+        border-bottom: 1px solid #000;
+    }
+
+    /* underline untuk seluruh baris (label + value) */
+    .summary .row-underline td {
+        border-bottom: 1px solid #000;
+    }
 
     /* sejajarkan IDR dan angka */
     .summary .value .currency {
@@ -60,7 +85,8 @@
     .bank-info .label {white-space: nowrap; padding-right: 2px;}
     .bank-info .sep {text-align:center; padding: 0 4px;}
     .bank-info .value {white-space: nowrap; padding-left: 2px;}
-    </style>
+</style>
+
 </head>
 <body>
 
@@ -74,8 +100,8 @@
     </td>
     <td align="right">
       <div class="invoice-title bold-wide">INVOICE</div>
-      <div class="regular">#<?=$data["header"]->notaorder?></div>
-      <div class="regular-bold"><?=date("d-M-Y", strtotime($data["header"]->tanggal))?></div>
+      <div class="regular">#<?=$data["header"]->nonota?></div>
+      <div class="regular-bold"><?=date("d-M-Y", strtotime($data["header"]->tgl_cicilan))?></div>
     </td>
   </tr>
 </table>
@@ -137,31 +163,35 @@
   // Untuk tampilan, hitung persentase diskon agar mirip invoice
   $diskonPersenView = $subtotal > 0 ? round(($diskonNominal/$subtotal)*100,2) : 0;
 
+  // Hitung total cicilan (dari semua payment)
+  $totalPaid = 0;
+  if (!empty($data["cicilan"])) {
+      foreach ($data["cicilan"] as $c) {
+          $totalPaid += floatval($c["bayar"]);
+      }
+  }
+
   // Hitung amount due
-  $amountDue = $grandTotal - $down_payment;
+  $amountDue = $grandTotal - $down_payment - $totalPaid;
 ?>
 
 <!-- summary -->
-<!-- summary -->
-<table class="summary" align="right">
+<table class="summary">
   <tr class="regular">
     <td class="label">Subtotal</td>
     <td class="value">
-      <span class="currency"></span>
       <span class="amount"><?=number_format($subtotal)?></span>
     </td>
   </tr>
   <tr class="regular">
     <td class="label">Discount (<?=$diskonPersenView?>%)</td>
     <td class="value">
-      <span class="currency"></span>
       <span class="amount">-<?=number_format($diskonNominal)?></span>
     </td>
   </tr>
-  <tr class="regular underline">
+  <tr class="regular row-underline">
     <td class="label">VAT (<?=$ppnPersen?>%)</td>
     <td class="value">
-      <span class="currency"></span>
       <span class="amount">+<?=number_format($ppnNominal)?></span>
     </td>
   </tr>
@@ -172,16 +202,29 @@
       <span class="amount"><?=number_format($grandTotal)?></span>
     </td>
   </tr>
-  <tr class="regular underline">
-  <td class="label">Down Payment</td>
-    <td class="value regular">
+  <tr class="regular row-underline">
+    <td class="label">Down Payment</td>
+    <td class="value">
       <span class="currency">IDR</span>
       <span class="amount">-<?=number_format($down_payment)?></span>
     </td>
   </tr>
+
+  <?php if (!empty($data["cicilan"])): ?>
+    <?php foreach ($data["cicilan"] as $i => $c): ?>
+      <tr class="regular <?=($i === array_key_last($data["cicilan"])) ? 'row-underline' : ''?>">
+        <td class="label">Payment <?=$i+1?></td>
+        <td class="value">
+          <span class="currency">IDR</span>
+          <span class="amount">-<?=number_format($c["bayar"])?></span>
+        </td>
+      </tr>
+    <?php endforeach; ?>
+  <?php endif; ?>
+
   <tr>
     <td class="label bold-wide">Amount Due</td>
-    <td class="value regular">
+    <td class="value">
       <span class="currency">IDR</span>
       <span class="amount"><?=number_format($amountDue)?></span>
     </td>
@@ -211,10 +254,22 @@
 
 <br>
 
-<script>
+<!-- <script>
   window.onafterprint = window.close;
   window.print();
+</script> -->
+<script>
+window.onload = function() {
+    // langsung munculin dialog print
+    window.print();
+
+    // setelah print selesai atau dibatalkan, balik ke daftar cicilan
+    window.onafterprint = function() {
+        window.location.href = "<?= base_url('admin/wholesale/cicilan') ?>";
+    };
+};
 </script>
+
 
 </body>
 </html>
