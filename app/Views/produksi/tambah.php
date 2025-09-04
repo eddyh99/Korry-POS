@@ -42,78 +42,109 @@
 						</div>
                 </div>
             </div>
-            <div class="card">
-				<div class="card-header">
-					<h5 class="card-title">ADD PRODUCT</h5>
-				</div>
+			
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <!-- Kolom Kiri: ADD PRODUCT -->
+            <div class="col-md-6">
+                <div class="card-header">
+                    <h5 class="card-title">ADD PRODUCT</h5>
+                </div>
                 <div class="card-content">
-					<div class="form-group">
-						<label for="produk" class="col-sm-2 control-label">Produk</label>
-						<div class="col-sm-4">
-						<select id="produk" class="form-control select2">
-							<option value="" disabled selected>-- Pilih Produk --</option>
-							<?php foreach ($produk as $dt){ ?>
-							<option value="<?= $dt["barcode"] ?>"
-									data-nama="<?= $dt["namaproduk"] ?>"
-									data-harga="<?= $dt["harga"] ?>"
-									data-bahan='<?= json_encode($dt["bahan"], JSON_HEX_APOS | JSON_HEX_QUOT) ?>'>
-								<?=$dt['namaproduk']; ?>
-							</option>
-							<?php } ?>
-						</select>
-						</div>
-					</div>
+                    <div class="form-group">
+                        <label for="produk" class="col-sm-2 control-label">Produk</label>
+                        <div class="col-sm-8">
+                            <select id="produk" class="form-control select2">
+                                <option value="" disabled selected>-- Pilih Produk --</option>
+                                <?php foreach ($produk as $dt){ ?>
+                                <option value="<?= $dt["barcode"] ?>"
+                                        data-nama="<?= $dt["namaproduk"] ?>"
+                                        data-harga="<?= $dt["harga"] ?>"
+                                        data-bahan='<?= json_encode($dt["bahan"], JSON_HEX_APOS | JSON_HEX_QUOT) ?>'>
+                                    <?=$dt['namaproduk']; ?>
+                                </option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
 
-					<!-- jumlah + harga + button -->
-					<div class="form-group">
-						<label class="col-sm-2 control-label">Jumlah</label>
-						<div class="col-sm-2">
-						<input type="number" id="jumlah" class="form-control" min="1" value="1">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label text-right" style="padding-left:10px;">Harga</label>
-						<div class="col-sm-3">
-						<input type="text" id="harga" class="form-control">
-						</div>
-					</div>
-					<div class="form-group">
-						<button type="button" id="btnAdd" class="btn btn-success btn-block">
-							<i class="material-icons" style="font-size: 18px; vertical-align: middle;">add</i>
-							&nbsp;TAMBAH
-						</button>
-					</div>
-				</div>
-			</div>
-            <div class="card">
-				<div class="card-header">
-					<h5 class="card-title">PRODUCT LIST</h5>
-				</div>
-                <div class="card-content">
-					<div class="table-responsive">
-						<table id="table_data" class="table table-striped table-bordered">
-						<thead>
-							<tr>
-							<th>Barcode</th>
-							<th>Nama Produk</th>
-							<th>Jumlah</th>
-							<th>Harga</th>
-							<th>Total</th>
-							<th>Aksi</th>
-							</tr>
-						</thead>
-						<tbody></tbody>
-						<tfoot>
-							<tr>
-							<th colspan="4" class="text-right">Sub Total:</th>
-							<th id="subtotal">0</th>
-							<th></th>
-							</tr>
-						</tfoot>
-						</table>
-					</div>
-				</div>
-			</div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Jumlah</label>
+                        <div class="col-sm-4">
+                            <input type="number" id="jumlah" class="form-control" min="1" value="1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Harga</label>
+                        <div class="col-sm-6">
+                            <input type="text" id="harga" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kolom Kanan: DETAIL BAHAN BAKU -->
+<!-- Kolom Kanan: DETAIL BAHAN BAKU -->
+<div class="col-md-6">
+    <div class="card-header">
+        <h5 class="card-title">DETAIL BAHAN BAKU</h5>
+    </div>
+    <div class="card-content">
+        <!-- Container kosong, akan diisi via JS -->
+        <div id="preview_bahan" class="p-2">
+            <div class="form-group">
+                <label class="col-sm-2 control-label text-muted">
+                    Pilih produk untuk melihat detail bahan baku
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div><!-- end row -->
+
+        <!-- Tombol TAMBAH -->
+        <div class="form-group text-center" style="margin-top:20px;">
+            <button type="button" id="btnAdd" class="btn btn-success btn-lg" style="width:80%; display:none;">
+                <i class="material-icons" style="font-size: 18px; vertical-align: middle;">add</i>
+                &nbsp;TAMBAH
+            </button>
+        </div>
+    </div><!-- end card-body -->
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title">PRODUCT LIST</h5>
+    </div>
+    <div class="card-content">
+        <div class="table-responsive">
+            <table id="table_data" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Barcode</th>
+                        <th>Detail Bahan Baku</th>
+                        <th>Jumlah</th>
+                        <th>Harga</th>
+                        <th>Total</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="4" class="text-right">Sub Total:</th>
+                        <th id="subtotal">0</th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
 			<div class="col-xs-6">
 				<button type="submit" class="btn btn-primary btn-lg btn-block">
 				<i class="material-icons" style="font-size: 18px; vertical-align: middle;">save</i>
