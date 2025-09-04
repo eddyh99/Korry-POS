@@ -161,6 +161,7 @@ class Produksi extends BaseApiController
         $barcodes = $this->request->getPost("barcode");
         $jumlahs  = $this->request->getPost("jumlah");
         $hargas   = $this->request->getPost("harga");
+        $sizes   = $this->request->getPost("size");
 
         $data = [
             "idvendor" => esc($this->request->getPost("idvendor")),
@@ -175,9 +176,12 @@ class Produksi extends BaseApiController
             $data["detail"][] = [
                 "barcode" => esc($barcode),
                 "jumlah"  => (int) $jumlahs[$i],
+                'size'    => esc($sizes[$i]),
                 "harga"   => (int) $hargas[$i],
             ];
         }
+
+
 
         $result = $this->produksiModel->insertData($data);
 
@@ -186,6 +190,11 @@ class Produksi extends BaseApiController
     
     public function getListdatadeadline(){
         $result = $this->produksiModel->listdeadline();
+        return $this->response->setJSON($result);
+    }
+
+    public function getComplete($nonota=null){
+        $result = $this->produksiModel->complete_produksi($nonota);
         return $this->response->setJSON($result);
     }
 }

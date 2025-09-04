@@ -4,7 +4,7 @@
     <div class="form-group row">
         <div class="col-md-6">
             <div class="panel panel-default">
-                <div class="panel-heading">Stok Bahan Baku</div>
+                <div class="panel-heading text-center" style="background-color:#f6f5f1"><strong>Stok Bahan Baku</strong></div>
                 <div class="panel-body">
                     <table id="table_data" class="table table-striped nowrap" width="100%">
                         <thead>
@@ -22,7 +22,7 @@
         </div>
         <div class="col-md-6">
             <div class="panel panel-default">
-                <div class="panel-heading">Produksi Deadline</div>
+                <div class="panel-heading text-center" style="background-color:#f6f5f1"><strong>Produksi Deadline</strong></div>
                 <div class="panel-body">
                     <table id="table_produksi" class="table table-striped nowrap" width="100%">
                         <thead>
@@ -43,7 +43,7 @@
     <div class="form-group row">
         <div class="col-md-6">
             <div class="panel panel-default">
-                <div class="panel-heading">All time top ten</div>
+                <div class="panel-heading text-center" style="background-color:#f6f5f1"><strong>All time top ten</strong></div>
                 <div class="panel-body">
                     <table id="table_topten" class="table table-striped nowrap" width="100%">
                         <thead>

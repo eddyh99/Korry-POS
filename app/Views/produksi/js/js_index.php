@@ -36,7 +36,7 @@
 
                         let button = '';
 
-                        if (full.role !== "Admin") {
+                        if (full.role !== "Admin" && full.is_complete==0) {
                             button += `
                                 <button 
                                     type="button" 
@@ -44,6 +44,13 @@
                                     title="Hapus" 
                                     data-nonota="${full.nonota}">
                                     <i class="material-icons">close</i>
+                                </button>
+                                <button 
+                                    type="button" 
+                                    class="btn btn-simple btn-success btn-icon btncomplete" 
+                                    title="Complete"
+                                    data-nonota="${full.nonota}">
+                                    <i class="material-icons">check</i>
                                 </button>
                             `;
                         }
@@ -70,6 +77,25 @@
             // munculkan modal
             $("#modal_deleteProduksi").modal("show");
         });
+
+         $('#table_data').on("click", ".btncomplete", function () {
+            const nonota = $(this).data("nonota");
+            $.ajax({
+                url: "<?=base_url()?>/produksi/complete/"+nonota,  // ganti sesuai route kamu
+                type: "GET",                          // biasanya POST untuk update
+                data: { nonota: nonota },
+                success: function (response) {
+                    // misalnya refresh tabel setelah update
+                    alert("Produksi " + nonota + " sudah complete!");
+                    $('#table_data').DataTable().ajax.reload(); 
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                    alert("Gagal update status!");
+                }
+            });
+        });
+
 
         // Saat konfirmasi hapus ditekan
         $("#confirmDeleteProduksiBtn").on("click", function () {
