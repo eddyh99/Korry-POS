@@ -183,86 +183,9 @@ class Produksi extends BaseApiController
 
         return $this->response->setJSON($result);
     }
-    // public function postAddData()
-    // {
-    //     $rules = [
-    //         'idvendor' => [
-    //             'label'  => 'Vendor',
-    //             'rules'  => 'required|integer',
-    //             'errors' => [
-    //                 'required' => '{field} wajib dipilih.',
-    //                 'integer'  => '{field} tidak valid.'
-    //             ]
-    //         ],
-    //         'estimasi' => [
-    //             'label'  => 'Estimasi',
-    //             'rules'  => 'required|integer|greater_than_equal_to[0]',
-    //             'errors' => [
-    //                 'required' => '{field} wajib diisi.',
-    //                 'integer'  => '{field} hanya angka.',
-    //                 'greater_than_equal_to' => '{field} minimal 0.'
-    //             ]
-    //         ],
-    //         'dp' => [
-    //             'label'  => 'DP',
-    //             'rules'  => 'required|integer|greater_than_equal_to[0]',
-    //             'errors' => [
-    //                 'required' => '{field} wajib diisi.',
-    //                 'integer'  => '{field} hanya angka.'
-    //             ]
-    //         ],
-    //         'total' => [
-    //             'label'  => 'Total',
-    //             'rules'  => 'required|integer|greater_than[0]',
-    //             'errors' => [
-    //                 'required' => '{field} wajib diisi.',
-    //                 'integer'  => '{field} hanya angka.',
-    //                 'greater_than' => '{field} harus lebih besar dari 0.'
-    //             ]
-    //         ],
-    //         'barcode' => [
-    //             'label'  => 'Barcode',
-    //             'rules'  => 'required|exact_length[13]|numeric',
-    //             'errors' => [
-    //                 'required'     => '{field} wajib diisi.',
-    //                 'exact_length' => '{field} harus 13 digit.',
-    //                 'numeric'      => '{field} hanya angka.'
-    //             ]
-    //         ],
-    //         'jumlah' => [
-    //             'label'  => 'Jumlah Produksi',
-    //             'rules'  => 'required|integer|greater_than[0]',
-    //             'errors' => [
-    //                 'required'     => '{field} wajib diisi.',
-    //                 'integer'      => '{field} hanya angka.',
-    //                 'greater_than' => '{field} harus lebih dari 0.'
-    //             ]
-    //         ]
-    //     ];
-
-    //     if (! $this->validate($rules)) {
-    //         $this->session->setFlashdata('message', $this->validator->listErrors());
-    //         return redirect()->to('produksi/tambah')->withInput();
-    //     }
-
-    //     $data = [
-    //         "idvendor" => esc($this->request->getPost('idvendor')),
-    //         "estimasi" => esc($this->request->getPost('estimasi')),
-    //         "dp"       => esc($this->request->getPost('dp')),
-    //         "total"    => esc($this->request->getPost('total')),
-    //         "user_id"  => session()->get('logged_status')['username'],
-    //         "barcode"  => esc($this->request->getPost('barcode')),
-    //         "jumlah"   => esc($this->request->getPost('jumlah'))
-    //     ];
-
-    //     $result = $this->produksiModel->insertData($data);
-
-    //     if ($result["code"] == 0) {
-    //         $this->session->setFlashdata('message', 'Data berhasil disimpan.');
-    //         return redirect()->to('/produksi');
-    //     } else {
-    //         $this->session->setFlashdata('message', 'Data gagal disimpan.');
-    //         return redirect()->to('/produksi/tambah')->withInput();
-    //     }
-    // }
+    
+    public function getListdatadeadline(){
+        $result = $this->produksiModel->listdeadline();
+        return $this->response->setJSON($result);
+    }
 }

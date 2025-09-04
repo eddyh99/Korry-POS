@@ -90,52 +90,6 @@ class ProduksiModel extends Model
             ];
         }
     }
-    // public function insertData($data)
-    // {
-    //     $sql="SELECT LPAD(
-    //             CAST(MAX(nonota) AS UNSIGNED) + 1,
-    //             5,
-    //             '0'
-    //         ) AS next_nonota
-    //         FROM produksi";
-
-    //     $nonota = $this->db->query($sql)->getRow()->next_nonota;
-
-    //     // data utama untuk tabel produksi
-    //     $produksi = [
-    //         'nonota'     => $nonota,
-    //         'tanggal'    => date("Y-m-d H:i:s"),
-    //         'idvendor'   => $data["idvendor"],
-    //         'estimasi'   => $data["estimasi"],
-    //         'dp'         => $data["dp"],
-    //         'total'      => $data["total"],
-    //         'user_id'    => $data["user_id"],
-    //         'lastupdate' => date("Y-m-d H:i:s")
-    //     ];
-
-    //     // data untuk tabel produksi detail
-    //     $produksi_detail = [
-    //         'nonota'  => $nonota,
-    //         'barcode' => $data["barcode"],
-    //         'jumlah'  => $data["jumlah"]
-    //     ];
-
-    //     $this->db->transStart();
-
-    //         $this->db->table($this->produksi)->insert($produksi);
-
-    //         $this->db->table($this->produksi_detail)->insert($produksi_detail);
-
-    //         $this->db->transComplete();
-
-    //     if ($this->db->transStatus() === false) {
-    //         $this->db->transRollback();
-    //         return ["code" => 511, "message" => "Data gagal disimpan"];
-    //     } else {
-    //         $this->db->transCommit();
-    //         return ["code" => 0, "message" => "Data berhasil disimpan"];
-    //     }
-    // }
 
     public function hapusData($data, $nonota)
     {
@@ -147,5 +101,27 @@ class ProduksiModel extends Model
         } else {
             return $this->db->error();
         }
+    }
+
+    public function listdeadline(){
+        $today = date("Y-m-d");
+        $sql="SELECT 
+                p.nonota,
+                p.tanggal,
+                p.estimasi,
+                DATE_ADD(p.tanggal, INTERVAL p.estimasi DAY) AS deadline,
+                p.dp,
+                p.total,
+                v.nama AS vendor_nama,
+                v.tipe AS vendor_tipe
+            FROM produksi p
+            JOIN vendor v ON p.idvendor = v.id
+            WHERE DATE_ADD(p.tanggal, INTERVAL p.estimasi DAY) <= ?
+            AND p.status = 0
+            AND v.status = 0
+            AND p.is_complete = 0
+        ";
+        $query = $this->db->query($sql,$today)->getResultArray();
+        return $query;
     }
 }
