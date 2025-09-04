@@ -49,4 +49,27 @@
 			{ "data": "deadline" },
 		],
 	});
+
+	table = $('#table_topten').DataTable({
+		"order": [[ 0, "asc" ]],
+		"scrollX": true,
+		"ajax": {
+			"url": "<?=base_url()?>dashboard/alltimetopten",
+			"type": "GET",
+			"dataSrc": function (data){
+				console.log("Data diterima dari server:", data);
+				return data;                            
+			},
+			"error": function (xhr, error, code) {
+				console.error("AJAX error:", error, "Code:", code, "Response:", xhr.responseText);
+			}
+		},
+		"columns": [
+			{ "data": "namaproduk" },
+			{ "data": "total_qty" },
+			{ "data": "avg_jual", render: $.fn.dataTable.render.number(".", ",", 2, "", "")},
+			{ "data": "avg_modal", render: $.fn.dataTable.render.number(".", ",", 2, "", "") },
+			{ "data": "avg_profit", render: $.fn.dataTable.render.number(".", ",", 2, "", "") },
+		],
+	});
 </script>

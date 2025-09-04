@@ -75,4 +75,10 @@ class Dashboard extends BaseController
 
         return $this->response->setJSON($data);
     }
+
+    public function getAlltimetopten()
+    {
+        $result = $this->dashboard->toptenpenjualan();
+        return $this->response->setJSON($result);
+    }
 }
