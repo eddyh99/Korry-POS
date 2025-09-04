@@ -198,6 +198,18 @@
                             <li class="<?=@$side21?>">
                                 <a href="<?=base_url()?>admin/laporan/kaskeluar">Kas</a>
                             </li>
+                            <li class="<?=@$side22?>">
+                                <a href="<?=base_url()?>admin/laporan/pospengeluaran">Pos Pengeluaran</a>
+                            </li>
+                            <li class="<?=@$side23?>">
+                                <a href="<?=base_url()?>admin/laporan/produkterlaris">Produk Terlaris</a>
+                            </li>
+                            <li class="<?=@$side23?>">
+                                <a href="<?=base_url()?>admin/laporan/neraca">Neraca</a>
+                            </li>
+                            <li class="<?=@$side23?>">
+                                <a href="<?=base_url()?>admin/laporan/labarugi">Laba-Rugi</a>
+                            </li>
                         </ul>
                     </div>
                 </li>
