@@ -126,4 +126,73 @@ class DashboardModel extends Model
 
         return $data;
     }
+
+    public function toptenpenjualan(){
+        $sql="SELECT x.barcode, pr.namaproduk, pr.namabrand,
+                    SUM(x.qty) AS total_qty,
+                    SUM(x.total_jual) / SUM(x.qty) AS avg_jual,
+                    m.avg_modal,
+                    (SUM(x.total_jual) / SUM(x.qty) - m.avg_modal) AS avg_profit
+                FROM (
+                -- gabungan penjualan, konsinyasi, wholesale
+                SELECT d.barcode, SUM(d.jumlah) AS qty,
+                        SUM((h.harga - d.diskonn - (d.diskonp/100.0*h.harga)) * d.jumlah) AS total_jual
+                FROM penjualan_detail d
+                JOIN penjualan p ON p.id = d.id
+                JOIN harga h ON h.barcode = d.barcode
+                                AND h.tanggal = (
+                                    SELECT MAX(h2.tanggal)
+                                    FROM harga h2
+                                    WHERE h2.barcode = d.barcode
+                                    AND h2.tanggal <= p.tanggal
+                                )
+                GROUP BY d.barcode
+
+                UNION ALL
+
+                SELECT d.barcode, SUM(d.jumlah) AS qty,
+                        SUM(h.harga_konsinyasi * d.jumlah) AS total_jual
+                FROM nota_konsinyasi_detail d
+                JOIN nota_konsinyasi n ON n.notajual = d.notajual
+                JOIN harga h ON h.barcode = d.barcode
+                                AND h.tanggal = (
+                                    SELECT MAX(h2.tanggal)
+                                    FROM harga h2
+                                    WHERE h2.barcode = d.barcode
+                                    AND h2.tanggal <= n.tanggal
+                                )
+                WHERE n.status != 'void'
+                GROUP BY d.barcode
+
+                UNION ALL
+
+                SELECT d.barcode, SUM(d.jumlah) AS qty,
+                        SUM((h.harga_wholesale - d.potongan) * d.jumlah) AS total_jual
+                FROM wholesale_order_detail d
+                JOIN wholesale_order w ON w.notaorder = d.notaorder
+                JOIN harga h ON h.barcode = d.barcode
+                                AND h.tanggal = (
+                                    SELECT MAX(h2.tanggal)
+                                    FROM harga h2
+                                    WHERE h2.barcode = d.barcode
+                                    AND h2.tanggal <= w.tanggal
+                                )
+                WHERE w.is_void = 0
+                GROUP BY d.barcode
+                ) x
+                JOIN produk pr ON pr.barcode = x.barcode
+                LEFT JOIN (
+                -- modal rata2 per barcode (dari produksi)
+                SELECT d.barcode, AVG(d.harga) AS avg_modal
+                FROM produksi_detail d
+                JOIN produksi p ON p.nonota = d.nonota
+                WHERE p.is_complete = 1
+                GROUP BY d.barcode
+                ) m ON m.barcode = x.barcode
+                GROUP BY x.barcode, pr.namaproduk, pr.namabrand
+                ORDER BY total_qty DESC
+                LIMIT 10";
+        $result = $this->db->query($sql)->getResultArray();
+        return $result;
+    }
 }

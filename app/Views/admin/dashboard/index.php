@@ -40,7 +40,32 @@
             </div>                
         </div>
     </div>
-<div class="form-group row">
+    <div class="form-group row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">All time top ten</div>
+                <div class="panel-body">
+                    <table id="table_topten" class="table table-striped nowrap" width="100%">
+                        <thead>
+                        <tr>
+                            <th>Nama Produk</th> 
+                            <th>Jumlah</th>
+                            <th>AVG Harga jual</th> 
+                            <th>AVG Produksi</th> 
+                            <th>AVG Profit</th> 
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>               
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+        </div>
+    </div>
+
+    <div class="form-group row">
         <div class="col-md-6">
             <div id="netincome" style="height: 300px; width: auto;margin-left:10px"></div>                
         </div>
