@@ -48,7 +48,8 @@ class ProdukModel extends Model
                             SEPARATOR ','
                         ),
                         ']'
-                    ) AS bahan
+                    ) AS bahan,
+                    GROUP_CONCAT(DISTINCT ps.size ORDER BY ps.size SEPARATOR ',') AS size_available
                 FROM produk p
                 INNER JOIN (
                     SELECT h1.barcode, h1.harga
@@ -61,22 +62,22 @@ class ProdukModel extends Model
                 ) h ON p.barcode = h.barcode
                 LEFT JOIN produk_bahan pb ON p.barcode = pb.barcode
                 LEFT JOIN bahanbaku b ON pb.idbahan = b.id
-                -- stok asli dari stok_bahanbaku
                 LEFT JOIN (
                     SELECT idbahan, SUM(jumlah) AS total_stok
                     FROM stok_bahanbaku
                     GROUP BY idbahan
                 ) sb ON pb.idbahan = sb.idbahan
-                -- kebutuhan bahan dari produksi_detail
                 LEFT JOIN (
                     SELECT pb.idbahan, SUM(pd.jumlah * pb.jumlah) AS total_kebutuhan
                     FROM produksi_detail pd
                     INNER JOIN produk_bahan pb ON pd.barcode = pb.barcode
                     GROUP BY pb.idbahan
                 ) kebutuhan ON pb.idbahan = kebutuhan.idbahan
+                LEFT JOIN produksize ps ON ps.barcode = p.barcode
                 WHERE p.status = '0'
                 GROUP BY p.barcode, p.namaproduk, h.harga
-                ORDER BY p.barcode;";
+                ORDER BY p.barcode;
+";
 
         $query = $this->db->query($sql);
 

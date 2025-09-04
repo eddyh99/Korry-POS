@@ -42,42 +42,60 @@
 						</div>
                 </div>
             </div>
-            <div class="card">
+			<div class="card">
 				<div class="card-header">
 					<h5 class="card-title">ADD PRODUCT</h5>
 				</div>
-                <div class="card-content">
-					<div class="form-group">
-						<label for="produk" class="col-sm-2 control-label">Produk</label>
-						<div class="col-sm-4">
-						<select id="produk" class="form-control select2">
-							<option value="" disabled selected>-- Pilih Produk --</option>
-							<?php foreach ($produk as $dt){ ?>
-							<option value="<?= $dt["barcode"] ?>"
-									data-nama="<?= $dt["namaproduk"] ?>"
-									data-harga="<?= $dt["harga"] ?>"
-									data-bahan='<?= json_encode($dt["bahan"], JSON_HEX_APOS | JSON_HEX_QUOT) ?>'>
-								<?=$dt['namaproduk']; ?>
-							</option>
-							<?php } ?>
-						</select>
+				<div class="card-content">
+					<div class="row">
+						<div class="col-sm-6">
+							<!-- Kiri -->
+							<div class="form-group">
+								<label for="produk" class="col-sm-2 control-label">Produk</label>
+								<div class="col-sm-4">
+									<select id="produk" class="form-control select2">
+										<option value="" disabled selected>-- Pilih Produk --</option>
+										<?php foreach ($produk as $dt){ ?>
+										<option value="<?= $dt["barcode"] ?>"
+												data-nama="<?= $dt["namaproduk"] ?>"
+												data-harga="<?= $dt["harga"] ?>"
+												data-size="<?=$dt["size_available"]?>"
+												data-bahan='<?= json_encode($dt["bahan"], JSON_HEX_APOS | JSON_HEX_QUOT) ?>'>
+											<?=$dt['namaproduk']; ?>
+										</option>
+										<?php } ?>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">Size</label>
+								<div class="col-sm-4">
+									<select id="size" class="form-control">
+										
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">Jumlah</label>
+								<div class="col-sm-4">
+									<input type="number" id="jumlah" class="form-control" min="1" value="1">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label text-right" style="padding-left:10px;">Harga</label>
+								<div class="col-sm-4">
+									<input type="text" id="harga" class="form-control">
+								</div>
+							</div>
+						</div>
+
+						<div class="col-sm-6">
+							<!-- Kanan -->
+							<div id="content"></div>
 						</div>
 					</div>
 
-					<!-- jumlah + harga + button -->
-					<div class="form-group">
-						<label class="col-sm-2 control-label">Jumlah</label>
-						<div class="col-sm-2">
-						<input type="number" id="jumlah" class="form-control" min="1" value="1">
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-2 control-label text-right" style="padding-left:10px;">Harga</label>
-						<div class="col-sm-3">
-						<input type="text" id="harga" class="form-control">
-						</div>
-					</div>
-					<div class="form-group">
+					<div class="form-group mt-3">
 						<button type="button" id="btnAdd" class="btn btn-success btn-block">
 							<i class="material-icons" style="font-size: 18px; vertical-align: middle;">add</i>
 							&nbsp;TAMBAH
@@ -97,6 +115,7 @@
 							<th>Barcode</th>
 							<th>Nama Produk</th>
 							<th>Jumlah</th>
+							<th>Size</th>
 							<th>Harga</th>
 							<th>Total</th>
 							<th>Aksi</th>
