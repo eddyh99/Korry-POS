@@ -11,41 +11,38 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 
 <script>
-let table;
-table = $('#table_data').DataTable({
-    "order": [[1, "desc"]],
+let table = $('#table_data').DataTable({
+    "order": [[0, "asc"]], // urutkan akun
     "pageLength": 10,
     "dom": 'Bfrtip',
     "buttons": [
-        {extend: 'excel'},
-        {extend: 'pdf'},
-        {extend: 'print'}
+        { extend: 'excel', text: 'Export Excel' },
+        { extend: 'pdf', text: 'Export PDF' },
+        { extend: 'print', text: 'Print' }
     ],
     "scrollX": true,
     "ajax": {
-        "url": "<?= base_url('admin/laporan/listprodukterlaris') ?>",
+        "url": "<?= base_url('admin/laporan/listneraca') ?>",
         "type": "POST",
         "data": function(d) {
-            d.bulan = $("#bulan").val();
-            d.tahun = (d.bulan === "all-time") ? "-" : $("#tahun").val();
+            d.tahun = $("#tahun").val();
         },
         "dataSrc": function(data) {
             return data;
         }
     },
     "columns": [
-        { "data": "namaproduk" },
-        { "data": "total_qty", "className": "text-right" },
-        { "data": "avg_jual", "className": "text-right", 
-          "render": $.fn.dataTable.render.number('.', ',', 0, '') },
-        { "data": "avg_modal", "className": "text-right",
-          "render": $.fn.dataTable.render.number('.', ',', 0, '') },
-        { "data": "avg_profit", "className": "text-right",
-          "render": $.fn.dataTable.render.number('.', ',', 0, '') }
+        { "data": "akun" },
+        { "data": "saldo", 
+            "className": "text-right",
+            "render": $.fn.dataTable.render.number('.', ',', 0, 'Rp ')
+        }
     ]
 });
 
+// tombol lihat untuk reload berdasarkan tahun
 $("#lihat").on("click", function(){
     table.ajax.reload();
 });
 </script>
+

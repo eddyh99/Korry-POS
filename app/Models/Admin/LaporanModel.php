@@ -19,7 +19,16 @@ class LaporanModel extends Model
     private $produk           = 'produk';
     private $store            = 'store';
     private $kas              = 'kas';
+
     private $pengeluaran      = 'pengeluaran';
+
+    private $nota_konsinyasi        = 'nota_konsinyasi';
+    private $nota_konsinyasi_detail = 'nota_konsinyasi_detail';
+    private $wholesale_order        = 'wholesale_order';
+    private $wholesale_order_detail = 'wholesale_order_detail';
+
+    private $produksi           = 'produksi';
+        private $produksi_detail           = 'produksi_detail';
 
     // Mutasi
     public function getmutasi($bulan, $tahun, $storeid, $brand, $kategori)
@@ -817,14 +826,243 @@ class LaporanModel extends Model
         return $query->getResultArray();
     }
 
-    public function getprodukterlaris($bulan, $tahun, $storeid, $pengeluaran)
+    public function getprodukterlaris($bulan, $tahun)
     {
-        $awal  = $tahun . "-" . $bulan . "-01";
-        $akhir = date("Y-m-t", strtotime($awal));
+        $wherePenjualan  = "";
+        $whereKonsinyasi = "";
+        $whereWholesale  = "";
 
-        // jgn pakai nama tabel di DB-nya langsung, gunakan {$this->kas}, {$this->store}, {$this->pengeluaran}
+        if ($bulan !== "all-time" && $tahun !== "-") {
+            $bulan = str_pad($bulan, 2, "0", STR_PAD_LEFT);
+            $awal  = $tahun . "-" . $bulan . "-01";
+            $akhir = date("Y-m-t", strtotime($awal));
 
-        return $mdata;
+            $wherePenjualan  = "AND p.tanggal BETWEEN '{$awal}' AND '{$akhir}'";
+            $whereKonsinyasi = "AND n.tanggal BETWEEN '{$awal}' AND '{$akhir}'";
+            $whereWholesale  = "AND w.tanggal BETWEEN '{$awal}' AND '{$akhir}'";
+        }
+
+        $sql = "
+            SELECT x.barcode, pr.namaproduk, pr.namabrand,
+                SUM(x.qty) AS total_qty,
+                SUM(x.total_jual) / SUM(x.qty) AS avg_jual,
+                m.avg_modal,
+                (SUM(x.total_jual) / SUM(x.qty) - m.avg_modal) AS avg_profit
+            FROM (
+                -- penjualan
+                SELECT d.barcode, SUM(d.jumlah) AS qty,
+                    SUM((h.harga - d.diskonn - (d.diskonp/100.0*h.harga)) * d.jumlah) AS total_jual
+                FROM {$this->penjualan_detail} d
+                JOIN {$this->penjualan} p ON p.id = d.id
+                JOIN {$this->harga} h ON h.barcode = d.barcode
+                            AND h.tanggal = (
+                                SELECT MAX(h2.tanggal) FROM {$this->harga} h2
+                                WHERE h2.barcode = d.barcode
+                                AND h2.tanggal <= p.tanggal
+                            )
+                WHERE 1=1 {$wherePenjualan}
+                GROUP BY d.barcode
+
+                UNION ALL
+
+                -- konsinyasi
+                SELECT d.barcode, SUM(d.jumlah) AS qty,
+                    SUM(h.harga_konsinyasi * d.jumlah) AS total_jual
+                FROM {$this->nota_konsinyasi_detail} d
+                JOIN {$this->nota_konsinyasi} n ON n.notajual = d.notajual
+                JOIN {$this->harga} h ON h.barcode = d.barcode
+                            AND h.tanggal = (
+                                SELECT MAX(h2.tanggal) FROM {$this->harga} h2
+                                WHERE h2.barcode = d.barcode
+                                AND h2.tanggal <= n.tanggal
+                            )
+                WHERE n.status != 'void' {$whereKonsinyasi}
+                GROUP BY d.barcode
+
+                UNION ALL
+
+                -- wholesale
+                SELECT d.barcode, SUM(d.jumlah) AS qty,
+                    SUM((h.harga_wholesale - d.potongan) * d.jumlah) AS total_jual
+                FROM {$this->wholesale_order_detail} d
+                JOIN {$this->wholesale_order} w ON w.notaorder = d.notaorder
+                JOIN {$this->harga} h ON h.barcode = d.barcode
+                            AND h.tanggal = (
+                                SELECT MAX(h2.tanggal) FROM {$this->harga} h2
+                                WHERE h2.barcode = d.barcode
+                                AND h2.tanggal <= w.tanggal
+                            )
+                WHERE w.is_void = 0 {$whereWholesale}
+                GROUP BY d.barcode
+            ) x
+            JOIN {$this->produk} pr ON pr.barcode = x.barcode
+            LEFT JOIN (
+                -- modal rata2 per barcode (dari produksi)
+                SELECT d.barcode, AVG(d.harga) AS avg_modal
+                FROM {$this->produksi_detail} d
+                JOIN {$this->produksi} p ON p.nonota = d.nonota
+                WHERE p.is_complete = 1
+                GROUP BY d.barcode
+            ) m ON m.barcode = x.barcode
+            GROUP BY x.barcode, pr.namaproduk, pr.namabrand
+            ORDER BY total_qty DESC
+            LIMIT 10
+        ";
+
+        return $this->db->query($sql)->getResultArray();
     }
 
+    public function getNeraca($tahun)
+    {
+        $result = [];
+
+        // 1. Kas / Saldo
+        $sqlKas = "
+            SELECT 
+                SUM(CASE WHEN jenis='Masuk' THEN nominal ELSE 0 END) -
+                SUM(CASE WHEN jenis='Keluar' THEN nominal ELSE 0 END) as saldo
+            FROM {$this->kas}
+            WHERE YEAR(tanggal) = ?
+        ";
+        $kasRow = $this->db->query($sqlKas, [$tahun])->getRow();
+        $kas = $kasRow ? (int)$kasRow->saldo : 0;
+        $result[] = ["akun" => "Kas / Saldo", "saldo" => $kas];
+
+        // 2. Piutang Usaha (penjualan kredit)
+        $sqlPiutang = "
+            SELECT a.id, a.tanggal, a.method
+            FROM {$this->penjualan} a
+            WHERE YEAR(a.tanggal) = ?
+            AND a.method = 'credit'
+            AND a.id NOT IN (SELECT jual_id FROM retur)
+        ";
+        $penjualanKredit = $this->db->query($sqlPiutang, [$tahun])->getResultArray();
+        $piutang = 0;
+        foreach ($penjualanKredit as $pj) {
+            $dsql = "SELECT * FROM {$this->penjualan_detail} WHERE id = ?";
+            $detail = $this->db->query($dsql, [$pj["id"]])->getResultArray();
+
+            foreach ($detail as $det) {
+                $sqlHarga = "
+                    SELECT harga 
+                    FROM {$this->harga}
+                    WHERE tanggal <= ? AND barcode = ?
+                    ORDER BY tanggal DESC 
+                    LIMIT 1
+                ";
+                $hargaRow = $this->db->query($sqlHarga, [$pj["tanggal"], $det["barcode"]])->getRow();
+                $harga = $hargaRow ? $hargaRow->harga : 0;
+                $piutang += ($det["jumlah"] * $harga) - $det["diskonn"] - $det["diskonp"];
+            }
+        }
+        $result[] = ["akun" => "Piutang Usaha", "saldo" => $piutang];
+
+        // 3. Hutang Usaha (produksi ke vendor belum lunas)
+        $sqlHutang = "
+            SELECT SUM(total - dp) as hutang
+            FROM {$this->produksi}
+            WHERE YEAR(tanggal) = ?
+            AND total > dp
+        ";
+        $hutangRow = $this->db->query($sqlHutang, [$tahun])->getRow();
+        $hutang = $hutangRow ? (int)$hutangRow->hutang : 0;
+        $result[] = ["akun" => "Hutang Usaha", "saldo" => $hutang];
+
+        // 4. Persediaan (stok akhir × harga perolehan)
+        $sqlPersediaan = "
+            SELECT d.barcode, SUM(d.jumlah) as jumlah, d.harga
+            FROM {$this->produksi} p
+            INNER JOIN {$this->produksi_detail} d ON p.nonota = d.nonota
+            WHERE YEAR(p.tanggal) <= ?
+            GROUP BY d.barcode, d.harga
+        ";
+        $rows = $this->db->query($sqlPersediaan, [$tahun])->getResultArray();
+        $persediaan = 0;
+        foreach ($rows as $row) {
+            $persediaan += $row["jumlah"] * $row["harga"];
+        }
+        $result[] = ["akun" => "Persediaan", "saldo" => $persediaan];
+
+        // Total Aktiva & Pasiva
+        $totalAktiva = $kas + $piutang + $persediaan;
+        $totalPasiva = $hutang + ($totalAktiva - $hutang); // modal = selisih
+
+        $result[] = ["akun" => "Total Aktiva", "saldo" => $totalAktiva];
+        $result[] = ["akun" => "Total Pasiva (Hutang + Modal)", "saldo" => $totalPasiva];
+
+        return $result;
+    }
+
+    public function getLabaRugi($tahun)
+    {
+        $result = [];
+
+        // 1. Pendapatan Penjualan
+        $sqlPenjualan = "
+            SELECT a.id, a.tanggal
+            FROM {$this->penjualan} a
+            WHERE YEAR(a.tanggal) = ?
+            AND a.id NOT IN (SELECT jual_id FROM retur)
+        ";
+        $rows = $this->db->query($sqlPenjualan, [$tahun])->getResultArray();
+
+        $pendapatan = 0;
+        foreach ($rows as $row) {
+            $dsql = "SELECT * FROM {$this->penjualan_detail} WHERE id = ?";
+            $detail = $this->db->query($dsql, [$row["id"]])->getResultArray();
+
+            foreach ($detail as $det) {
+                // Ambil harga jual saat itu
+                $sqlHarga = "
+                    SELECT harga 
+                    FROM {$this->harga} 
+                    WHERE tanggal <= ? AND barcode = ?
+                    ORDER BY tanggal DESC 
+                    LIMIT 1
+                ";
+                $hargaRow = $this->db->query($sqlHarga, [$row["tanggal"], $det["barcode"]])->getRow();
+                $hargaJual = $hargaRow ? $hargaRow->harga : 0;
+
+                $pendapatan += ($det["jumlah"] * $hargaJual) - $det["diskonn"] - $det["diskonp"];
+            }
+        }
+        $result[] = ["keterangan" => "Pendapatan Penjualan", "jumlah" => $pendapatan];
+
+        // 2. HPP (Harga Pokok Penjualan)
+        $sqlHpp = "
+            SELECT d.jumlah, d.harga
+            FROM {$this->produksi} p
+            INNER JOIN {$this->produksi_detail} d ON p.nonota = d.nonota
+            WHERE YEAR(p.tanggal) = ?
+        ";
+        $hppRows = $this->db->query($sqlHpp, [$tahun])->getResultArray();
+
+        $hpp = 0;
+        foreach ($hppRows as $row) {
+            $hpp += $row["jumlah"] * $row["harga"];
+        }
+        $result[] = ["keterangan" => "Harga Pokok Penjualan (HPP)", "jumlah" => $hpp];
+
+        // 3. Laba Kotor
+        $labaKotor = $pendapatan - $hpp;
+        $result[] = ["keterangan" => "Laba Kotor", "jumlah" => $labaKotor];
+
+        // 4. Beban Operasional
+        $sqlBeban = "
+            SELECT SUM(nominal) as total
+            FROM {$this->kas}
+            WHERE YEAR(tanggal) = ?
+            AND jenis = 'Keluar'
+        ";
+        $bebanRow = $this->db->query($sqlBeban, [$tahun])->getRow();
+        $beban = $bebanRow ? (int)$bebanRow->total : 0;
+
+        $result[] = ["keterangan" => "Beban Operasional", "jumlah" => $beban];
+
+        // 5. Laba Bersih
+        $labaBersih = $labaKotor - $beban;
+        $result[] = ["keterangan" => "Laba Bersih", "jumlah" => $labaBersih];
+
+        return $result;
+    }
 }

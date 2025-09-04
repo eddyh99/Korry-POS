@@ -432,11 +432,9 @@ class Laporan extends BaseApiController
     public function getProdukterlaris()
     {
         $data = [
-            'title'      => 'Laporan Pos Pengeluaran',
+            'title'      => 'Laporan 10 Produk Terlaris',
             'content'    => 'admin/laporan/produkterlaris',
             'extra'      => 'admin/laporan/js/js_produkterlaris',
-            'store'      => $this->store->listStore(),
-            'pengeluaran'=> $this->pengeluaran->listPengeluaran(),
             'mn_laporan' => 'active',
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
@@ -451,10 +449,58 @@ class Laporan extends BaseApiController
     {
         $bulan    = $this->request->getPost('bulan');
         $tahun    = $this->request->getPost('tahun');
-        $storeid  = $this->request->getPost('storeid');
-        $pengeluaran  = $this->request->getPost('pengeluaran');
 
-        $result = $this->laporan->getpospengeluaran($bulan, $tahun, $storeid, $pengeluaran);
+        $result = $this->laporan->getprodukterlaris($bulan, $tahun);
+
+        return $this->response->setJSON($result);
+    }
+
+    public function getNeraca()
+    {
+        $data = [
+            'title'      => 'Laporan Neraca',
+            'content'    => 'admin/laporan/neraca',
+            'extra'      => 'admin/laporan/js/js_neraca',
+            'mn_laporan' => 'active',
+            'collap'     => 'collapse in',
+            'colmas'     => 'collapse',
+            'colset'     => 'collapse',
+            'side21'     => 'active'
+        ];
+
+        return view('layout/wrapper', $data);
+    }
+
+    public function postListneraca()
+    {
+        $tahun    = $this->request->getPost('tahun');
+
+        $result = $this->laporan->getneraca($tahun);
+
+        return $this->response->setJSON($result);
+    }
+
+    public function getLabarugi()
+    {
+        $data = [
+            'title'      => 'Laporan Laba-Rugi',
+            'content'    => 'admin/laporan/labarugi',
+            'extra'      => 'admin/laporan/js/js_labarugi',
+            'mn_laporan' => 'active',
+            'collap'     => 'collapse in',
+            'colmas'     => 'collapse',
+            'colset'     => 'collapse',
+            'side21'     => 'active'
+        ];
+
+        return view('layout/wrapper', $data);
+    }
+
+    public function postListlabarugi()
+    {
+        $tahun    = $this->request->getPost('tahun');
+
+        $result = $this->laporan->getlabarugi($tahun);
 
         return $this->response->setJSON($result);
     }
