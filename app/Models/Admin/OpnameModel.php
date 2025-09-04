@@ -24,10 +24,10 @@ class OpnameModel extends Model
             $barcode, $size, $storeid,
             $barcode, $size, $storeid,
             $barcode, $size, $storeid,
-            $barcode, $size,
-            $barcode, $size,
-            $barcode, $size,
-            $barcode, $size,
+            $barcode, $size, $storeid,
+            $barcode, $size, $storeid,
+            $barcode, $size, $storeid,
+            $barcode, $size, $storeid
         ];
 
         $sql = "SELECT IFNULL(SUM(x.total),0) AS stok
@@ -70,31 +70,31 @@ class OpnameModel extends Model
 
                     SELECT barcode, SUM(jumlah) AS total, size, '' as storeid
                     FROM produksi a INNER JOIN produksi_detail b ON a.nonota=b.nonota
-                    WHERE is_complete=1 AND status=0 AND barcode=? AND size=?
+                    WHERE is_complete=1 AND status=0 AND barcode=? AND size=? AMD storeid=?
 
                     UNION ALL
 
                     SELECT barcode, SUM(jumlah)*-1 AS total, size, '' as storeid
                     FROM do_konsinyasi a INNER JOIN do_konsinyasi_detail b ON a.nonota=b.nonota
-                    WHERE is_void=0 AND barcode=? AND size=?
+                    WHERE is_void=0 AND barcode=? AND size=? AND storeid=?
 
                     UNION ALL
 
                     SELECT barcode, SUM(jumlah) AS total, size, '' as storeid
                     FROM retur_konsinyasi a INNER JOIN retur_konsinyasi_detail b ON a.nonota=b.nonota
-                    WHERE is_void=0 AND barcode=? AND size=?
+                    WHERE is_void=0 AND barcode=? AND size=? AND storeid=?
 
                     UNION ALL
 
                     SELECT barcode, SUM(jumlah)*-1 AS total, size, '' as storeid
                     FROM nota_konsinyasi_detail
-                    WHERE barcode=? AND size=? AND notakonsinyasi IS NULL
+                    WHERE barcode=? AND size=? AND notakonsinyasi IS NULL AND storeid=?
 
                     UNION ALL
 
                     SELECT barcode, SUM(jumlah) AS total, size, '' as storeid
                     FROM wholesale_order a INNER JOIN wholesale_order_detail b ON a.nonota=b.nonota
-                    WHERE is_void=0 AND is_complete=1 AND barcode=? AND size=?
+                    WHERE is_void=0 AND is_complete=1 AND barcode=? AND size=? AND storeid=?
                 ) x";
 
         return $this->db->query($sql, $where)->getRow()->stok;

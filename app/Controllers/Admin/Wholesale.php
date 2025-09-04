@@ -165,7 +165,6 @@ class Wholesale extends BaseApiController
         }
 
         // Ambil data setelah validasi
-        // Ambil data setelah validasi
         $wholesaler  = esc($this->request->getPost("wholesaler"));
         $lama        = $this->request->getPost("lama");
         $diskonInput = $this->request->getPost("diskon");
@@ -174,6 +173,7 @@ class Wholesale extends BaseApiController
         $barcodes    = $this->request->getPost("barcode");
         $jumlahs     = $this->request->getPost("jumlah");
         $potongans   = $this->request->getPost("potongan");
+        $sizes       = $this->request->getPost("size");
 
         // hitung subtotal untuk konversi diskon persen → nominal
         $subtotal = 0;
@@ -201,6 +201,7 @@ class Wholesale extends BaseApiController
 
             $data["detail"][] = [
                 "barcode"  => esc($barcode),
+                "size"     => esc($sizes[$i]),
                 "jumlah"   => $jumlah,
                 "potongan" => $potongan
             ];
@@ -517,5 +518,10 @@ class Wholesale extends BaseApiController
         ];
 
         return view('admin/wholesale/cicilan/balance_payment', $nota);
+    }
+
+    public function getComplete($nonota=null){
+        $result = $this->wholesaleModel->complete_wholesale($nonota);
+        return $this->response->setJSON($result);
     }
 }

@@ -13,6 +13,7 @@ class ProdukModel extends Model
     private $produk = 'produk';
     private $harga  = 'harga';
     private $produkbahan = 'produk_bahan';
+    private $produksize = 'produksize';
 
     public function Listproduk()
     {
@@ -195,7 +196,12 @@ class ProdukModel extends Model
 
     public function ListProdukOrderWholesale()
     {
-        $sql = "SELECT a.*, x.harga, x.harga_konsinyasi, x.harga_wholesale, x.diskon
+        $sql = "SELECT a.*,
+                    x.harga,
+                    x.harga_konsinyasi,
+                    x.harga_wholesale,
+                    x.diskon,
+                    GROUP_CONCAT(DISTINCT ps.size ORDER BY ps.size SEPARATOR ',') AS size_available
                 FROM {$this->produk} a
                 INNER JOIN (
                     SELECT h1.barcode, h1.harga, h1.harga_konsinyasi, h1.harga_wholesale, h1.diskon
@@ -206,7 +212,9 @@ class ProdukModel extends Model
                         GROUP BY barcode
                     ) h2 ON h1.barcode = h2.barcode AND h1.tanggal = h2.tanggal
                 ) x ON a.barcode = x.barcode
-                WHERE a.status = '0'";
+                LEFT JOIN {$this->produksize} ps ON a.barcode = ps.barcode AND ps.status = 0
+                WHERE a.status = '0'
+                GROUP BY a.barcode";
 
         $query = $this->db->query($sql);
 

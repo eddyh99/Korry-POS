@@ -49,43 +49,84 @@ $(document).ready(function(){
     // ambil harga ketika pilih produk
     $("#produk").change(function(){
         let harga = $(this).find(":selected").data("harga") || 0;
+        let sizeStr    = $(this).find(":selected").data("size");   // contoh: "S,M,L"
         $("#harga").val(harga);
-    });
+        $("#size").empty().append('<option value="" disabled selected>-- Pilih Size --</option>');
+        if (sizeStr) {
+            sizeStr.split(",").forEach(sz => {
+                $("#size").append(`<option value="${sz}">${sz}</option>`);
+            });
+        }    });
 
     // tambah produk ke tabel
     $("#btnAdd").on("click", function(){
         let barcode  = $("#produk").val();
         let nama     = $("#produk option:selected").text();
+        let size     = $("#size").val();
         let jumlah   = parseFloat($("#jumlah").val()) || 0;
         let harga    = parseFloat($("#harga").val()) || 0;
-        let potonganRaw = $("#potongan").val().trim(); // bisa "10000" atau "10%"
+        let potonganRaw = $("#potongan").val().trim(); // bisa angka atau %
 
-        if(!barcode || jumlah <= 0 || harga <= 0){
-            alert("Produk, jumlah, dan harga wajib diisi!");
+        if(!barcode || !size || jumlah <= 0 || harga <= 0){
+            alert("Produk, size, jumlah, dan harga wajib diisi!");
             return;
         }
 
-        let total = hitungTotal(jumlah, harga, potonganRaw);
+        // cek apakah row dengan barcode + size sudah ada
+        let rowFound = null;
+        table.rows().every(function(){
+            let row = this.data();
+            let existingBarcode = $(row[0]).filter("input").val();
+            let existingSize    = $(row[2]).filter("input").val();
+            if(existingBarcode === barcode && existingSize === size){
+                rowFound = this;
+            }
+        });
 
-        table.row.add([
-            `<input type="hidden" name="barcode[]" value="${barcode}">${barcode}`,
-            nama,
-            `<input type="hidden" name="jumlah[]" value="${jumlah}">${jumlah}`,
-            `<input type="hidden" name="harga[]" value="${harga}">${formatNumber(harga)}`,
-            `<input type="hidden" name="potongan[]" value="${potonganRaw}">${potonganRaw}`,
-            `<input type="hidden" name="total[]" value="${total}">${formatNumber(total)}`,
-            `<button type="button" class="btn btn-danger btn-sm btnDelete">x</button>`
-        ]).draw(false);
+        if(rowFound){
+            // ambil jumlah lama
+            let jumlahLama = parseFloat($(rowFound.data()[3]).filter("input").val()) || 0;
+            let jumlahBaru = jumlahLama + jumlah;
 
-        // hapus produk yg sudah dipakai dari select
-        $("#produk option[value='"+barcode+"']").remove();
+            let total = hitungTotal(jumlahBaru, harga, potonganRaw);
+
+            // update row
+            rowFound.data([
+                `<input type="hidden" name="barcode[]" value="${barcode}">${barcode}`,
+                nama,
+                `<input type="hidden" name="size[]" value="${size}">${size}`,
+                `<input type="hidden" name="jumlah[]" value="${jumlahBaru}">${jumlahBaru}`,
+                `<input type="hidden" name="harga[]" value="${harga}">${formatNumber(harga)}`,
+                `<input type="hidden" name="potongan[]" value="${potonganRaw}">${potonganRaw}`,
+                `<input type="hidden" name="total[]" value="${total}">${formatNumber(total)}`,
+                `<button type="button" class="btn btn-danger btn-sm btnDelete">x</button>`
+            ]).draw(false);
+        }else{
+            // row baru
+            let total = hitungTotal(jumlah, harga, potonganRaw);
+
+            table.row.add([
+                `<input type="hidden" name="barcode[]" value="${barcode}">${barcode}`,
+                nama,
+                `<input type="hidden" name="size[]" value="${size}">${size}`,
+                `<input type="hidden" name="jumlah[]" value="${jumlah}">${jumlah}`,
+                `<input type="hidden" name="harga[]" value="${harga}">${formatNumber(harga)}`,
+                `<input type="hidden" name="potongan[]" value="${potonganRaw}">${potonganRaw}`,
+                `<input type="hidden" name="total[]" value="${total}">${formatNumber(total)}`,
+                `<button type="button" class="btn btn-danger btn-sm btnDelete">x</button>`
+            ]).draw(false);
+        }
+
+        // reset input
         $("#produk").val("").trigger("change");
+        $("#size").empty().append('<option value="" disabled selected>-- Pilih Size --</option>');
         $("#jumlah").val(1);
         $("#harga").val("");
         $("#potongan").val(0);
 
         hitungSubtotal();
     });
+
 
     // hapus produk dari tabel
     $("#table_data").on("click", ".btnDelete", function(){
@@ -106,6 +147,17 @@ $(document).ready(function(){
     // submit form via ajax
     $("#form_order").submit(function(e){
         e.preventDefault();
+
+        // hitung total jumlah barang
+        let totalQty = 0;
+        $("input[name='jumlah[]']").each(function(){
+            totalQty += parseFloat($(this).val()) || 0;
+        });
+
+        if(totalQty < 100){
+            alert("Jumlah total barang minimal 100!");
+            return; // hentikan submit
+        }
 
         let formData = $(this).serialize();
 
@@ -128,5 +180,58 @@ $(document).ready(function(){
             }
         });
     });
+
+    function parseInputValue(inputStr, baseAmount){
+        let val = 0;
+        inputStr = inputStr.toString().trim();
+        if(inputStr.includes("%")){
+            const percent = parseFloat(inputStr.replace("%","")) || 0;
+            val = Math.round(baseAmount * percent / 100);
+        }else{
+            val = parseFloat(inputStr) || 0;
+        }
+        return val;
+    }
+
+    function formatNumber(num){
+        return new Intl.NumberFormat('id-ID').format(num);
+    }
+
+    function updateGrandTotal(){
+        let subtotal = 0;
+        $("input[name='total[]']").each(function(){
+            subtotal += parseFloat($(this).val()) || 0;
+        });
+
+        // tampilkan subtotal ke input
+        $("#subtotal").val(formatNumber(subtotal));
+
+        // ambil diskon & ppn
+        let diskonRaw = $("#diskon").val();
+        let ppnRaw    = $("#ppn").val();
+
+        let diskon = parseInputValue(diskonRaw, subtotal);
+        let setelahDiskon = subtotal - diskon;
+
+        let ppn = parseInputValue(ppnRaw, setelahDiskon);
+
+        let grandTotal = setelahDiskon + ppn;
+
+        $("#total").val(formatNumber(grandTotal));
+    }
+
+    // event saat diskon/ppn diubah
+    $("#diskon, #ppn").on("input", function(){
+        updateGrandTotal();
+    });
+
+    // panggil juga setelah tabel berubah
+    function hitungSubtotal(){
+        updateGrandTotal();
+    }
+
+
 });
+
+
 </script>

@@ -4,7 +4,7 @@
         <input type="hidden" id="tujuan" value="<?=$_SESSION["logged_status"]["storeid"];?>">
 		<div class="form-group row">
 			<div class="col-sm-3">
-				<img src="<?=base_url()?>/assets/img/logo3.png" style="width:100%" />
+				<img src="<?=base_url()?>/assets/img/korry-crop.png" style="width:100%" />
 			</div>
 			<div class="col-sm-9 text-right">
 			    <label class="col-form-label">Store : <?=$_SESSION["logged_status"]["store"]?></label><br>

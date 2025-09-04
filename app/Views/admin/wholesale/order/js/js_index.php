@@ -58,10 +58,24 @@
 		// === Handle Print Balance ===
 		$('#table_data').on("click", ".btnBP", function () {
 			const notaorder = $(this).data("notaorder");
-			if (notaorder) {
-				// langsung buka jendela cetak
-				window.open("<?=base_url('admin/wholesale/cetakbalancepayment')?>/" + notaorder, "_blank");
-			}
+            $.ajax({
+                url: "<?=base_url()?>/admin/wholesale/complete/"+notaorder,  // ganti sesuai route kamu
+                type: "GET",                          // biasanya POST untuk update
+                success: function (response) {
+                    // misalnya refresh tabel setelah update
+                    alert("Produksi " + notaorder + " sudah complete!");
+                    $('#table_data').DataTable().ajax.reload(); 
+					if (notaorder) {
+						// langsung buka jendela cetak
+						window.open("<?=base_url('admin/wholesale/cetakbalancepayment')?>/" + notaorder, "_blank");
+					}
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                    alert("Gagal update status!");
+                }
+            });
+
 		});
 
 		// === Handle Hapus Modal (Bootstrap 4) ===

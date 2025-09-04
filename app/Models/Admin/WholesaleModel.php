@@ -133,6 +133,7 @@ class WholesaleModel extends Model
             $detail = [
                 'notaorder' => $notaorder,
                 'barcode'   => $row["barcode"],
+                'size'   => $row["size"],
                 'jumlah'    => $row["jumlah"],
                 'potongan'  => $row["potongan"]
             ];
@@ -518,5 +519,17 @@ class WholesaleModel extends Model
         }
 
         return $mdata;
+    }
+
+    public function complete_wholesale($nonota){
+        $builder = $this->db->table('wholesale_order');
+        $builder->where("notaorder", $nonota);
+        $result = $builder->update(["is_complete" => 1]);
+
+        if ($result) {
+            return ["code" => 0, "message" => "Produksi sudah complete"];
+        } else {
+            return ["code" => 1, "message" => $this->db->error()];
+        }
     }
 }
