@@ -19,6 +19,7 @@ class LaporanModel extends Model
     private $produk           = 'produk';
     private $store            = 'store';
     private $kas              = 'kas';
+    private $pengeluaran      = 'pengeluaran';
 
     // Mutasi
     public function getmutasi($bulan, $tahun, $storeid, $brand, $kategori)
@@ -776,6 +777,54 @@ class LaporanModel extends Model
         ";
 
         return $this->db->query($sql, [$storeid, $storeid, $awal, $akhir])->getResultArray();
+    }
+
+    // Laporan Pengeluaran per Pos Bulanan
+
+    public function getpospengeluaran($bulan, $tahun, $storeid, $pengeluaran)
+    {
+        $awal  = $tahun . "-" . str_pad($bulan, 2, "0", STR_PAD_LEFT) . "-01";
+        $akhir = date("Y-m-t", strtotime($awal));
+
+        $sql = "
+            SELECT 
+                s.store,
+                p.namapengeluaran,
+                SUM(k.nominal) AS total
+            FROM {$this->kas} k
+            LEFT JOIN {$this->store} s ON s.storeid = k.storeid
+            LEFT JOIN {$this->pengeluaran} p ON p.namapengeluaran = k.jenis
+            WHERE k.dateonly BETWEEN ? AND ?
+        ";
+
+        $params = [$awal, $akhir];
+
+        if ($storeid !== "all") {
+            $sql .= " AND k.storeid = ? ";
+            $params[] = $storeid;
+        }
+
+        if ($pengeluaran !== "all") {
+            $sql .= " AND k.jenis = ? ";
+            $params[] = $pengeluaran;
+        }
+
+        $sql .= " GROUP BY s.store, p.namapengeluaran 
+                ORDER BY s.store ASC, p.namapengeluaran ASC";
+
+        $query = $this->db->query($sql, $params);
+
+        return $query->getResultArray();
+    }
+
+    public function getprodukterlaris($bulan, $tahun, $storeid, $pengeluaran)
+    {
+        $awal  = $tahun . "-" . $bulan . "-01";
+        $akhir = date("Y-m-t", strtotime($awal));
+
+        // jgn pakai nama tabel di DB-nya langsung, gunakan {$this->kas}, {$this->store}, {$this->pengeluaran}
+
+        return $mdata;
     }
 
 }

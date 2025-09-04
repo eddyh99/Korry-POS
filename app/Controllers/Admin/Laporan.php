@@ -7,6 +7,8 @@ use App\Models\Admin\BrandModel;
 use App\Models\Admin\KategoriModel;
 use App\Models\Admin\LaporanModel;
 
+use App\Models\Admin\PengeluaranModel;
+
 use App\Controllers\BaseApiController;
 
 class Laporan extends BaseApiController
@@ -16,12 +18,16 @@ class Laporan extends BaseApiController
     protected $kategori;
     protected $laporan;
 
+    protected $pengeluaran;
+
     public function __construct()
     {
         $this->store    = new StoreModel();
         $this->brand    = new BrandModel();
         $this->kategori = new KategoriModel();
         $this->laporan  = new LaporanModel();
+
+        $this->pengeluaran  = new PengeluaranModel();
     }
 
     // Mutasi
@@ -381,6 +387,74 @@ class Laporan extends BaseApiController
         $akhir = date_format(date_create(trim($tgl[1])), "Y-m-d");
 
         $result = $this->laporan->getKaskeluar($awal, $akhir, $storeid);
+
+        return $this->response->setJSON($result);
+    }
+
+    // 4 Sept 2025 
+
+    // Laporan Neraca,
+    // Laporan Laba Rugi,
+    // Laporan Produk Terlaris + 10 Margin Untung
+
+    // Laporan Pos Bulanan
+
+    public function getPospengeluaran()
+    {
+        $data = [
+            'title'      => 'Laporan Pos Pengeluaran',
+            'content'    => 'admin/laporan/pospengeluaran',
+            'extra'      => 'admin/laporan/js/js_pospengeluaran',
+            'store'      => $this->store->listStore(),
+            'pengeluaran'=> $this->pengeluaran->listPengeluaran(),
+            'mn_laporan' => 'active',
+            'collap'     => 'collapse in',
+            'colmas'     => 'collapse',
+            'colset'     => 'collapse',
+            'side21'     => 'active'
+        ];
+
+        return view('layout/wrapper', $data);
+    }
+
+    public function postListpospengeluaran()
+    {
+        $bulan    = $this->request->getPost('bulan');
+        $tahun    = $this->request->getPost('tahun');
+        $storeid  = $this->request->getPost('storeid');
+        $pengeluaran  = $this->request->getPost('pengeluaran');
+
+        $result = $this->laporan->getpospengeluaran($bulan, $tahun, $storeid, $pengeluaran);
+
+        return $this->response->setJSON($result);
+    }
+
+    public function getProdukterlaris()
+    {
+        $data = [
+            'title'      => 'Laporan Pos Pengeluaran',
+            'content'    => 'admin/laporan/produkterlaris',
+            'extra'      => 'admin/laporan/js/js_produkterlaris',
+            'store'      => $this->store->listStore(),
+            'pengeluaran'=> $this->pengeluaran->listPengeluaran(),
+            'mn_laporan' => 'active',
+            'collap'     => 'collapse in',
+            'colmas'     => 'collapse',
+            'colset'     => 'collapse',
+            'side21'     => 'active'
+        ];
+
+        return view('layout/wrapper', $data);
+    }
+
+    public function postListprodukterlaris()
+    {
+        $bulan    = $this->request->getPost('bulan');
+        $tahun    = $this->request->getPost('tahun');
+        $storeid  = $this->request->getPost('storeid');
+        $pengeluaran  = $this->request->getPost('pengeluaran');
+
+        $result = $this->laporan->getpospengeluaran($bulan, $tahun, $storeid, $pengeluaran);
 
         return $this->response->setJSON($result);
     }
