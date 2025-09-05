@@ -27,6 +27,7 @@ class OpnameModel extends Model
             $barcode, $size, $storeid,
             $barcode, $size, $storeid,
             $barcode, $size, $storeid,
+            $barcode, $size, $storeid,
             $barcode, $size, $storeid
         ];
 

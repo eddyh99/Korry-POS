@@ -56,7 +56,8 @@ $(document).ready(function(){
             sizeStr.split(",").forEach(sz => {
                 $("#size").append(`<option value="${sz}">${sz}</option>`);
             });
-        }    });
+        }    
+    });
 
     // tambah produk ke tabel
     $("#btnAdd").on("click", function(){

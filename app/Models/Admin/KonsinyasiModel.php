@@ -161,6 +161,7 @@ class KonsinyasiModel extends Model
             $detail = [
                 'nonota'  => $nonota,
                 'barcode' => $row["barcode"],
+                'size'    => $row["size"],
                 'jumlah'  => $row["jumlah"]
             ];
             $this->db->table($this->do_konsinyasi_detail)->insert($detail);
@@ -172,7 +173,7 @@ class KonsinyasiModel extends Model
             $this->db->transRollback();
             return [
                 "status"  => false,
-                "message" => "DB Error: " . $this->db->error()["message"]
+                "message" => "DB Error: " . $this->db->error()->message
             ];
         } else {
             $this->db->transCommit();

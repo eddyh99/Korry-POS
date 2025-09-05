@@ -283,6 +283,7 @@ class Konsinyasi extends BaseApiController
         $partner  = esc($this->request->getPost("partner"));
         $barcodes = $this->request->getPost("barcode");
         $jumlahs  = $this->request->getPost("jumlah");
+        $sizes    = $this->request->getPost("size");
 
         $data = [
             "partner" => $partner,
@@ -293,6 +294,7 @@ class Konsinyasi extends BaseApiController
         foreach ($barcodes as $i => $barcode) {
             $data["detail"][] = [
                 "barcode" => esc($barcode),
+                "size"    => esc($sizes[$i]),
                 "jumlah"  => (int) $jumlahs[$i]
             ];
         }
