@@ -42,7 +42,7 @@ class Stok extends BaseApiController
             'colmas'     => 'collapse in',
             'colset'     => 'collapse',
             'collap'     => 'collapse',
-            'side9'      => 'active'
+            'side15'      => 'active'
         ];
         echo view('layout/wrapper', $data);
     }
@@ -95,7 +95,7 @@ class Stok extends BaseApiController
             'colmas'    => 'collapse in',
             'colset'    => 'collapse',
             'collap'    => 'collapse',
-            'side9'     => 'active',
+            'side15'     => 'active',
         ];
         echo view('layout/wrapper', $data);
     }
@@ -241,7 +241,7 @@ class Stok extends BaseApiController
             'mn_master' => 'active',
             'colmas'    => 'collapse in',
             'colset'    => 'collapse',
-            'side16'    => 'active',
+            'side15'    => 'active',
         ];
         echo view('layout/wrapper', $data);
     }

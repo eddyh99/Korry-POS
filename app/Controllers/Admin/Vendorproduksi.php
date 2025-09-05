@@ -25,11 +25,11 @@ class Vendorproduksi extends BaseApiController
             'title'      => 'Data Vendor Produksi',
             'content'    => 'admin/vendorproduksi/index',
             'extra'      => 'admin/vendorproduksi/js/js_index', 
-            'mn_setting' => 'active',
+            'mn_master' => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side10'     => 'active',
+            'side17'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -53,7 +53,7 @@ class Vendorproduksi extends BaseApiController
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side10'      => 'active',
+            'side17'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -71,7 +71,7 @@ class Vendorproduksi extends BaseApiController
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side10'      => 'active',
+            'side17'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }

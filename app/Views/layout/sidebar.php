@@ -67,11 +67,14 @@
                             <li class="<?=@$side8?>">
                                 <a href="<?=base_url()?>admin/warna">Warna</a>
                             </li>
-                            <li class="<?=@$side4?>">
+                            <li class="<?=@$side9?>">
                                 <a href="<?=base_url()?>admin/pengeluaran">Pengeluaran</a>
                             </li>
-                            <li class="<?=@$side4?>">
+                            <li class="<?=@$side10?>">
                                 <a href="<?=base_url()?>admin/metodebayar">Metode Bayar</a>
+                            </li>
+                            <li class="<?=@$side11?>">
+                                <a href="<?=base_url()?>admin/biayaproduksi">Biaya Produksi</a>
                             </li>
                         </ul>
                     </div>
@@ -85,30 +88,28 @@
                     </a>
                     <div class="<?=@$colmas?>" id="master">
                         <ul class="nav">
-                            <li class="<?=@$side6?>">
+                            <li class="<?=@$side12?>">
                                 <a href="<?=base_url()?>admin/assignstaff">Staff</a>
                             </li>
-                            <li class="<?=@$side7?>">
+                            <li class="<?=@$side13?>">
                                 <a href="<?=base_url()?>admin/produk">Produk</a>
                             </li>
-                            <li class="<?=@$side8?>">
-                                <a href="<?=base_url()?>admin/produksize">Size</a>
+                            <li class="<?=@$side14?>">
+                                <a href="<?=base_url()?>admin/produksize">Produk Size</a>
                             </li>
-                            <li class="<?=@$side9?>">
+                            <li class="<?=@$side15?>">
                                 <a href="<?=base_url()?>admin/stok">Stok</a>
                             </li>
-
-                            <li class="<?=@$side9?>">
+                            <li class="<?=@$side16?>">
                                 <a href="<?=base_url()?>admin/stokbahanbaku">Stok Bahan Baku</a>
                             </li>
-
-                            <li class="<?=@$side10?>">
+                            <li class="<?=@$side17?>">
                                 <a href="<?=base_url()?>admin/vendorproduksi">Vendor</a>
                             </li>
-                            <li class="<?=@$side11?>">
+                            <li class="<?=@$side18?>">
                                 <a href="<?=base_url()?>admin/partner">Partner</a>
                             </li>
-                            <li class="<?=@$side12?>">
+                            <li class="<?=@$side19?>">
                                 <a href="<?=base_url()?>admin/wholesaler">Wholesaler</a>
                             </li>
                         </ul>
@@ -129,13 +130,13 @@
                     </a>
                     <div class="<?=@$collap?>" id="konsinyasi">
                         <ul class="nav">
-                            <li class="<?=@$side10?>">
+                            <li class="<?=@$side20?>">
                                 <a href="<?=base_url()?>admin/konsinyasi/do">Delivery Order</a>
                             </li>
-                            <li class="<?=@$side20?>">
+                            <li class="<?=@$side21?>">
                                 <a href="<?=base_url()?>admin/konsinyasi/nota">Nota</a>
                             </li>
-                            <li class="<?=@$side11?>">
+                            <li class="<?=@$side22?>">
                                 <a href="<?=base_url()?>admin/konsinyasi/retur">Retur</a>
                             </li>
                         </ul>
@@ -150,10 +151,10 @@
                     </a>
                     <div class="<?=@$collap?>" id="wholesale">
                         <ul class="nav">
-                            <li class="<?=@$side10?>">
+                            <li class="<?=@$side23?>">
                                 <a href="<?=base_url()?>admin/wholesale/order">Order</a>
                             </li>
-                            <li class="<?=@$side20?>">
+                            <li class="<?=@$side24?>">
                                 <a href="<?=base_url()?>admin/wholesale/cicilan">Cicilan</a>
                             </li>
                         </ul>
@@ -168,46 +169,49 @@
                     </a>
                     <div class="<?=@$collap?>" id="laporan">
                         <ul class="nav">
-                            <li class="<?=@$side10?>">
+                            <li class="<?=@$side25?>">
                                 <a href="<?=base_url()?>admin/laporan/mutasi">Persediaan Global</a>
                             </li>
-                            <li class="<?=@$side20?>">
+                            <li class="<?=@$side26?>">
                                 <a href="<?=base_url()?>admin/laporan/mutasidetail">Persediaan Detail</a>
                             </li>
-                            <li class="<?=@$side11?>">
-                                <a href="<?=base_url()?>admin/laporan/penjualan">Penjualan Summary</a>
+                            <li class="<?=@$side27?>">
+                                <a href="<?=base_url()?>admin/laporan/penjualan">Penjualan</a>
                             </li>
-                            <li class="<?=@$side15?>">
+                            <li class="<?=@$side28?>">
+                                <a href="<?=base_url()?>admin/laporan/penjualandetail">Penjualan Detail</a>
+                            </li>
+                            <li class="<?=@$side29?>">
                                 <a href="<?=base_url()?>admin/laporan/brand">Penjualan Brand</a>
                             </li>
-                            <li class="<?=@$side12?>">
+                            <li class="<?=@$side30?>">
                                 <a href="<?=base_url()?>admin/laporan/barang">Drop In/Drop Out</a>
                             </li>
-                            <li class="<?=@$side14?>">
+                            <li class="<?=@$side31?>">
                                 <a href="<?=base_url()?>admin/laporan/nontunai">Non Tunai</a>
                             </li>
-                            <li class="<?=@$side17?>">
+                            <li class="<?=@$side32?>">
                                 <a href="<?=base_url()?>admin/laporan/request">Permintaan</a>
                             </li>
-                            <li class="<?=@$side18?>">
+                            <li class="<?=@$side33?>">
                                 <a href="<?=base_url()?>admin/laporan/retur">Retur Konsumen</a>
                             </li>
-                            <li class="<?=@$side19?>">
+                            <li class="<?=@$side34?>">
                                 <a href="<?=base_url()?>admin/laporan/stokout">Stok Out</a>
                             </li>
-                            <li class="<?=@$side21?>">
+                            <li class="<?=@$side35?>">
                                 <a href="<?=base_url()?>admin/laporan/kaskeluar">Kas</a>
                             </li>
-                            <li class="<?=@$side22?>">
+                            <li class="<?=@$side36?>">
                                 <a href="<?=base_url()?>admin/laporan/pospengeluaran">Pos Pengeluaran</a>
                             </li>
-                            <li class="<?=@$side23?>">
+                            <li class="<?=@$side37?>">
                                 <a href="<?=base_url()?>admin/laporan/produkterlaris">Produk Terlaris</a>
                             </li>
-                            <li class="<?=@$side23?>">
+                            <li class="<?=@$side38?>">
                                 <a href="<?=base_url()?>admin/laporan/neraca">Neraca</a>
                             </li>
-                            <li class="<?=@$side23?>">
+                            <li class="<?=@$side39?>">
                                 <a href="<?=base_url()?>admin/laporan/labarugi">Laba-Rugi</a>
                             </li>
                         </ul>

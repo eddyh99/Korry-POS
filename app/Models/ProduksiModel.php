@@ -70,7 +70,8 @@ class ProduksiModel extends Model
                 'barcode' => $row["barcode"],
                 'size'    => $row["size"],
                 'jumlah'  => $row["jumlah"],
-                'harga'   => $row["harga"]
+                'harga'   => $row["harga"],
+                'jenisbiaya'   => $row["biayaproduksi"],
             ];
             $this->db->table($this->produksi_detail)->insert($detail);
         }

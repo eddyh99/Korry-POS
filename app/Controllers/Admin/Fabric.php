@@ -25,7 +25,7 @@ class Fabric extends BaseApiController
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side4'      => 'active',
+            'side7'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -45,7 +45,7 @@ class Fabric extends BaseApiController
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side4'      => 'active',
+            'side7'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -63,7 +63,7 @@ class Fabric extends BaseApiController
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side4'      => 'active',
+            'side7'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }

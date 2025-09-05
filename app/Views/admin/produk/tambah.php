@@ -119,7 +119,7 @@
 									</div>
 								</div>
 
-								<!-- input baru SKU -->
+								<!-- input baru: SKU -->
 								<div class="form-group row">
 									<label class="col-sm-3 col-form-label">SKU</label>
 									<div class="col-sm-7">
@@ -140,6 +140,30 @@
 
 								<!-- container baris bahan -->
 								<div id="bahan-container"></div>
+
+								<!-- input baru: Jenis Biaya Produksi -->
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Jenis Biaya Produksi</label>
+									<div class="col-sm-7">
+										<input type="text" class="form-control" id="biayaproduksi" name="biayaproduksi" 
+											maxlength="50" list="biayaproduksilist" required value="<?=old('biayaproduksi')?>">
+										<datalist id="biayaproduksilist">
+											<?php foreach($biayaproduksi as $dt): ?>
+												<option value="<?=$dt['namabiayaproduksi']?>"></option>
+											<?php endforeach; ?>
+										</datalist>
+									</div>
+								</div>
+
+								<!-- input baru: Jumlah Biaya Produksi -->
+								<div class="form-group row">
+									<label class="col-sm-3 col-form-label">Harga Produksi</label>
+									<div class="col-sm-7">
+										<input type="text" class="form-control" id="hargaproduksi" name="hargaproduksi" 
+											maxlength="7" required onkeypress="return isNumber(event)" 
+											value="<?=old('hargaproduksi')?>">
+									</div>
+								</div>
 
 							</div>
 						</div>

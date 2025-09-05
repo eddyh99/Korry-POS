@@ -25,11 +25,11 @@ class Partner extends BaseApiController
             'title'      => 'Data Partner Konsinyasi', // ✅ ganti judul
             'content'    => 'admin/partner/index',     // ✅ ganti view
             'extra'      => 'admin/partner/js/js_index', 
-            'mn_setting' => 'active',
+            'mn_master' => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side11'     => 'active',
+            'side18'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -53,7 +53,7 @@ class Partner extends BaseApiController
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side11'      => 'active',
+            'side18'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -71,7 +71,7 @@ class Partner extends BaseApiController
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side2'      => 'active',
+            'side18'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }
