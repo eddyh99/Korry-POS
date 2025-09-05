@@ -31,7 +31,7 @@ class Assignstaff extends BaseApiController
             'colmas'    => 'collapse in',
             'colset'    => 'collapse',
             'collap'    => 'collapse',
-            'side6'     => 'active',
+            'side12'     => 'active',
         ];
 
         return view('layout/wrapper', $data);
@@ -55,7 +55,7 @@ class Assignstaff extends BaseApiController
             'colmas'    => 'collapse in',
             'colset'    => 'collapse',
             'collap'    => 'collapse',
-            'side6'     => 'active',
+            'side12'     => 'active',
         ];
 
         return view('layout/wrapper', $data);

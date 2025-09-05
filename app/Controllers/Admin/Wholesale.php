@@ -36,11 +36,11 @@ class Wholesale extends BaseApiController
             'title'      => 'Data Order Wholesale',
             'content'    => 'admin/wholesale/order/index',
             'extra'      => 'admin/wholesale/order/js/js_index', 
-            'mn_setting' => 'active',
+            'mn_wholesale' => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side11'     => 'active',
+            'side23'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -65,10 +65,11 @@ class Wholesale extends BaseApiController
             'extracss' => 'admin/wholesale/order/css/css_tambah',
             'wholesaler'    => $wholesaler,
             'produk'        => $produk,
-            'mn_req'   => 'active',
+            'mn_wholesale'   => 'active',
             'colmas'   => 'collapse',
-            'colset'   => 'collapse',
+            'colset'   => 'collapse in',
             'collap'   => 'collapse',
+            'side23'   => 'active',
         ];
 
         return view('layout/wrapper', $data);
@@ -346,11 +347,11 @@ class Wholesale extends BaseApiController
             'title'      => 'Data Cicilan Wholesale',
             'content'    => 'admin/wholesale/cicilan/index',
             'extra'      => 'admin/wholesale/cicilan/js/js_index', 
-            'mn_setting' => 'active',
+            'mn_wholesale' => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side11'     => 'active',
+            'side24'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -371,10 +372,11 @@ class Wholesale extends BaseApiController
             'title'    => 'Tambah Data',
             'content'  => 'admin/wholesale/cicilan/tambah',
             'wholesale_order' => $wholesale_order,
-            'mn_req'   => 'active',
+            'mn_wholesale'   => 'active',
             'colmas'   => 'collapse',
-            'colset'   => 'collapse',
+            'colset'   => 'collapse in',
             'collap'   => 'collapse',
+            'side24'   => 'active',
         ];
 
         return view('layout/wrapper', $data);

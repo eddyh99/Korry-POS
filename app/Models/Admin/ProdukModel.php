@@ -33,7 +33,9 @@ class ProdukModel extends Model
         $sql = "SELECT
                     p.barcode,
                     p.namaproduk,
+                    p.namabiayaproduksi,
                     h.harga,
+                    h.harga_produksi,
                     CONCAT(
                         '[',
                         GROUP_CONCAT(
@@ -53,7 +55,7 @@ class ProdukModel extends Model
                     GROUP_CONCAT(DISTINCT ps.size ORDER BY ps.size SEPARATOR ',') AS size_available
                 FROM produk p
                 INNER JOIN (
-                    SELECT h1.barcode, h1.harga
+                    SELECT h1.barcode, h1.harga, h1.harga_produksi
                     FROM harga h1
                     INNER JOIN (
                         SELECT barcode, MAX(tanggal) AS tanggal
@@ -76,9 +78,8 @@ class ProdukModel extends Model
                 ) kebutuhan ON pb.idbahan = kebutuhan.idbahan
                 LEFT JOIN produksize ps ON ps.barcode = p.barcode
                 WHERE p.status = '0'
-                GROUP BY p.barcode, p.namaproduk, h.harga
-                ORDER BY p.barcode;
-";
+                GROUP BY p.barcode, p.namaproduk, p.namabiayaproduksi, h.harga, h.harga_produksi
+                ORDER BY p.barcode;";
 
         $query = $this->db->query($sql);
 
@@ -415,10 +416,10 @@ class ProdukModel extends Model
     }
     public function getProduk($barcode)
     {
-        $sql = "SELECT a.*, x.harga, x.harga_konsinyasi, x.harga_wholesale, x.diskon
+        $sql = "SELECT a.*, x.harga, x.harga_konsinyasi, x.harga_wholesale, x.harga_produksi, x.diskon
                 FROM produk a
                 INNER JOIN (
-                    SELECT a.harga, a.harga_konsinyasi, a.harga_wholesale, a.diskon, a.barcode
+                    SELECT a.harga, a.harga_konsinyasi, a.harga_wholesale, a.harga_produksi, a.diskon, a.barcode
                     FROM harga a
                     INNER JOIN (
                         SELECT MAX(tanggal) as tanggal, barcode 
@@ -451,7 +452,9 @@ class ProdukModel extends Model
             'namabrand'    => $data["namabrand"],
             'namakategori' => $data["namakategori"],
             'sku'          => $data["sku"],
-            'userid'       => $data["userid"]
+            'userid'       => $data["userid"],
+            // Tambahan : Biaya Produksi
+            'namabiayaproduksi' => $data["namabiayaproduksi"]
         ];
 
         $price = [
@@ -461,6 +464,8 @@ class ProdukModel extends Model
             // Tambahan : Harga Konsinyasi & Wholesale
             'harga_konsinyasi'   => $data["hargakonsinyasi"],
             'harga_wholesale'    => $data["hargawholesale"],
+            // Tambahan : Biaya Produksi
+            'harga_produksi'    => $data["hargaproduksi"],
 
             'diskon'  => $data["diskon"] ?? 0,
             'userid'  => $data["userid"]
@@ -506,9 +511,11 @@ class ProdukModel extends Model
             'namaproduk'   => $data["namaproduk"],
             'namabrand'    => $data["namabrand"],
             'namakategori' => $data["namakategori"],
-            // Tambahan : Harga Konsinyasi & Wholesale
+            // Tambahan : Fabric & Warna
             'namafabric'   => $data["fabric"],
             'namawarna'    => $data["warna"],
+            // Tambahan : Biaya Produksi
+            'namabiayaproduksi'    => $data["biayaproduksi"],
 
             'userid'       => $data["userid"]
         ];
@@ -521,7 +528,8 @@ class ProdukModel extends Model
         if (($data["harga"] != $lastharga->harga) 
             || ($data["diskon"]          != $lastharga->diskon) 
             || ($data["hargakonsinyasi"] != $lastharga->harga_konsinyasi) 
-            || ($data["hargawholesale"]  != $lastharga->harga_wholesale)) {
+            || ($data["hargawholesale"]  != $lastharga->harga_wholesale)
+            || ($data["hargaproduksi"]   != $lastharga->harga_produksi)) {
             $price = [
                 'barcode' => $barcode,
                 'tanggal' => date("Y-m-d H:i:s"),
@@ -529,6 +537,9 @@ class ProdukModel extends Model
                 // Tambahan : Harga Konsinyasi & Wholesale
                 'harga_konsinyasi'   => $data["hargakonsinyasi"],
                 'harga_wholesale'    => $data["hargawholesale"],
+                // Tambahan : Harga Produksi
+                'harga_produksi'    => $data["hargaproduksi"],
+
                 'diskon'  => $data["diskon"],
                 'userid'  => $data["userid"]
             ];

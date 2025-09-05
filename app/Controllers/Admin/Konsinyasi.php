@@ -39,11 +39,11 @@ class Konsinyasi extends BaseApiController
             'title'      => 'Data Do Konsinyasi',
             'content'    => 'admin/konsinyasi/do/index',
             'extra'      => 'admin/konsinyasi/do/js/js_index', 
-            'mn_setting' => 'active',
+            'mn_konsinyasi' => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side11'     => 'active',
+            'side20'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -68,10 +68,11 @@ class Konsinyasi extends BaseApiController
             'extracss' => 'admin/konsinyasi/do/css/css_tambah',
             'partner'  => $partner,
             'produk'   => $produk,
-            'mn_req'   => 'active',
+            'mn_konsinyasi'   => 'active',
             'colmas'   => 'collapse',
-            'colset'   => 'collapse',
+            'colset'   => 'collapse in',
             'collap'   => 'collapse',
+            'side20'     => 'active',
         ];
 
         return view('layout/wrapper', $data);
@@ -109,11 +110,11 @@ class Konsinyasi extends BaseApiController
             'title'      => 'Data Nota Konsinyasi',
             'content'    => 'admin/konsinyasi/nota/index',
             'extra'      => 'admin/konsinyasi/nota/js/js_index', 
-            'mn_setting' => 'active',
+            'mn_konsinyasi' => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side11'     => 'active',
+            'side21'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -136,10 +137,11 @@ class Konsinyasi extends BaseApiController
             'extra'    => 'admin/konsinyasi/nota/js/js_tambah',
             'extracss' => 'admin/konsinyasi/nota/css/css_tambah',
             'do_konsinyasi'   => $do_konsinyasi,
-            'mn_req'   => 'active',
+            'mn_konsinyasi'   => 'active',
             'colmas'   => 'collapse',
-            'colset'   => 'collapse',
+            'colset'   => 'collapse in',
             'collap'   => 'collapse',
+            'side21'   => 'active',
         ];
 
         return view('layout/wrapper', $data);
@@ -177,11 +179,11 @@ class Konsinyasi extends BaseApiController
             'title'      => 'Data Retur Konsinyasi',
             'content'    => 'admin/konsinyasi/retur/index',
             'extra'      => 'admin/konsinyasi/retur/js/js_index', 
-            'mn_setting' => 'active',
+            'mn_konsinyasi' => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side11'     => 'active',
+            'side22'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -204,10 +206,11 @@ class Konsinyasi extends BaseApiController
             'extra'    => 'admin/konsinyasi/retur/js/js_tambah',
             'extracss' => 'admin/konsinyasi/retur/css/css_tambah',
             'do_konsinyasi'   => $do_konsinyasi,
-            'mn_req'   => 'active',
+            'mn_konsinyasi'   => 'active',
             'colmas'   => 'collapse',
-            'colset'   => 'collapse',
+            'colset'   => 'collapse in',
             'collap'   => 'collapse',
+            'side22'   => 'active',
         ];
 
         return view('layout/wrapper', $data);

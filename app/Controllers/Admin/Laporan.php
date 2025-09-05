@@ -45,7 +45,7 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side10'     => 'active'
+            'side25'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -79,7 +79,7 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side20'     => 'active'
+            'side26'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -112,7 +112,7 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side11'     => 'active'
+            'side27'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -131,10 +131,10 @@ class Laporan extends BaseApiController
     }
 
     // DETAIL Penjualan
-    public function getDetailpenjualan($id)
+    public function getPenjualandetail($id)
     {
         $data = [
-            'title'      => 'Laporan Penjualan',
+            'title'      => 'Laporan Penjualan Detail',
             'content'    => 'admin/laporan/detailpenjualan',
             'extra'      => 'admin/laporan/js/js_detailpenjualan',
             'mn_laporan' => 'active',
@@ -142,7 +142,7 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side11'     => 'active'
+            'side28'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -173,7 +173,7 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side15'     => 'active'
+            'side29'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -207,7 +207,7 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side12'     => 'active'
+            'side30'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -240,7 +240,7 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side14'     => 'active'
+            'side31'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -272,7 +272,7 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side17'     => 'active'
+            'side32'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -306,7 +306,7 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side18'     => 'active'
+            'side33'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -339,7 +339,7 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side19'     => 'active'
+            'side34'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -372,7 +372,7 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side21'     => 'active'
+            'side35'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -411,7 +411,7 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side21'     => 'active'
+            'side36'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -439,7 +439,7 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side21'     => 'active'
+            'side37'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -465,7 +465,7 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side21'     => 'active'
+            'side38'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -490,7 +490,7 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side21'     => 'active'
+            'side39'     => 'active'
         ];
 
         return view('layout/wrapper', $data);

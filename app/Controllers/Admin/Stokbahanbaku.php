@@ -29,11 +29,11 @@ class Stokbahanbaku extends BaseApiController
             'title'      => 'Data Stok Bahan Baku',
             'content'    => 'admin/stokbahanbaku/index',
             'extra'      => 'admin/stokbahanbaku/js/js_index', 
-            'mn_setting' => 'active',
+            'mn_master' => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side11'     => 'active',
+            'side16'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -61,7 +61,7 @@ class Stokbahanbaku extends BaseApiController
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side11'     => 'active',
+            'side16'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }

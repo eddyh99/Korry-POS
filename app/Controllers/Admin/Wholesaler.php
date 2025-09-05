@@ -25,11 +25,11 @@ class Wholesaler extends BaseApiController
             'title'      => 'Data Whole Saler',
             'content'    => 'admin/wholesaler/index',
             'extra'      => 'admin/wholesaler/js/js_index', 
-            'mn_setting' => 'active',
+            'mn_master' => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side11'     => 'active',
+            'side19'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -53,7 +53,7 @@ class Wholesaler extends BaseApiController
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side11'      => 'active',
+            'side19'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -71,7 +71,7 @@ class Wholesaler extends BaseApiController
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
-            'side2'      => 'active',
+            'side19'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }

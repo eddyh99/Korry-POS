@@ -58,7 +58,8 @@
 										<?php foreach ($produk as $dt){ ?>
 										<option value="<?= $dt["barcode"] ?>"
 												data-nama="<?= $dt["namaproduk"] ?>"
-												data-harga="<?= $dt["harga"] ?>"
+												data-harga="<?= $dt["harga_produksi"] ?>"
+												data-biayaproduksi="<?= $dt["namabiayaproduksi"] ?>"
 												data-size="<?=$dt["size_available"]?>"
 												data-bahan='<?= json_encode($dt["bahan"], JSON_HEX_APOS | JSON_HEX_QUOT) ?>'>
 											<?=$dt['namaproduk']; ?>
@@ -76,13 +77,27 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label">Jumlah</label>
+								<label class="col-sm-2 control-label">Jumlah Produk</label>
 								<div class="col-sm-4">
 									<input type="number" id="jumlah" class="form-control" min="1" value="1">
 								</div>
 							</div>
-							<div class="form-group">
+							<!-- <div class="form-group">
 								<label class="col-sm-2 control-label text-right" style="padding-left:10px;">Harga</label>
+								<div class="col-sm-4">
+									<input type="text" id="harga" class="form-control">
+								</div>
+							</div> -->
+
+							<div class="form-group">
+								<label class="col-sm-2 control-label text-right" style="padding-left:10px;">Jenis Biaya Produksi</label>
+								<div class="col-sm-4">
+									<input type="text" id="biayaproduksi" class="form-control">
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-2 control-label text-right" style="padding-left:10px;">Jumlah Biaya Produksi</label>
 								<div class="col-sm-4">
 									<input type="text" id="harga" class="form-control">
 								</div>
@@ -116,7 +131,7 @@
 							<th>Nama Produk</th>
 							<th>Jumlah</th>
 							<th>Size</th>
-							<th>Harga</th>
+							<th>Biaya</th>
 							<th>Total</th>
 							<th>Aksi</th>
 							</tr>

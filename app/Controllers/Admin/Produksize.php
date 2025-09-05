@@ -31,7 +31,7 @@ class Produksize extends BaseApiController
             'colmas'     => 'collapse in',
             'colset'     => 'collapse',
             'collap'     => 'collapse',
-            'side8'      => 'active',
+            'side14'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -57,7 +57,7 @@ class Produksize extends BaseApiController
             'colmas'     => 'collapse in',
             'colset'     => 'collapse',
             'collap'     => 'collapse',
-            'side8'      => 'active',
+            'side14'      => 'active',
         ];
 
         return view('layout/wrapper', $data);

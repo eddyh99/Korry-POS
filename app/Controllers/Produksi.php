@@ -31,11 +31,10 @@ class Produksi extends BaseApiController
             'title'      => 'Data Produksi',
             'content'    => 'produksi/index',
             'extra'      => 'produksi/js/js_index', 
-            'mn_setting' => 'active',
-            'colmas'     => 'collapse',
-            'colset'     => 'collapse in',
+            'mn_produksi' => 'active',
             'collap'     => 'collapse',
-            'side11'     => 'active',
+            'colmas'     => 'collapse',
+            'colset'     => 'collapse',
         ];
         return view('layout/wrapper', $data);
     }
@@ -162,6 +161,7 @@ class Produksi extends BaseApiController
         $jumlahs  = $this->request->getPost("jumlah");
         $hargas   = $this->request->getPost("harga");
         $sizes   = $this->request->getPost("size");
+        $biayaproduksis   = $this->request->getPost("biayaproduksi");
 
         $data = [
             "idvendor" => esc($this->request->getPost("idvendor")),
@@ -178,10 +178,9 @@ class Produksi extends BaseApiController
                 "jumlah"  => (int) $jumlahs[$i],
                 'size'    => esc($sizes[$i]),
                 "harga"   => (int) $hargas[$i],
+                'biayaproduksi'    => esc($biayaproduksis[$i]),
             ];
         }
-
-
 
         $result = $this->produksiModel->insertData($data);
 

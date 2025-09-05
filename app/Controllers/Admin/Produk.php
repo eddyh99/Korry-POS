@@ -10,6 +10,8 @@ use App\Models\Admin\BahanbakuModel;
 use App\Models\Admin\FabricModel;
 use App\Models\Admin\WarnaModel;
 
+use App\Models\Admin\BiayaproduksiModel;
+
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
@@ -30,6 +32,8 @@ class Produk extends BaseApiController
 
         $this->fabricModel      = new FabricModel();
         $this->warnaModel       = new WarnaModel();
+
+        $this->biayaproduksiModel   = new BiayaproduksiModel();
     }
 
     public function getIndex()
@@ -42,7 +46,7 @@ class Produk extends BaseApiController
             'colmas'     => 'collapse in',
             'colset'     => 'collapse',
             'collap'     => 'collapse',
-            'side7'      => 'active',
+            'side13'      => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -109,6 +113,8 @@ class Produk extends BaseApiController
         $fabric = $this->fabricModel->listFabric();
         $warna  = $this->warnaModel->listWarna();
 
+        $biayaproduksi  = $this->biayaproduksiModel->listBiayaproduksi();
+
         $data = [
             'title'    => 'Tambah Data Produk',
             'content'  => 'admin/produk/tambah',
@@ -118,11 +124,12 @@ class Produk extends BaseApiController
             'fabric'    => $fabric,
             'warna'     => $warna,
             'bahanbaku' => $bahanbaku,
+            'biayaproduksi' => $biayaproduksi,
             'mn_master' => 'active',
             'colmas'   => 'collapse in',
             'colset'   => 'collapse',
             'collap'   => 'collapse',
-            'side7'    => 'active',
+            'side13'    => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -141,6 +148,8 @@ class Produk extends BaseApiController
         $bahanbaku  = $this->bahanbakuModel->Listbahanbaku();
 
         $produkBahan = $this->produkModel->getProdukBahan($barcode);
+        
+        $biayaproduksi  = $this->biayaproduksiModel->listBiayaproduksi();
 
         $data = [
             'title'    => 'Ubah Data Produk',
@@ -154,11 +163,12 @@ class Produk extends BaseApiController
             'warna'     => $warna,
             'bahanbaku' => $bahanbaku,
             'produkBahan'=> $produkBahan,
+            'biayaproduksi' => $biayaproduksi,
             'mn_master' => 'active',
             'colmas'   => 'collapse in',
             'colset'   => 'collapse',
             'collap'   => 'collapse',
-            'side7'    => 'active',
+            'side13'    => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -303,6 +313,24 @@ class Produk extends BaseApiController
                     'numeric'      => '{field} hanya boleh berisi angka.',
                     'greater_than' => '{field} harus lebih dari 0.'
                 ]
+            ],
+            'biayaproduksi' => [
+                'label'  => 'Nama Biaya Produksi',
+                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
+                'errors' => [
+                    'required'            => '{field} wajib diisi.',
+                    'max_length'          => '{field} maksimal 50 karakter.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                ]
+            ],
+            'hargaproduksi' => [
+                'label'  => 'Harga Produksi',
+                'rules'  => 'required|trim|numeric|max_length[10]',
+                'errors' => [
+                    'required'   => '{field} wajib diisi.',
+                    'numeric'    => '{field} hanya boleh berisi angka.',
+                    'max_length' => '{field} maksimal 10 digit.'
+                ]
             ]
         ];
 
@@ -330,7 +358,11 @@ class Produk extends BaseApiController
             "sku"          => esc($this->request->getPost('sku')),
             // dynamic bahan
             "bahanbaku"    => $this->request->getPost('bahanbaku'),
-            "jumlah"       => $this->request->getPost('jumlah')
+            "jumlah"       => $this->request->getPost('jumlah'),
+
+            // Tambahan : Biaya Produksi
+            "namabiayaproduksi" => esc($this->request->getPost('biayaproduksi')),
+            "hargaproduksi" => esc($this->request->getPost('hargaproduksi')),
         ];
 
         $result = $this->produkModel->insertData($data);
@@ -453,6 +485,24 @@ class Produk extends BaseApiController
                     'numeric'      => '{field} hanya boleh berisi angka.',
                     'greater_than' => '{field} harus lebih dari 0.'
                 ]
+            ],
+            'biayaproduksi' => [
+                'label'  => 'Nama Biaya Produksi',
+                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
+                'errors' => [
+                    'required'            => '{field} wajib diisi.',
+                    'max_length'          => '{field} maksimal 50 karakter.',
+                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                ]
+            ],
+            'hargaproduksi' => [
+                'label'  => 'Harga Produksi',
+                'rules'  => 'required|trim|numeric|max_length[10]',
+                'errors' => [
+                    'required'   => '{field} wajib diisi.',
+                    'numeric'    => '{field} hanya boleh berisi angka.',
+                    'max_length' => '{field} maksimal 10 digit.'
+                ]
             ]
         ];
 
@@ -470,11 +520,15 @@ class Produk extends BaseApiController
             // Tambahan : Fabric & Warna
             "fabric" => esc($this->request->getPost('fabric')),
             "warna"  => esc($this->request->getPost('warna')),
+            // Tambahan : Biaya Produksi
+            "biayaproduksi" => esc($this->request->getPost('biayaproduksi')),
 
             "harga"        => esc($this->request->getPost('harga')),
             // Tambahan : Harga Konsinyasi & Harga Wholesale
             "hargakonsinyasi" => esc($this->request->getPost('hargakonsinyasi')),
             "hargawholesale"  => esc($this->request->getPost('hargawholesale')),
+            // Tambahan : Harga Produksi
+            "hargaproduksi"  => esc($this->request->getPost('hargaproduksi')),
 
             "diskon"       => esc($this->request->getPost('diskon')),
             "userid"       => session()->get('logged_status')['username'],

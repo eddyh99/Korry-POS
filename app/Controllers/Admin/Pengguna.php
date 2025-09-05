@@ -46,7 +46,8 @@ class Pengguna extends BaseApiController
         return view('layout/wrapper', [
             'title'      => 'Tambah Data Pengguna',
             'content'    => 'admin/pengguna/tambah',
-            'mn_master'  => 'active',
+            // 'mn_master'  => 'active',
+            'mn_setting'  => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
@@ -157,7 +158,7 @@ class Pengguna extends BaseApiController
             'title'      => 'Ubah Data Pengguna',
             'content'    => 'admin/pengguna/ubah',
             'detail'     => $result,
-            'mn_master'  => 'active',
+            'mn_setting'  => 'active',
             'colmas'     => 'collapse',
             'colset'     => 'collapse in',
             'collap'     => 'collapse',
