@@ -13,15 +13,15 @@
                 <div class="card-content">
                     	<table id="table_data" class="table table-striped nowrap" width="100%">
                     	    <thead>
-                    		<tr>
-                          <th>Nota Order</th>
-                    			<th>Partner</th>
-                          <th>Tanggal</th>
-                          <th>Lama</th>
-                          <th>Diskon</th>
-                          <th>PPN</th>
-                    			<th>Aksi</th>
-                    		</tr>
+                            <tr>
+                              <th>Nota Order</th>
+                              <th>Partner</th>
+                              <th>Tanggal</th>
+                              <th>Lama</th>
+                              <th>Subtotal</th>
+                              <th>DP</th>
+                              <th>Aksi</th>
+                            </tr>
                     	    </thead>
                     	    <tbody>
                     	    </tbody>

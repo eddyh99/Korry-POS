@@ -15,28 +15,22 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Nota Order</label>
                                         <div class="col-sm-7">
-                                            <select id="notaorder" name="notaorder" class="form-control select2" required>
-                                                <option value="" disabled selected>--Pilih Wholesale Order--</option>
-                                                <?php foreach ($wholesale_order as $dt){ ?>
-                                                    <?php if ($dt["total_cicilan"]<$dt["subtotal"]) { ?>
-                                                        <option data-total="<?=$dt["subtotal"]?>" value="<?=$dt["notaorder"]?>">
-                                                            <?=$dt["notaorder"]?> (Nama : <?=$dt["nama_partner"]?>)
-                                                        </option>
-                                                    <?php } ?>
-                                                <?php } ?>
-                                            </select>
+                                            <input type="text" id="notaorder" class="form-control" readonly value="<?=$notaorder?>">
                                         </div>
-                                    </div>
-                                   
-
-                                    <!-- Nominal Bayar -->
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Nominal Bayar</label>
-                                        <div class="col-sm-7">
-                                            <input type="text" class="form-control" id="bayar" name="bayar" maxlength="12" required>
-                                        </div>
-                                    </div>
+                                    </div>                                   
                                     <hr>
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Customer</label>
+                                        <div class="col-sm-7">
+                                            <input type="text" class="form-control" id="customer" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Tanggal Order</label>
+                                        <div class="col-sm-7">
+                                            <input type="text" class="form-control" id="tanggal" readonly>
+                                        </div>
+                                    </div>
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Total Tagihan</label>
                                         <div class="col-sm-7">
@@ -72,13 +66,8 @@
                                     </tfoot>
                                 </table>
                             </div>
-                            <div class="col-lg-12">
-                                <div class="col-lg-6">
-                                    <button id="btnSimpan" name="btnSimpan"  class="btn btn-primary">Simpan Cicilan Wholesale</button>
-                                </div>
-                                <div class="col-lg-6 text-right">
-                                    <a name="btnBack" href="<?=base_url()?>admin/wholesale/cicilan" class="btn btn-warning"><i class="material-icons">reply</i>Kembali</a>
-                                </div>
+                            <div class="col-lg-12 text-right">
+                                <a name="btnBack" href="<?=base_url()?>admin/wholesale/cicilan" class="btn btn-warning"><i class="material-icons">reply</i>Kembali</a>
                             </div>
 
                         </form>

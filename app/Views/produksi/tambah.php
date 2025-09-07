@@ -52,7 +52,7 @@
 							<!-- Kiri -->
 							<div class="form-group">
 								<label for="produk" class="col-sm-2">Produk</label>
-								<div class="col-sm-4">
+								<div class="col-sm-8">
 									<select id="produk" class="form-control select2">
 										<option value="" disabled selected>-- Pilih Produk --</option>
 										<?php foreach ($produk as $dt){ ?>

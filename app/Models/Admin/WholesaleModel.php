@@ -25,7 +25,54 @@ class WholesaleModel extends Model
 
     public function listOrderWholesale1()
     {
-        $sql = "SELECT * FROM {$this->wholesale_order} WHERE is_void ='0'";
+        $sql = "SELECT 
+                    o.notaorder,
+                    o.tanggal,
+                    o.diskon,
+                    o.lama,
+                    o.ppn,
+                    o.dp,
+                    o.is_complete,
+                    w.nama AS nama_partner,
+                    -- subtotal semua item (harga_wholesale x qty - potongan)
+                    (
+                        SELECT SUM((d.jumlah * h.harga_wholesale) - d.potongan)
+                        FROM wholesale_order_detail d
+                        LEFT JOIN harga h 
+                            ON h.barcode = d.barcode
+                            AND h.tanggal = (
+                                SELECT MAX(h2.tanggal) 
+                                FROM harga h2 
+                                WHERE h2.barcode = d.barcode
+                            )
+                        WHERE d.notaorder = o.notaorder
+                    ) AS subtotal,
+                    -- total cicilan yang sudah dibayar
+                    (
+                        SELECT COALESCE(SUM(c.bayar),0)
+                        FROM wholesale_cicilan c
+                        WHERE c.notaorder = o.notaorder
+                    ) AS total_cicilan,
+                    -- total pembelian akhir (subtotal - diskon + ppn - dp)
+                    (
+                        (
+                            SELECT SUM((d.jumlah * h.harga_wholesale) - d.potongan)
+                            FROM wholesale_order_detail d
+                            LEFT JOIN harga h 
+                                ON h.barcode = d.barcode
+                                AND h.tanggal = (
+                                    SELECT MAX(h2.tanggal) 
+                                    FROM harga h2 
+                                    WHERE h2.barcode = d.barcode
+                                )
+                            WHERE d.notaorder = o.notaorder
+                        )
+                        - o.diskon + o.ppn - o.dp
+                    ) AS total_pembelian
+                FROM wholesale_order o
+                LEFT JOIN wholesaler w ON o.id_wholesaler = w.id
+                WHERE o.is_void = 0;
+";
         $query = $this->db->query($sql);
 
         if ($query) {
@@ -34,67 +81,78 @@ class WholesaleModel extends Model
             return $this->db->error();
         }
     }
-    public function listOrderWholesale()
-    {
-        $sql = "
-            SELECT 
-                o.notaorder,
-                o.tanggal,
-                o.diskon,
-                o.ppn,
-                o.dp,
-                -- subtotal semua item (harga_wholesale x qty - potongan)
-                (
-                    SELECT SUM((d.jumlah * h.harga_wholesale) - d.potongan)
-                    FROM {$this->wholesale_order_detail} d
-                    LEFT JOIN {$this->harga} h 
-                        ON h.barcode = d.barcode
-                        AND h.tanggal = (
-                            SELECT MAX(h2.tanggal) 
-                            FROM {$this->harga} h2 
-                            WHERE h2.barcode = d.barcode
-                        )
-                    WHERE d.notaorder = o.notaorder
-                ) AS subtotal,
-                -- total cicilan yang sudah dibayar
-                (
-                    SELECT COALESCE(SUM(c.bayar),0)
-                    FROM {$this->wholesale_cicilan} c
-                    WHERE c.notaorder = o.notaorder
-                ) AS total_cicilan
-            FROM {$this->wholesale_order} o
-            WHERE o.is_void = 0
-        ";
+    // public function listOrderWholesale()
+    // {
+    //     $sql = "
+    //         SELECT 
+    //             o.notaorder,
+    //             o.tanggal,
+    //             o.diskon,
+    //             o.ppn,
+    //             o.dp,
+    //             -- subtotal semua item (harga_wholesale x qty - potongan)
+    //             (
+    //                 SELECT SUM((d.jumlah * h.harga_wholesale) - d.potongan)
+    //                 FROM {$this->wholesale_order_detail} d
+    //                 LEFT JOIN {$this->harga} h 
+    //                     ON h.barcode = d.barcode
+    //                     AND h.tanggal = (
+    //                         SELECT MAX(h2.tanggal) 
+    //                         FROM {$this->harga} h2 
+    //                         WHERE h2.barcode = d.barcode
+    //                     )
+    //                 WHERE d.notaorder = o.notaorder
+    //             ) AS subtotal,
+    //             -- total cicilan yang sudah dibayar
+    //             (
+    //                 SELECT COALESCE(SUM(c.bayar),0)
+    //                 FROM {$this->wholesale_cicilan} c
+    //                 WHERE c.notaorder = o.notaorder
+    //             ) AS total_cicilan
+    //         FROM {$this->wholesale_order} o
+    //         WHERE o.is_void = 0
+    //     ";
 
-        $rows = $this->db->query($sql)->getResultArray();
-        $result = [];
+    //     $rows = $this->db->query($sql)->getResultArray();
+    //     $result = [];
 
-        foreach ($rows as $row) {
-            $subtotal = floatval($row["subtotal"]);
-            $diskon   = floatval($row["diskon"]);
-            $ppn      = floatval($row["ppn"]);
-            $dp       = floatval($row["dp"]);
-            $cicilan  = floatval($row["total_cicilan"]);
+    //     foreach ($rows as $row) {
+    //         $subtotal = floatval($row["subtotal"]);
+    //         $diskon   = floatval($row["diskon"]);
+    //         $ppn      = floatval($row["ppn"]);
+    //         $dp       = floatval($row["dp"]);
+    //         $cicilan  = floatval($row["total_cicilan"]);
 
-            // hitung grand total
-            $afterDiskon = $subtotal - $diskon;
-            $ppnNominal  = ($ppn / 100) * $afterDiskon;
-            $grandTotal  = $afterDiskon + $ppnNominal;
+    //         // hitung grand total
+    //         $afterDiskon = $subtotal - $diskon;
+    //         $ppnNominal  = ($ppn / 100) * $afterDiskon;
+    //         $grandTotal  = $afterDiskon + $ppnNominal;
 
-            // hitung sisa (amount due)
-            $amountDue   = $grandTotal - $dp - $cicilan;
+    //         // hitung sisa (amount due)
+    //         $amountDue   = $grandTotal - $dp - $cicilan;
 
-            // hanya masukkan yang masih ada sisa
-            if ($amountDue > 0) {
-                $result[] = [
-                    "notaorder"  => $row["notaorder"],
-                    "subtotal"   => number_format($subtotal, 0, ",", "."),
-                    "amount_due" => number_format($amountDue, 0, ",", ".")
-                ];
-            }
+    //         // hanya masukkan yang masih ada sisa
+    //         if ($amountDue > 0) {
+    //             $result[] = [
+    //                 "notaorder"  => $row["notaorder"],
+    //                 "subtotal"   => number_format($subtotal, 0, ",", "."),
+    //                 "amount_due" => number_format($amountDue, 0, ",", ".")
+    //             ];
+    //         }
+    //     }
+
+    //     return $result;
+    // }
+
+    public function list_cicilan($nonota){
+        $sql="SELECT * FROM wholesale_cicilan WHERE nonota=? AND status='paid'";
+        $query = $this->db->query($sql,$nonota);
+
+        if ($query) {
+            return $query->getResultArray();
+        } else {
+            return $this->db->error();
         }
-
-        return $result;
     }
 
     // === Wholesale Order : Tambah === 
@@ -137,8 +195,8 @@ class WholesaleModel extends Model
                 'jumlah'    => $row["jumlah"],
                 'potongan'  => $row["potongan"]
             ];
-            $this->db->table($this->wholesale_order_detail)->insert($detail);
         }
+        $this->db->table($this->wholesale_order_detail)->insertBatch($detail);
 
         $this->db->transComplete();
 
@@ -160,17 +218,17 @@ class WholesaleModel extends Model
 
     // === Wholesale Cicilan : Index ===
 
-    public function listCicilanWholesale()
-    {
-        $sql = "SELECT * FROM {$this->wholesale_cicilan} WHERE status ='paid'";
-        $query = $this->db->query($sql);
+    // public function listCicilanWholesale()
+    // {
+    //     $sql = "SELECT * FROM {$this->wholesale_cicilan} WHERE status ='paid'";
+    //     $query = $this->db->query($sql);
 
-        if ($query) {
-            return $query->getResultArray();
-        } else {
-            return $this->db->error();
-        }
-    }
+    //     if ($query) {
+    //         return $query->getResultArray();
+    //     } else {
+    //         return $this->db->error();
+    //     }
+    // }
 
     // === Wholesale Cicilan : Tambah ===
 
@@ -221,9 +279,9 @@ class WholesaleModel extends Model
 
     // === Wholesale Cicilan : Hapus ===
 
-    public function hapusCicilanWholesale($data, $nonota)
+    public function hapusCicilanWholesale($data, $id)
     {
-        $builder = $this->db->table($this->wholesale_cicilan)->where('nonota', $nonota);
+        $builder = $this->db->table($this->wholesale_cicilan)->where('id', $id);
         $query = $builder->update($data);
 
         if ($query) {

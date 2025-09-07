@@ -99,10 +99,6 @@ class Konsinyasi extends BaseApiController
 
     public function getNota()
     {
-        if (!$this->session->get('logged_status')) {
-            return redirect()->to(base_url());
-        }
-
         $data = [
             'title'      => 'Data Nota Konsinyasi',
             'content'    => 'admin/konsinyasi/nota/index',
@@ -168,9 +164,6 @@ class Konsinyasi extends BaseApiController
 
     public function getRetur()
     {
-        if (!$this->session->get('logged_status')) {
-            return redirect()->to(base_url());
-        }
 
         $data = [
             'title'      => 'Data Retur Konsinyasi',
@@ -475,113 +468,7 @@ class Konsinyasi extends BaseApiController
 
         return $this->response->setJSON($result);
     }
-    // public function postAddDataNota()
-    // {
-    //     // Rules validasi
-    //     $rules = [
-    //         "notajual" => [
-    //             "label"  => "Nota Jual",
-    //             "rules"  => "required|numeric|max_length[6]|is_unique[nota_konsinyasi.notajual]",
-    //             "errors" => [
-    //                 "required"   => "{field} wajib diisi",
-    //                 "numeric"    => "{field} harus berupa angka",
-    //                 "max_length" => "{field} maksimal 6 digit",
-    //                 "is_unique"  => "{field} sudah digunakan."
-    //             ]
-    //         ],
-    //         "diskon" => [
-    //             "label"  => "Diskon",
-    //             "rules"  => "permit_empty|numeric|max_length[6]",
-    //             "errors" => [
-    //                 "numeric"    => "{field} harus berupa angka",
-    //                 "max_length" => "{field} maksimal 6 digit"
-    //             ]
-    //         ],
-    //         "ppn" => [
-    //             "label"  => "PPN",
-    //             "rules"  => "permit_empty|numeric|max_length[6]",
-    //             "errors" => [
-    //                 "numeric"    => "{field} harus berupa angka",
-    //                 "max_length" => "{field} maksimal 6 digit"
-    //             ]
-    //         ],
-    //         // minimal 1 detail harus dikirim (array)
-    //         "do_id" => [
-    //             "label"  => "No. DO Konsinyasi",
-    //             "rules"  => "required",
-    //             "errors" => [
-    //                 "required" => "{field} wajib dipilih minimal 1"
-    //             ]
-    //         ],
-    //         "barcode" => [
-    //             "label"  => "Produk",
-    //             "rules"  => "required",
-    //             "errors" => [
-    //                 "required" => "{field} wajib dipilih minimal 1"
-    //             ]
-    //         ],
-    //         "jumlah" => [
-    //             "label"  => "Jumlah",
-    //             "rules"  => "required|numeric|greater_than_equal_to[1]",
-    //             "errors" => [
-    //                 "required"                => "{field} wajib diisi",
-    //                 "numeric"                 => "{field} harus berupa angka",
-    //                 "greater_than_equal_to"   => "{field} minimal 1"
-    //             ]
-    //         ],
-    //     ];
 
-    //     // Jalankan rules validasi
-    //     if (! $this->validate($rules)) {
-    //         if ($this->request->isAJAX()) {
-    //             return $this->response->setJSON([
-    //                 "status"  => false,
-    //                 "message" => implode("\n", $this->validator->getErrors()),
-    //                 "errors"  => $this->validator->getErrors()
-    //             ]);
-    //         } else {
-    //             $this->session->setFlashdata('message', $this->validator->listErrors());
-    //             return redirect()->to('/admin/konsinyasi/notatambah')->withInput();
-    //         }
-    //     }
-
-    //     // Ambil input utama
-    //     $notajual = esc($this->request->getPost("notajual"));
-    //     $diskon   = (float) $this->request->getPost("diskon");
-    //     $ppn      = (float) $this->request->getPost("ppn");
-
-    //     // Array detail
-    //     $do_ids   = $this->request->getPost("do_id");     // array notakonsinyasi
-    //     $barcodes = $this->request->getPost("barcode");   // array barcode
-    //     $jumlahs  = $this->request->getPost("jumlah");    // array jumlah
-
-    //     if (!$notajual || empty($do_ids) || empty($barcodes) || empty($jumlahs)) {
-    //         return $this->response->setJSON([
-    //             "status"  => false,
-    //             "message" => "Data tidak lengkap"
-    //         ]);
-    //     }
-
-    //     $data = [
-    //         "notajual" => $notajual,
-    //         "diskon"   => $diskon,
-    //         "ppn"      => $ppn,
-    //         "userid"   => session()->get("logged_status")["username"],
-    //         "detail"   => []
-    //     ];
-
-    //     foreach ($barcodes as $i => $barcode) {
-    //         $data["detail"][] = [
-    //             "notakonsinyasi" => esc($do_ids[$i]),
-    //             "barcode"        => esc($barcode),
-    //             "jumlah"         => (int) $jumlahs[$i],
-    //         ];
-    //     }
-
-    //     $result = $this->konsinyasiModel->insertNotaKonsinyasi($data);
-
-    //     return $this->response->setJSON($result);
-    // }
 
     public function postAddDataRetur1()
     {
@@ -594,16 +481,6 @@ class Konsinyasi extends BaseApiController
                     "required" => "{field} wajib dipilih"
                 ]
             ],
-            // "noretur" => [
-            //     "label"  => "No. Retur",
-            //     "rules"  => "required|numeric|max_length[6]|is_unique[retur_konsinyasi.noretur]",
-            //     "errors" => [
-            //         "required"   => "{field} wajib diisi",
-            //         "numeric"    => "{field} harus berupa angka",
-            //         "max_length" => "{field} maksimal 6 digit",
-            //         "is_unique"  => "{field} sudah digunakan."
-            //     ]
-            // ],
         ];
 
         // Jalankan rules validasi
@@ -653,6 +530,7 @@ class Konsinyasi extends BaseApiController
         foreach ($details as $row) {
             $data["detail"][] = [
                 "barcode" => esc($row["barcode"]),
+                "size"    => esc($row["size"]),
                 "jumlah"  => (int) $row["jumlah"],
                 "alasan"  => esc($row["alasan"])
             ];

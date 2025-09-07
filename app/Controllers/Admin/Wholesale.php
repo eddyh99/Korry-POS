@@ -28,9 +28,6 @@ class Wholesale extends BaseApiController
 
     public function getOrder()
     {
-        if (!$this->session->get('logged_status')) {
-            return redirect()->to(base_url());
-        }
 
         $data = [
             'title'      => 'Data Order Wholesale',
@@ -339,9 +336,6 @@ class Wholesale extends BaseApiController
 
     public function getCicilan()
     {
-        if (!$this->session->get('logged_status')) {
-            return redirect()->to(base_url());
-        }
 
         $data = [
             'title'      => 'Data Cicilan Wholesale',
@@ -358,7 +352,7 @@ class Wholesale extends BaseApiController
 
     public function postCicilanlistdata()
     {
-        $result = $this->wholesaleModel->listCicilanWholesale();
+        $result = $this->wholesaleModel->listOrderWholesale1();
         return $this->response->setJSON($result);
     }
 
@@ -366,11 +360,12 @@ class Wholesale extends BaseApiController
 
     public function getCicilantambah()
     {
-        $wholesale_order = $this->wholesaleModel->listOrderWholesale();
+        $wholesale_order = $this->wholesaleModel->listOrderWholesale1();
 
         $data = [
             'title'    => 'Tambah Data',
             'content'  => 'admin/wholesale/cicilan/tambah',
+            'extra'    => 'admin/wholesale/cicilan/js/js_tambah',
             'wholesale_order' => $wholesale_order,
             'mn_wholesale'   => 'active',
             'colmas'   => 'collapse',
@@ -380,6 +375,12 @@ class Wholesale extends BaseApiController
         ];
 
         return view('layout/wrapper', $data);
+    }
+
+    public function postDetailcicilan(){
+        $nonota     = $this->request->getPost("nonota");
+        $result = $this->wholesaleModel->list_cicilan($nonota);
+        return $this->response->setJSON($result);
     }
 
     // === Cicilan Wholesale : Handle POST Tambah ===
@@ -463,9 +464,9 @@ class Wholesale extends BaseApiController
 
     // === Order Wholesale : Hapus ===
 
-    public function getCicilanhapus($nonota)
+    public function postCicilanhapus()
     {
-        $nonota = base64_decode(esc($nonota));
+        $nonota = esc($this->request->getPost('id'));
 
         $data = [
             "status" => 'void'
@@ -520,6 +521,21 @@ class Wholesale extends BaseApiController
         ];
 
         return view('admin/wholesale/cicilan/balance_payment', $nota);
+    }
+
+    public function getDetailcicilan($notaorder){
+        $data = [
+            'title'    => 'Detail Cicilan',
+            'content'  => 'admin/wholesale/cicilan/detail',
+            'notaorder' => $notaorder,
+            'mn_wholesale'   => 'active',
+            'colmas'   => 'collapse',
+            'colset'   => 'collapse in',
+            'collap'   => 'collapse',
+            'side24'   => 'active',
+        ];
+
+        return view('layout/wrapper', $data);
     }
 
     public function getComplete($nonota=null){

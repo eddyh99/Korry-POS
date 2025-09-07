@@ -477,60 +477,6 @@ class KonsinyasiModel extends Model
         }
     }
 
-    // === Retur Konsinyasi: Tambah ===
-
-    public function insertReturKonsinyasi1($data)
-    {
-        $this->db->transStart();
-
-        // Auto-generate No. Retur Konsinyasi
-        $sql = "SELECT LPAD(
-                    COALESCE(CAST(MAX(noretur) AS UNSIGNED), 0) + 1,
-                    6,
-                    '0'
-                ) AS next_noretur
-                FROM retur_konsinyasi";
-
-        $noretur = $this->db->query($sql)->getRow()->next_noretur;
-
-        // Insert ke master nota_konsinyasi (retur)
-        $notaData = [
-            "noretur"      => $noretur,
-            "tanggal"      => date("Y-m-d H:i:s"),
-            "nokonsinyasi" => $data["nokonsinyasi"],
-            "is_void"      => 0,
-            "userid"       => $data["userid"],
-        ];
-
-        $this->db->table($this->retur_konsinyasi)->insert($notaData);
-
-        // Insert detail retur
-        foreach ($data["detail"] as $row) {
-            $detailData = [
-                "noretur" => $noretur,
-                "barcode" => $row["barcode"],
-                "jumlah"  => $row["jumlah"],
-                "alasan"  => $row["alasan"]
-            ];
-            $this->db->table($this->retur_konsinyasi_detail)->insert($detailData);
-        }
-
-        $this->db->transComplete();
-
-        if ($this->db->transStatus() === false) {
-            $this->db->transRollback();
-            return [
-                "status"  => false,
-                "message" => "DB Error: " . $this->db->error()["message"]
-            ];
-        } else {
-            $this->db->transCommit();
-            return [
-                "status"  => true,
-                "message" => "Retur Konsinyasi berhasil disimpan"
-            ];
-        }
-    }
 
     public function insertReturKonsinyasi($data)
     {
@@ -562,23 +508,11 @@ class KonsinyasiModel extends Model
                 "noretur" => $noretur,
                 "barcode" => $row["barcode"],
                 "jumlah"  => $row["jumlah"],
+                "size"    => $row["size"],
                 "alasan"  => $row["alasan"]
             ];
-            $this->db->table($this->retur_konsinyasi_detail)->insert($detailData);
-
-            // Simpan juga ke tabel penyesuaian
-            $adjData = [
-                "barcode"    => $row["barcode"],
-                "size"       => $row["size"],
-                "storeid"    => session()->get("logged_status")["storeid"],
-                "tanggal"    => date("Y-m-d"),
-                "jumlah"     => -1 * (int) $row["jumlah"], // retur = keluar, kurangi stok
-                "keterangan" => "Retur Konsinyasi #".$noretur." (".$row["alasan"].")",
-                "userid"     => $data["userid"],
-                "approved"   => 1
-            ];
-            $this->db->table($this->penyesuaian)->insert($adjData);
         }
+        $this->db->table($this->retur_konsinyasi_detail)->insertBatch($detailData);
 
         $this->db->transComplete();
 

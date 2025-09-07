@@ -310,7 +310,7 @@ public function allposts($limit, $start, $col, $dir)
 
                 UNION ALL
                 -- Wholesale order (barang keluar ke wholesale)
-                SELECT d.barcode, SUM(d.jumlah) AS total, d.size, a.storeid
+                SELECT d.barcode, SUM(d.jumlah)*-1 AS total, d.size, a.storeid
                 FROM wholesale_order a 
                 INNER JOIN wholesale_order_detail d ON a.notaorder = d.notaorder
                 WHERE a.is_void = 0 AND a.is_complete = 1
@@ -425,7 +425,7 @@ public function posts_search($limit, $start, $search, $col, $dir)
 
                 UNION ALL
                 -- Wholesale order (barang keluar ke wholesale)
-                SELECT d.barcode, SUM(d.jumlah) AS total, d.size, a.storeid
+                SELECT d.barcode, SUM(d.jumlah)*-1 AS total, d.size, a.storeid
                 FROM wholesale_order a 
                 INNER JOIN wholesale_order_detail d ON a.notaorder = d.notaorder
                 WHERE a.is_void = 0 AND a.is_complete = 1
@@ -540,7 +540,7 @@ public function posts_search_count($search)
 
                 UNION ALL
                 -- Wholesale order (barang keluar ke wholesale)
-                SELECT d.barcode, SUM(d.jumlah) AS total, d.size, a.storeid
+                SELECT d.barcode, SUM(d.jumlah)*-1 AS total, d.size, a.storeid
                 FROM wholesale_order a 
                 INNER JOIN wholesale_order_detail d ON a.notaorder = d.notaorder
                 WHERE a.is_void = 0 AND a.is_complete = 1

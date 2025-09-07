@@ -25,17 +25,19 @@
 			},
 			"columns": [
 				{ "data": "notaorder" },
-				{ "data": "id_wholesaler" },   // sudah join, bukan id lagi
+				{ "data": "nama_partner" },   // sudah join, bukan id lagi
 				{ "data": "tanggal" },
 				{ "data": "lama" },
-				{ "data": "diskon", "render": function(data){ return new Intl.NumberFormat('id-ID').format(data); }},		
-				{ "data": "ppn" },						
+				{ "data": "subtotal", "render": function(data){ return new Intl.NumberFormat('id-ID').format(data); } },
+				{ "data": "dp", "render": function(data){ return new Intl.NumberFormat('id-ID').format(data); }},		
 				{ "data": "notaorder",
 					"render": function (data, type, full, meta){
 						let button = '';
-						button += '<button type="button" class="btn btn-simple btn-info btn-icon btnPrint" title="Print Ulang" data-notaorder="' + data + '"><i class="material-icons">print</i></button>';
-						button += '<button type="button" class="btn btn-simple btn-info btn-icon btnBP" title="Cetak BP" data-notaorder="' + data + '"><i class="material-icons">account_balance</i></button>';
-						// button += '<button type="button" class="btn btn-simple btn-danger btn-icon btnDelete" title="Hapus" data-notaorder="' + data + '"><i class="material-icons">close</i></button>';
+						if (full.is_complete!=="1"){
+							button += '<button type="button" class="btn btn-simple btn-info btn-icon btnPrint" title="Print Ulang" data-notaorder="' + data + '"><i class="material-icons">print</i></button>';
+							//button += '<button type="button" class="btn btn-simple btn-info btn-icon btnBP" title="Cetak BP" data-notaorder="' + data + '"><i class="material-icons">account_balance</i></button>';
+							button += '<button type="button" class="btn btn-simple btn-danger btn-icon btnDelete" title="Hapus" data-notaorder="' + data + '"><i class="material-icons">close</i></button>';
+						}
 						return button;
 					}
 				}

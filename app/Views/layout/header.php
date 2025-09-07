@@ -21,7 +21,7 @@
   <!--     Fonts and icons     -->
   <link href="<?=base_url()?>assets/bootstrap/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
   <link href="<?=base_url()?>assets/css/google-roboto-300-700.css" rel="stylesheet" />
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.12/css/select2.min.css"  />
   <!-- Datatables -->
   <link rel="stylesheet" href="<?=base_url()?>assets/bootstrap/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
   

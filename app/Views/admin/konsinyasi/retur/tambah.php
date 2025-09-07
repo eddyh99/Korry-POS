@@ -6,13 +6,13 @@
 			<div class="card">
 				<div class="card-body">
 
-                    <div class="col-sm-12">
+                    <form id="form_retur" class="form-horizontal">
+                        <div class="col-sm-6">
 
-                        <form id="form_retur">
                             <!-- Bagian Header Retur Konsinyasi -->
-                            <div class="row form-group">
-                                <div class="col-sm-3">
-                                    <label class="col-form-label">No. DO Konsinyasi</label>
+                            <div class="form-group">
+                                <label for="produk" class="col-sm-3 control-label">No. DO Konsinyasi</label>
+                                <div class="col-sm-9">
                                     <select id="do_konsinyasi" name="do_konsinyasi" class="form-control select2" required>
                                         <option value="" disabled selected>--Pilih No. DO--</option>
                                         <?php foreach ($do_konsinyasi as $dt) { ?>
@@ -26,39 +26,47 @@
 
                             <hr>
 
-                            <!-- Bagian Input Detail Produk Retur -->
-                            <div class="row form-group">
-                                <!-- Pilih Produk -->
-                                <div class="col-sm-3">
-                                    <label class="col-form-label">Produk</label>
+                            <!-- Produk -->
+                            <div class="form-group">
+                                <label for="produk" class="col-sm-3 control-label">Produk</label>
+                                <div class="col-sm-9">
                                     <select id="produk" name="produk" class="form-control select2">
                                         <option value="" disabled selected>--Pilih Produk--</option>
                                     </select>
                                 </div>
+                            </div>
 
-                                <!-- Jumlah Retur -->
-                                <div class="col-sm-2">
-                                    <label class="col-form-label">Jumlah</label>
+                            <!-- Jumlah -->
+                            <div class="form-group">
+                                <label for="jumlah" class="col-sm-3 control-label">Jumlah</label>
+                                <div class="col-sm-3">
                                     <input type="number" id="jumlah" name="jumlah" 
                                         class="form-control" min="1" value="1">
                                 </div>
+                            </div>
 
-                                <!-- Alasan Retur -->
-                                <div class="col-sm-3">
-                                    <label class="col-form-label">Alasan Retur</label>
+                            <!-- Alasan Retur -->
+                            <div class="form-group">
+                                <label for="alasan" class="col-sm-3 control-label">Alasan Retur</label>
+                                <div class="col-sm-9">
                                     <input type="text" id="alasan" name="alasan" 
                                         class="form-control" placeholder="Masukkan alasan retur">
                                 </div>
-
-                                <!-- Tombol Tambah ke Temporary Table -->
-                                <div class="col-sm-2 d-flex align-items-end">
-                                    <button type="button" id="btnAdd" class="btn btn-success">+ Tambah</button>
-                                </div>
                             </div>
 
+                            <!-- Tombol Tambah -->
+                            <div class="form-group">
+                                <div class="col-sm-offset-3 col-sm-9">
+                                    <button type="button" id="btnAdd" class="btn btn-success btn-block">
+                                        + Tambah
+                                    </button>
+                                </div>
+                            </div>
                             <hr>
 
                             <!-- Temporary Table untuk menampung detail retur -->
+                        </div>
+                        <div class="col-sm-12">
                             <table id="table_data" class="table table-striped nowrap" width="100%">
                                 <thead>
                                     <tr>
@@ -84,12 +92,9 @@
                                         <i class="material-icons">reply</i> Kembali
                                     </a>
                                 </div>
-                            </div>
-                            
-                        </form>
-
-                    </div>
-
+                            </div>                        
+                        </div>
+                    </form>
 				</div>
 			</div>
 		</div>
