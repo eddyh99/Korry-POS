@@ -72,7 +72,7 @@ $(document).ready(function(){
         let namaProduk = $("#produk option:selected").text();
 
         if(val > max){
-            alert("Maksimal " + namaProduk + " hanya " + max);
+            alert("Maksimal retur:  " + namaProduk.trim() + " hanya " + max);
             $(this).val(max);
         } else if(val < 1){
             $(this).val(1);

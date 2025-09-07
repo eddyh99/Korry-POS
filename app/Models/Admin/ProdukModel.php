@@ -13,6 +13,7 @@ class ProdukModel extends Model
     private $produk = 'produk';
     private $harga  = 'harga';
     private $produkbahan = 'produk_bahan';
+    private $biaya  = 'produk_biaya';
     private $produksize = 'produksize';
 
     public function Listproduk()
@@ -50,9 +51,8 @@ class ProdukModel extends Model
         $sql = "SELECT
                     p.barcode,
                     p.namaproduk,
-                    p.namabiayaproduksi,
                     h.harga,
-                    h.harga_produksi,
+                    COALESCE(biaya.total_biaya, 0) AS harga_produksi,
                     CONCAT(
                         '[',
                         GROUP_CONCAT(
@@ -72,7 +72,7 @@ class ProdukModel extends Model
                     GROUP_CONCAT(DISTINCT ps.size ORDER BY ps.size SEPARATOR ',') AS size_available
                 FROM produk p
                 INNER JOIN (
-                    SELECT h1.barcode, h1.harga, h1.harga_produksi
+                    SELECT h1.barcode, h1.harga
                     FROM harga h1
                     INNER JOIN (
                         SELECT barcode, MAX(tanggal) AS tanggal
@@ -94,9 +94,15 @@ class ProdukModel extends Model
                     GROUP BY pb.idbahan
                 ) kebutuhan ON pb.idbahan = kebutuhan.idbahan
                 LEFT JOIN produksize ps ON ps.barcode = p.barcode
+                LEFT JOIN (
+                    SELECT barcode, SUM(nominal) AS total_biaya
+                    FROM produk_biaya
+                    GROUP BY barcode
+                ) biaya ON biaya.barcode = p.barcode
                 WHERE p.status = '0'
-                GROUP BY p.barcode, p.namaproduk, p.namabiayaproduksi, h.harga, h.harga_produksi
-                ORDER BY p.barcode;";
+                GROUP BY p.barcode, p.namaproduk, h.harga, biaya.total_biaya
+                ORDER BY p.barcode;
+";
 
         $query = $this->db->query($sql);
 
@@ -117,100 +123,7 @@ class ProdukModel extends Model
             return $this->db->error();
         }
     }
-    // public function ListProdukProduksi()
-    // {
-    //     $sql = "SELECT
-    //                 p.barcode,
-    //                 p.namaproduk,
-    //                 h.harga,
-    //                 CONCAT(
-    //                     '[', 
-    //                     GROUP_CONCAT(
-    //                         CONCAT(
-    //                             '{',
-    //                                 '\"idbahan\":', '\"', IFNULL(pb.idbahan,''), '\"', ',',
-    //                                 '\"namabahan\":', '\"', IFNULL(b.namabahan,''), '\"', ',',
-    //                                 '\"jumlah\":', IFNULL(pb.jumlah,0), ',',
-    //                                 '\"satuan\":', '\"', IFNULL(pb.satuan,''), '\"', ',',
-    //                                 '\"stok\":', IFNULL(sb.total_stok,0),
-    //                             '}'
-    //                         )
-    //                         SEPARATOR ','
-    //                     ),
-    //                     ']'
-    //                 ) AS bahan
-    //             FROM produk p
-    //             INNER JOIN (
-    //                 SELECT h1.barcode, h1.harga
-    //                 FROM harga h1
-    //                 INNER JOIN (
-    //                     SELECT barcode, MAX(tanggal) AS tanggal
-    //                     FROM harga
-    //                     GROUP BY barcode
-    //                 ) h2
-    //                 ON h1.barcode = h2.barcode
-    //                 AND h1.tanggal = h2.tanggal
-    //             ) h ON p.barcode = h.barcode
-    //             LEFT JOIN produk_bahan pb ON p.barcode = pb.barcode
-    //             LEFT JOIN bahanbaku b ON pb.idbahan = b.id
-    //             LEFT JOIN (
-    //                 SELECT idbahan, SUM(jumlah) AS total_stok
-    //                 FROM stok_bahanbaku
-    //                 GROUP BY idbahan
-    //             ) sb ON pb.idbahan = sb.idbahan
-    //             WHERE p.status = '0'
-    //             GROUP BY p.barcode, p.namaproduk, h.harga
-    //             ORDER BY p.barcode;";
 
-    //     $query = $this->db->query($sql);
-
-    //     if ($query) {
-    //         $result = $query->getResultArray();
-
-    //         // parsing string jadi array JSON beneran
-    //         foreach ($result as &$row) {
-    //             if (!empty($row['bahan'])) {
-    //                 $row['bahan'] = json_decode($row['bahan'], true);
-    //             } else {
-    //                 $row['bahan'] = [];
-    //             }
-    //         }
-
-    //         return $result;
-    //     } else {
-    //         return $this->db->error();
-    //     }
-    // }
-    // public function ListProdukProduksi()
-    // {
-    //     $sql = "SELECT
-    //                 p.barcode,
-    //                 p.namaproduk,
-    //                 h.harga
-    //             FROM produk p
-    //             INNER JOIN (
-    //                 SELECT h1.barcode, h1.harga
-    //                 FROM harga h1
-    //                 INNER JOIN (
-    //                     SELECT barcode, MAX(tanggal) AS tanggal
-    //                     FROM harga
-    //                     GROUP BY barcode
-    //                 ) h2
-    //                 ON h1.barcode = h2.barcode
-    //                 AND h1.tanggal = h2.tanggal
-    //             ) h
-    //             ON p.barcode = h.barcode
-    //             WHERE p.status = '0'
-    //             ORDER BY p.barcode;";
-
-    //     $query = $this->db->query($sql);
-
-    //     if ($query) {
-    //         return $query->getResultArray();
-    //     } else {
-    //         return $this->db->error();
-    //     }
-    // }
 
     public function ListProdukOrderWholesale()
     {
@@ -433,19 +346,57 @@ class ProdukModel extends Model
     }
     public function getProduk($barcode)
     {
-        $sql = "SELECT a.*, x.harga, x.harga_konsinyasi, x.harga_wholesale, x.harga_produksi, x.diskon
+        $sql = "SELECT 
+                    a.*,
+                    x.harga, 
+                    x.harga_konsinyasi, 
+                    x.harga_wholesale, 
+                    x.diskon,
+                    COALESCE(stok.total_biaya_bahan, 0) AS total_biaya_bahan,
+                    COALESCE(stok.breakdown_bahan, '[]') AS breakdown_bahan
                 FROM produk a
                 INNER JOIN (
-                    SELECT a.harga, a.harga_konsinyasi, a.harga_wholesale, a.harga_produksi, a.diskon, a.barcode
+                    SELECT a.harga, a.harga_konsinyasi, a.harga_wholesale, a.diskon, a.barcode
                     FROM harga a
                     INNER JOIN (
-                        SELECT MAX(tanggal) as tanggal, barcode 
+                        SELECT MAX(tanggal) AS tanggal, barcode 
                         FROM harga 
                         GROUP BY barcode
                     ) x 
-                    ON a.barcode = x.barcode 
-                    AND a.tanggal = x.tanggal
+                    ON a.barcode = x.barcode AND a.tanggal = x.tanggal
                 ) x ON a.barcode = x.barcode
+                LEFT JOIN (
+                    -- Hitung weighted average per bahan, lalu breakdown
+                    SELECT 
+                        pb.barcode,
+                        SUM(pb.jumlah * (sb.total_harga / sb.total_jumlah)) AS total_biaya_bahan,
+                        CONCAT(
+                            '[',
+                            GROUP_CONCAT(
+                                CONCAT(
+                                    '{',
+                                        '\"idbahan\":', '\"', pb.idbahan, '\"', ',',
+                                        '\"namabahan\":', '\"', IFNULL(b.namabahan,''), '\"', ',',
+                                        '\"jumlah\":', pb.jumlah, ',',
+                                        '\"harga_avg\":', ROUND(sb.total_harga / sb.total_jumlah, 2), ',',
+                                        '\"subtotal\":', ROUND(pb.jumlah * (sb.total_harga / sb.total_jumlah), 2),
+                                    '}'
+                                )
+                                SEPARATOR ','
+                            ),
+                            ']'
+                        ) AS breakdown_bahan
+                    FROM produk_bahan pb
+                    JOIN (
+                        SELECT idbahan,
+                            SUM(harga * jumlah) AS total_harga,
+                            SUM(jumlah) AS total_jumlah
+                        FROM stok_bahanbaku
+                        GROUP BY idbahan
+                    ) sb ON sb.idbahan = pb.idbahan
+                    LEFT JOIN bahanbaku b ON b.id = pb.idbahan
+                    GROUP BY pb.barcode
+                ) stok ON stok.barcode = a.barcode
                 WHERE a.barcode = ?";
         
         $query = $this->db->query($sql, [$barcode]);
@@ -470,8 +421,6 @@ class ProdukModel extends Model
             'namakategori' => $data["namakategori"],
             'sku'          => $data["sku"],
             'userid'       => $data["userid"],
-            // Tambahan : Biaya Produksi
-            'namabiayaproduksi' => $data["namabiayaproduksi"]
         ];
 
         $price = [
@@ -481,8 +430,6 @@ class ProdukModel extends Model
             // Tambahan : Harga Konsinyasi & Wholesale
             'harga_konsinyasi'   => $data["hargakonsinyasi"],
             'harga_wholesale'    => $data["hargawholesale"],
-            // Tambahan : Biaya Produksi
-            'harga_produksi'    => $data["hargaproduksi"],
 
             'diskon'  => $data["diskon"] ?? 0,
             'userid'  => $data["userid"]
@@ -491,25 +438,12 @@ class ProdukModel extends Model
         $this->db->transStart();
 
         $this->db->table($this->produk)->insert($produk);
-
         $this->db->table($this->harga)->insert($price);
 
-        if (!empty($data["bahanbaku"])) {
-            foreach ($data["bahanbaku"] as $i => $idbahan) {
-                $jumlah = $data["jumlah"][$i];
-
-                // anggap semua sudah dalam meter/pcs (yard dikonversi di sini jika ada logic tambahan)
-                $produkbahan = [
-                    'barcode' => $data["barcode"],
-                    'idbahan' => $idbahan,
-                    'jumlah'  => $jumlah
-                    // 'satuan'  => 'meter', // default (kalau mau pcs, bisa diset berdasarkan jenis bahan di DB)
-                    // 'userid'  => $data["userid"]
-                ];
-
-                $this->db->table($this->produkbahan)->insert($produkbahan);
-            }
-        }
+        if (!empty($data["bahanbaku"]))
+            $this->db->table($this->produkbahan)->insertBatch($data["bahanbaku"]);
+        if (!empty($data["biayaproduksi"]))
+            $this->db->table($this->biaya)->insertBatch($data["biayaproduksi"]);
 
         $this->db->transComplete();
 
@@ -531,40 +465,58 @@ class ProdukModel extends Model
             // Tambahan : Fabric & Warna
             'namafabric'   => $data["fabric"],
             'namawarna'    => $data["warna"],
+            'sku'          => $data["sku"],
             // Tambahan : Biaya Produksi
-            'namabiayaproduksi'    => $data["biayaproduksi"],
 
             'userid'       => $data["userid"]
         ];
 
-        $this->db->table($this->table)->where("barcode", $barcode)->update($produk);
+        $this->db->transStart();
+            $this->db->table($this->table)->where("barcode", $barcode)->update($produk);
+            $err[]=$this->db->error();
 
-        // cek harga terakhir
-        $lastharga = $this->getProduk($barcode);
+            // cek harga terakhir
+            $lastharga = $this->getProduk($barcode);
+            $this->db->table($this->produkbahan)->where("barcode",$barcode)->delete();
+            $this->db->table($this->biaya)->where("barcode",$barcode)->delete();
 
-        if (($data["harga"] != $lastharga->harga) 
-            || ($data["diskon"]          != $lastharga->diskon) 
-            || ($data["hargakonsinyasi"] != $lastharga->harga_konsinyasi) 
-            || ($data["hargawholesale"]  != $lastharga->harga_wholesale)
-            || ($data["hargaproduksi"]   != $lastharga->harga_produksi)) {
-            $price = [
-                'barcode' => $barcode,
-                'tanggal' => date("Y-m-d H:i:s"),
-                'harga'   => $data["harga"],
-                // Tambahan : Harga Konsinyasi & Wholesale
-                'harga_konsinyasi'   => $data["hargakonsinyasi"],
-                'harga_wholesale'    => $data["hargawholesale"],
-                // Tambahan : Harga Produksi
-                'harga_produksi'    => $data["hargaproduksi"],
+            if (!empty($data["bahanbaku"]))
+                $this->db->table($this->produkbahan)->insertBatch($data["bahanbaku"]);
+                $err[]=$this->db->error();
+            if(!empty($data["biayaproduksi"]))
+                $this->db->table($this->biaya)->insertBatch($data["biayaproduksi"]);
+                $err[]=$this->db->error();
 
-                'diskon'  => $data["diskon"],
-                'userid'  => $data["userid"]
-            ];
+            if (($data["harga"] != $lastharga->harga) 
+                || ($data["diskon"]          != $lastharga->diskon) 
+                || ($data["hargakonsinyasi"] != $lastharga->harga_konsinyasi) 
+                || ($data["hargawholesale"]  != $lastharga->harga_wholesale)
+                ) {
+                $price = [
+                    'barcode' => $barcode,
+                    'tanggal' => date("Y-m-d H:i:s"),
+                    'harga'   => $data["harga"],
+                    // Tambahan : Harga Konsinyasi & Wholesale
+                    'harga_konsinyasi'   => $data["hargakonsinyasi"],
+                    'harga_wholesale'    => $data["hargawholesale"],
 
-            $this->db->table($this->harga)->insert($price);
+                    'diskon'  => $data["diskon"],
+                    'userid'  => $data["userid"]
+                ];
+
+                $this->db->table($this->harga)->insert($price);
+                $err[]=$this->db->error();
+            }
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false) {
+            $this->db->transRollback();
+            return ["code" => 511, "message" => $err];
+        } else {
+            $this->db->transCommit();
+            return ["code" => 0, "message" => "Data berhasil disimpan"];
         }
-
-        return ["code" => 0, "message" => ""];
     }
 
     public function hapusData($data, $barcode)
@@ -744,105 +696,6 @@ class ProdukModel extends Model
         }
     }
 
-    // public function insertbatchData($data)
-    // {
-    //     $this->db->transStart();
-
-    //     foreach ($data as $dt) {
-    //         $produk = [
-    //             'barcode'      => $dt["barcode"],
-    //             'namaproduk'   => $dt["namaproduk"],
-    //             'namabrand'    => $dt["namabrand"],
-    //             'namakategori' => $dt["namakategori"],
-    //             'userid'       => $dt["userid"]
-    //         ];
-
-    //         $price = [
-    //             'barcode' => $dt["barcode"],
-    //             'tanggal' => date("Y-m-d H:i:s"),
-    //             'harga'   => $dt["harga"],
-    //             'diskon'  => $dt["diskon"] ?? 0,
-    //             'userid'  => $dt["userid"]
-    //         ];
-
-    //         $this->db->table($this->table)->insert($produk);
-    //         $this->db->table($this->harga)->insert($price);
-    //     }
-
-    //     $this->db->transComplete();
-
-    //     if ($this->db->transStatus() === false) {
-    //         return ["code" => 1, "message" => "Transaksi gagal"];
-    //     }
-
-    //     return ["code" => 0, "message" => ""];
-    // }
-
-    // public function setData($data, $barcode)
-    // {
-    //     $produk = [
-    //         'namaproduk'   => $data["namaproduk"],
-    //         'namabrand'    => $data["namabrand"],
-    //         'namakategori' => $data["namakategori"],
-    //         'userid'       => $data["userid"]
-    //     ];
-
-    //     $this->db->table($this->table)->where("barcode", $barcode)->update($produk);
-
-    //     // cek harga terakhir
-    //     $lastharga = $this->getProduk($barcode);
-
-    //     if (($data["harga"] != $lastharga->harga) || ($data["diskon"] != $lastharga->diskon)) {
-    //         $price = [
-    //             'barcode' => $barcode,
-    //             'tanggal' => date("Y-m-d H:i:s"),
-    //             'harga'   => $data["harga"],
-    //             'diskon'  => $data["diskon"],
-    //             'userid'  => $data["userid"]
-    //         ];
-
-    //         $this->db->table($this->hargaTable)->insert($price);
-    //     }
-
-    //     return ["code" => 0, "message" => ""];
-    // }
-
-    // public function insertData($data)
-    // {
-    //     $produk = [
-    //         'barcode'      => $data["barcode"],
-    //         'namaproduk'   => $data["namaproduk"],
-    //         'namabrand'    => $data["namabrand"],
-    //         'namakategori' => $data["namakategori"],
-    //         'userid'       => $data["userid"]
-    //     ];
-
-    //     $price = [
-    //         'barcode' => $data["barcode"],
-    //         'tanggal' => date("Y-m-d H:i:s"),
-    //         'harga'   => $data["harga"],
-    //         'diskon'  => $data["diskon"] ?? 0,
-    //         'userid'  => $data["userid"]
-    //     ];
-
-    //     $this->db->transStart();
-
-    //     // Insert produk
-    //     $this->db->table($this->produk)->insert($produk);
-
-    //     // Insert harga
-    //     $this->db->table($this->harga)->insert($price);
-
-    //     $this->db->transComplete();
-
-    //     if ($this->db->transStatus() === false) {
-    //         $this->db->transRollback();
-    //         return ["code" => 511, "message" => "Data sudah pernah digunakan"];
-    //     } else {
-    //         $this->db->transCommit();
-    //         return ["code" => 0, "message" => ""];
-    //     }
-    // }
 }
 
 

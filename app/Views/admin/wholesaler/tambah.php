@@ -12,19 +12,19 @@
         		        <div class="col-lg-6">
                 			<div class="card-body">
                 			  <div class="form-group row">
-                				<label class="col-sm-3 col-form-label">Nama Whole Saler</label>
+                				<label class="col-sm-4 col-form-label">Nama Whole Saler</label>
                 				<div class="col-sm-7">
                 				  <input type="text" class="form-control" id="wholesaler" name="wholesaler" maxlength="50">
                 				</div>
                 			  </div>
                 			  <div class="form-group row">
-                				<label class="col-sm-3 col-form-label">Alamat</label>
+                				<label class="col-sm-4 col-form-label">Alamat</label>
                 				<div class="col-sm-7">
                 				  <input type="text" class="form-control" id="alamat" name="alamat" maxlength="100">
                 				</div>
                 			  </div>
                 			  <div class="form-group row">
-                				<label class="col-sm-3 col-form-label">Kontak</label>
+                				<label class="col-sm-4 col-form-label">Kontak</label>
                 				<div class="col-sm-7">
                 				  <input type="text" class="form-control" id="kontak" name="kontak" maxlength="50" placeholder="Masukkan No. HP atau Telepon (ex: 0812..., 021...)">
                 				</div>

@@ -13,7 +13,7 @@
                 <div class="card-content">
 						<div class="col-lg-6">
 							<div class="form-group">
-								<label for="idvendor" class="col-sm-4 control-label">Vendor</label>
+								<label for="idvendor" class="col-sm-4">Vendor</label>
 								<div class="col-sm-8">
 								<select id="idvendor" name="idvendor" class="form-control select2" required>
 									<option value="" disabled selected>-- Pilih Vendor --</option>
@@ -26,7 +26,7 @@
 
 							<!-- Estimasi (Hari) -->
 							<div class="form-group">
-								<label for="estimasi" class="col-sm-4 control-label">Estimasi (Hari)</label>
+								<label for="estimasi" class="col-sm-4">Estimasi (Hari)</label>
 								<div class="col-sm-8">
 								<input type="number" id="estimasi" name="estimasi" class="form-control" min="0" required>
 								</div>
@@ -34,7 +34,7 @@
 
 							<!-- DP -->
 							<div class="form-group">
-								<label for="dp" class="col-sm-4 control-label">DP</label>
+								<label for="dp" class="col-sm-4">DP</label>
 								<div class="col-sm-8">
 								<input type="number" id="dp" name="dp" class="form-control" min="0">
 								</div>
@@ -51,7 +51,7 @@
 						<div class="col-sm-6">
 							<!-- Kiri -->
 							<div class="form-group">
-								<label for="produk" class="col-sm-2 control-label">Produk</label>
+								<label for="produk" class="col-sm-2">Produk</label>
 								<div class="col-sm-4">
 									<select id="produk" class="form-control select2">
 										<option value="" disabled selected>-- Pilih Produk --</option>
@@ -59,7 +59,6 @@
 										<option value="<?= $dt["barcode"] ?>"
 												data-nama="<?= $dt["namaproduk"] ?>"
 												data-harga="<?= $dt["harga_produksi"] ?>"
-												data-biayaproduksi="<?= $dt["namabiayaproduksi"] ?>"
 												data-size="<?=$dt["size_available"]?>"
 												data-bahan='<?= json_encode($dt["bahan"], JSON_HEX_APOS | JSON_HEX_QUOT) ?>'>
 											<?=$dt['namaproduk']; ?>
@@ -69,7 +68,7 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label">Size</label>
+								<label class="col-sm-2">Size</label>
 								<div class="col-sm-4">
 									<select id="size" class="form-control">
 										
@@ -77,29 +76,22 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label">Jumlah Produk</label>
+								<label class="col-sm-2">Jumlah</label>
 								<div class="col-sm-4">
 									<input type="number" id="jumlah" class="form-control" min="1" value="1">
 								</div>
 							</div>
 							<!-- <div class="form-group">
-								<label class="col-sm-2 control-label text-right" style="padding-left:10px;">Harga</label>
+								<label class="col-sm-2 text-right" style="padding-left:10px;">Harga</label>
 								<div class="col-sm-4">
 									<input type="text" id="harga" class="form-control">
 								</div>
 							</div> -->
 
 							<div class="form-group">
-								<label class="col-sm-2 control-label text-right" style="padding-left:10px;">Jenis Biaya Produksi</label>
+								<label class="col-sm-2" style="padding-left:10px;">Biaya</label>
 								<div class="col-sm-4">
-									<input type="text" id="biayaproduksi" class="form-control">
-								</div>
-							</div>
-
-							<div class="form-group">
-								<label class="col-sm-2 control-label text-right" style="padding-left:10px;">Jumlah Biaya Produksi</label>
-								<div class="col-sm-4">
-									<input type="text" id="harga" class="form-control">
+									<input type="text" id="harga" class="form-control" readonly>
 								</div>
 							</div>
 						</div>

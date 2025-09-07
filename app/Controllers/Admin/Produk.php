@@ -314,31 +314,51 @@ class Produk extends BaseApiController
             return redirect()->to('/admin/produk/tambah')->withInput();
         }
 
+        // Ambil inputan dulu
+        $bahanbaku = $this->request->getPost('bahanbaku'); // bisa single atau array
+        $jumlah    = $this->request->getPost('jumlah');
+        $biayaproduksi = $this->request->getPost('biayaproduksi');
+        $hargaproduksi = $this->request->getPost('hargaproduksi');
+
         $data = [
             "barcode"      => esc($this->request->getPost('barcode')),
             "namaproduk"   => esc($this->request->getPost('produk')),
-            // Tambahan : Fabric & Warna
-            "fabric" => esc($this->request->getPost('fabric')),
-            "warna"  => esc($this->request->getPost('warna')),
-
+            "fabric"       => esc($this->request->getPost('fabric')),
+            "warna"        => esc($this->request->getPost('warna')),
             "namabrand"    => esc($this->request->getPost('brand')),
             "namakategori" => esc($this->request->getPost('kategori')),
             "harga"        => esc($this->request->getPost('harga')),
-            // Tambahan : Harga Konsinyasi & Harga Wholesale
             "hargakonsinyasi" => esc($this->request->getPost('hargakonsinyasi')),
             "hargawholesale"  => esc($this->request->getPost('hargawholesale')),
-            
             "diskon"       => esc($this->request->getPost('diskon')),
             "userid"       => session()->get('logged_status')['username'],
             "sku"          => esc($this->request->getPost('sku')),
-            // dynamic bahan
-            "bahanbaku"    => $this->request->getPost('bahanbaku'),
-            "jumlah"       => $this->request->getPost('jumlah'),
-
-            // Tambahan : Biaya Produksi
-            "namabiayaproduksi" => esc($this->request->getPost('biayaproduksi')),
-            "hargaproduksi" => esc($this->request->getPost('hargaproduksi')),
         ];
+
+        // Format ulang bahanbaku
+        $data['bahanbaku'] = [];
+        if (!empty($bahanbaku) && is_array($bahanbaku)) {
+            foreach ($bahanbaku as $i => $idbahan) {
+                $data['bahanbaku'][] = [
+                    "barcode" => $data['barcode'],
+                    "idbahan" => esc($idbahan),
+                    "jumlah"  => isset($jumlah[$i]) ? esc($jumlah[$i]) : 0,
+                ];
+            }
+        }
+
+        // Format ulang biaya produksi
+        $data['biayaproduksi'] = [];
+        if (!empty($biayaproduksi) && is_array($biayaproduksi)) {
+            foreach ($biayaproduksi as $i => $namabiaya) {
+                $data['biayaproduksi'][] = [
+                    "namabiaya"     => esc($namabiaya),
+                    "hargaproduksi" => isset($hargaproduksi[$i]) ? esc($hargaproduksi[$i]) : 0,
+                ];
+            }
+        }
+
+        
 
         $result = $this->produkModel->insertData($data);
 
@@ -487,6 +507,10 @@ class Produk extends BaseApiController
         }
 
         $barcode = esc($this->request->getPost('barcode'));
+        $bahanbaku = $this->request->getPost('bahanbaku'); // bisa single atau array
+        $jumlah    = $this->request->getPost('jumlah');
+        $biayaproduksi = $this->request->getPost('biayaproduksi');
+        $hargaproduksi = $this->request->getPost('hargaproduksi');
 
         $data = [
             "namaproduk"   => esc($this->request->getPost('produk')),
@@ -507,11 +531,31 @@ class Produk extends BaseApiController
 
             "diskon"       => esc($this->request->getPost('diskon')),
             "userid"       => session()->get('logged_status')['username'],
-            "sku"          => esc($this->request->getPost('sku'))
+            "sku"          => esc($this->request->getPost('sku')),
         ];
 
-        $bahanbaku = $this->request->getPost('bahanbaku'); // array
-        $jumlah    = $this->request->getPost('jumlah');    // array
+        // Format ulang bahanbaku
+        $data['bahanbaku'] = [];
+        if (!empty($bahanbaku) && is_array($bahanbaku)) {
+            foreach ($bahanbaku as $i => $idbahan) {
+                $data['bahanbaku'][] = [
+                    "barcode" => $barcode,
+                    "idbahan" => esc($idbahan),
+                    "jumlah"  => isset($jumlah[$i]) ? esc($jumlah[$i]) : 0,
+                ];
+            }
+        }
+
+        // Format ulang biaya produksi
+        $data['biayaproduksi'] = [];
+        if (!empty($biayaproduksi) && is_array($biayaproduksi)) {
+            foreach ($biayaproduksi as $i => $namabiaya) {
+                $data['biayaproduksi'][] = [
+                    "namabiaya"     => esc($namabiaya),
+                    "hargaproduksi" => isset($hargaproduksi[$i]) ? esc($hargaproduksi[$i]) : 0,
+                ];
+            }
+        }
 
         $result = $this->produkModel->setData($data, $barcode);
 

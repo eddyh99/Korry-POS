@@ -221,55 +221,113 @@ public function allposts_count()
 
 public function allposts($limit, $start, $col, $dir)
 {
-    $sql = "SELECT a.barcode,a.namaproduk, a.namabrand,b.size,IFNULL(SUM(x.total),0) AS stok,y.store,z.harga
-            FROM {$this->produk} a 
-            INNER JOIN {$this->produksize} b ON a.barcode=b.barcode
+    $sql = "SELECT 
+                a.barcode,
+                a.namaproduk, 
+                a.namabrand,
+                b.size,
+                IFNULL(SUM(x.total),0) AS stok,
+                y.store,
+                z.harga
+            FROM produk a
+            INNER JOIN produksize b 
+                ON a.barcode = b.barcode
             LEFT JOIN (
-              SELECT barcode, SUM(jumlah)*-1 AS total,size, storeid 
-              FROM {$this->penjualan} c 
-              INNER JOIN {$this->penjualan_detail} d ON c.id=d.id 
-              GROUP BY barcode,size, storeid
-              UNION ALL
-              SELECT barcode, SUM(jumlah) AS total, size, storeid 
-              FROM {$this->penyesuaian} 
-              WHERE approved='1' 
-              GROUP BY barcode,size, storeid
-              UNION ALL
-              SELECT barcode, SUM(jumlah)*-1 AS total, size,dari AS storeid 
-              FROM {$this->pindah} e 
-              INNER JOIN {$this->pindah_detail} f ON e.mutasi_id=f.mutasi_id 
-              WHERE e.approved='1' 
-              GROUP BY barcode, size, storeid
-              UNION ALL
-              SELECT barcode, SUM(jumlah) AS total, size,tujuan AS storeid 
-              FROM {$this->pindah} e 
-              INNER JOIN {$this->pindah_detail} f ON e.mutasi_id=f.mutasi_id  
-              WHERE e.approved='1' 
-              GROUP BY barcode, size, storeid
-              UNION ALL
-              SELECT barcode, SUM(jumlah) AS total,size, storeid 
-              FROM retur a 
-              INNER JOIN retur_detail b ON a.id=b.id 
-              GROUP BY barcode,size, storeid
-              UNION ALL
-              SELECT barcode, SUM(jumlah)*-1 AS total, size, storeid 
-              FROM pinjam a 
-              INNER JOIN pinjam_detail b ON a.id=b.id 
-              WHERE (ISNULL(kembali) OR status='tidak') 
-              GROUP BY barcode,size, storeid 
-            ) x ON a.barcode=x.barcode AND b.size=x.size 
-            INNER JOIN {$this->store} y ON x.storeid=y.storeid
+                -- penjualan
+                SELECT d.barcode, SUM(d.jumlah)*-1 AS total, d.size, c.storeid 
+                FROM penjualan c 
+                INNER JOIN penjualan_detail d ON c.id = d.id 
+                GROUP BY d.barcode, d.size, c.storeid
+
+                UNION ALL
+                -- penyesuaian
+                SELECT barcode, SUM(jumlah) AS total, size, storeid 
+                FROM penyesuaian
+                WHERE approved = '1'
+                GROUP BY barcode, size, storeid
+
+                UNION ALL
+                -- pindah keluar
+                SELECT f.barcode, SUM(f.jumlah)*-1 AS total, f.size, e.dari AS storeid
+                FROM pindah e 
+                INNER JOIN pindah_detail f ON e.mutasi_id = f.mutasi_id
+                WHERE e.approved = '1'
+                GROUP BY f.barcode, f.size, e.dari
+
+                UNION ALL
+                -- pindah masuk
+                SELECT f.barcode, SUM(f.jumlah) AS total, f.size, e.tujuan AS storeid
+                FROM pindah e 
+                INNER JOIN pindah_detail f ON e.mutasi_id = f.mutasi_id
+                WHERE e.approved = '1'
+                GROUP BY f.barcode, f.size, e.tujuan
+
+                UNION ALL
+                -- retur
+                SELECT b.barcode, SUM(b.jumlah) AS total, b.size, a.storeid
+                FROM retur a
+                INNER JOIN retur_detail b ON a.id = b.id
+                GROUP BY b.barcode, b.size, a.storeid
+
+                UNION ALL
+                -- pinjam
+                SELECT b.barcode, SUM(b.jumlah)*-1 AS total, b.size, a.storeid
+                FROM pinjam a
+                INNER JOIN pinjam_detail b ON a.id = b.id
+                WHERE (ISNULL(b.kembali) OR b.status='tidak')
+                GROUP BY b.barcode, b.size, a.storeid
+
+                UNION ALL
+                -- produksi complete masuk stok
+                SELECT pd.barcode, SUM(pd.jumlah) AS total, pd.size, p.storeid
+                FROM produksi p
+                INNER JOIN produksi_detail pd ON p.nonota = pd.nonota
+                WHERE p.is_complete = 1 AND p.status = 0
+                GROUP BY pd.barcode, pd.size, p.storeid
+
+                UNION ALL
+                -- DO Konsinyasi (barang keluar ke toko konsinyasi)
+                SELECT d.barcode, SUM(d.jumlah)*-1 AS total, d.size, a.storeid
+                FROM do_konsinyasi a 
+                INNER JOIN do_konsinyasi_detail d ON a.nonota = d.nonota
+                WHERE a.is_void = 0
+                GROUP BY d.barcode, d.size, a.storeid
+
+                UNION ALL
+                -- Retur Konsinyasi (barang kembali dari konsinyasi)
+                SELECT d.barcode, SUM(d.jumlah) AS total, d.size, a.storeid
+                FROM retur_konsinyasi a 
+                INNER JOIN retur_konsinyasi_detail d ON a.noretur = d.noretur
+                WHERE a.is_void = 0
+                GROUP BY d.barcode, d.size, a.storeid
+
+                UNION ALL
+                -- Nota Konsinyasi (terjual di toko konsinyasi, keluar stok)
+                SELECT barcode, SUM(jumlah)*-1 AS total, size, storeid
+                FROM nota_konsinyasi_detail a INNER JOIN nota_konsinyasi b ON a.notajual=b.notajual
+                WHERE a.notakonsinyasi IS NULL
+                GROUP BY barcode, size, storeid
+
+                UNION ALL
+                -- Wholesale order (barang keluar ke wholesale)
+                SELECT d.barcode, SUM(d.jumlah) AS total, d.size, a.storeid
+                FROM wholesale_order a 
+                INNER JOIN wholesale_order_detail d ON a.notaorder = d.notaorder
+                WHERE a.is_void = 0 AND a.is_complete = 1
+                GROUP BY d.barcode, d.size, a.storeid
+            ) x ON a.barcode = x.barcode AND b.size = x.size
+            INNER JOIN store y ON x.storeid = y.storeid
             INNER JOIN (
-                SELECT a.harga, a.barcode 
-                FROM harga a 
+                SELECT a.harga, a.barcode
+                FROM harga a
                 INNER JOIN (
-                    SELECT MAX(tanggal) AS tanggal, barcode 
-                    FROM harga 
+                    SELECT MAX(tanggal) AS tanggal, barcode
+                    FROM harga
                     GROUP BY barcode
-                ) x ON a.barcode=x.barcode AND a.tanggal=x.tanggal
-            ) z ON a.barcode=z.barcode
-            WHERE x.storeid IS NOT NULL 
-            GROUP BY a.barcode, x.size,x.storeid 
+                ) x ON a.barcode = x.barcode AND a.tanggal = x.tanggal
+            ) z ON a.barcode = z.barcode
+            WHERE x.storeid IS NOT NULL
+            GROUP BY a.barcode, x.size, x.storeid 
             ORDER BY {$col} {$dir} 
             LIMIT {$start}, {$limit}";
 
@@ -278,56 +336,113 @@ public function allposts($limit, $start, $col, $dir)
 
 public function posts_search($limit, $start, $search, $col, $dir)
 {
-    $sql = "SELECT a.barcode,a.namaproduk, a.namabrand,b.size,IFNULL(SUM(x.total),0) AS stok,y.store,z.harga
-            FROM {$this->produk} a 
-            INNER JOIN {$this->produksize} b ON a.barcode=b.barcode
+    $sql = "SELECT 
+                a.barcode,
+                a.namaproduk, 
+                a.namabrand,
+                b.size,
+                IFNULL(SUM(x.total),0) AS stok,
+                y.store,
+                z.harga
+            FROM produk a
+            INNER JOIN produksize b 
+                ON a.barcode = b.barcode
             LEFT JOIN (
-              SELECT barcode, SUM(jumlah)*-1 AS total,size, storeid 
-              FROM {$this->penjualan} c 
-              INNER JOIN {$this->penjualan_detail} d ON c.id=d.id 
-              GROUP BY barcode,size, storeid
-              UNION ALL
-              SELECT barcode, SUM(jumlah) AS total, size, storeid 
-              FROM {$this->penyesuaian} 
-              WHERE approved='1' 
-              GROUP BY barcode,size, storeid
-              UNION ALL
-              SELECT barcode, SUM(jumlah)*-1 AS total, size,dari AS storeid 
-              FROM {$this->pindah} e 
-              INNER JOIN {$this->pindah_detail} f ON e.mutasi_id=f.mutasi_id 
-              WHERE e.approved='1' 
-              GROUP BY barcode, size, storeid
-              UNION ALL
-              SELECT barcode, SUM(jumlah) AS total, size,tujuan AS storeid 
-              FROM {$this->pindah} e 
-              INNER JOIN {$this->pindah_detail} f ON e.mutasi_id=f.mutasi_id  
-              WHERE e.approved='1' 
-              GROUP BY barcode, size, storeid
-              UNION ALL
-              SELECT barcode, SUM(jumlah) AS total,size, storeid 
-              FROM retur a 
-              INNER JOIN retur_detail b ON a.id=b.id 
-              GROUP BY barcode,size, storeid
-              UNION ALL
-              SELECT barcode, SUM(jumlah)*-1 AS total, size, storeid 
-              FROM pinjam a 
-              INNER JOIN pinjam_detail b ON a.id=b.id 
-              WHERE (ISNULL(kembali) OR status='tidak') 
-              GROUP BY barcode,size, storeid 
-            ) x ON a.barcode=x.barcode AND b.size=x.size 
-            INNER JOIN {$this->store} y ON x.storeid=y.storeid
+                -- penjualan
+                SELECT d.barcode, SUM(d.jumlah)*-1 AS total, d.size, c.storeid 
+                FROM penjualan c 
+                INNER JOIN penjualan_detail d ON c.id = d.id 
+                GROUP BY d.barcode, d.size, c.storeid
+
+                UNION ALL
+                -- penyesuaian
+                SELECT barcode, SUM(jumlah) AS total, size, storeid 
+                FROM penyesuaian
+                WHERE approved = '1'
+                GROUP BY barcode, size, storeid
+
+                UNION ALL
+                -- pindah keluar
+                SELECT f.barcode, SUM(f.jumlah)*-1 AS total, f.size, e.dari AS storeid
+                FROM pindah e 
+                INNER JOIN pindah_detail f ON e.mutasi_id = f.mutasi_id
+                WHERE e.approved = '1'
+                GROUP BY f.barcode, f.size, e.dari
+
+                UNION ALL
+                -- pindah masuk
+                SELECT f.barcode, SUM(f.jumlah) AS total, f.size, e.tujuan AS storeid
+                FROM pindah e 
+                INNER JOIN pindah_detail f ON e.mutasi_id = f.mutasi_id
+                WHERE e.approved = '1'
+                GROUP BY f.barcode, f.size, e.tujuan
+
+                UNION ALL
+                -- retur
+                SELECT b.barcode, SUM(b.jumlah) AS total, b.size, a.storeid
+                FROM retur a
+                INNER JOIN retur_detail b ON a.id = b.id
+                GROUP BY b.barcode, b.size, a.storeid
+
+                UNION ALL
+                -- pinjam
+                SELECT b.barcode, SUM(b.jumlah)*-1 AS total, b.size, a.storeid
+                FROM pinjam a
+                INNER JOIN pinjam_detail b ON a.id = b.id
+                WHERE (ISNULL(b.kembali) OR b.status='tidak')
+                GROUP BY b.barcode, b.size, a.storeid
+
+                UNION ALL
+                -- produksi complete masuk stok
+                SELECT pd.barcode, SUM(pd.jumlah) AS total, pd.size, p.storeid
+                FROM produksi p
+                INNER JOIN produksi_detail pd ON p.nonota = pd.nonota
+                WHERE p.is_complete = 1 AND p.status = 0
+                GROUP BY pd.barcode, pd.size, p.storeid
+
+                UNION ALL
+                -- DO Konsinyasi (barang keluar ke toko konsinyasi)
+                SELECT d.barcode, SUM(d.jumlah)*-1 AS total, d.size, a.storeid
+                FROM do_konsinyasi a 
+                INNER JOIN do_konsinyasi_detail d ON a.nonota = d.nonota
+                WHERE a.is_void = 0
+                GROUP BY d.barcode, d.size, a.storeid
+
+                UNION ALL
+                -- Retur Konsinyasi (barang kembali dari konsinyasi)
+                SELECT d.barcode, SUM(d.jumlah) AS total, d.size, a.storeid
+                FROM retur_konsinyasi a 
+                INNER JOIN retur_konsinyasi_detail d ON a.noretur = d.noretur
+                WHERE a.is_void = 0
+                GROUP BY d.barcode, d.size, a.storeid
+
+                UNION ALL
+                -- Nota Konsinyasi (terjual di toko konsinyasi, keluar stok)
+                SELECT barcode, SUM(jumlah)*-1 AS total, size, storeid
+                FROM nota_konsinyasi_detail a INNER JOIN nota_konsinyasi b ON a.notajual=b.notajual
+                WHERE a.notakonsinyasi IS NULL
+                GROUP BY barcode, size, storeid
+
+                UNION ALL
+                -- Wholesale order (barang keluar ke wholesale)
+                SELECT d.barcode, SUM(d.jumlah) AS total, d.size, a.storeid
+                FROM wholesale_order a 
+                INNER JOIN wholesale_order_detail d ON a.notaorder = d.notaorder
+                WHERE a.is_void = 0 AND a.is_complete = 1
+                GROUP BY d.barcode, d.size, a.storeid
+            ) x ON a.barcode = x.barcode AND b.size = x.size
+            INNER JOIN store y ON x.storeid = y.storeid
             INNER JOIN (
-                SELECT a.harga, a.barcode 
-                FROM harga a 
+                SELECT a.harga, a.barcode
+                FROM harga a
                 INNER JOIN (
-                    SELECT MAX(tanggal) AS tanggal, barcode 
-                    FROM harga 
+                    SELECT MAX(tanggal) AS tanggal, barcode
+                    FROM harga
                     GROUP BY barcode
-                ) x ON a.barcode=x.barcode AND a.tanggal=x.tanggal
-            ) z ON a.barcode=z.barcode
-            WHERE x.storeid IS NOT NULL 
-              AND (a.barcode LIKE '%{$search}%' OR a.namaproduk LIKE '%{$search}%' OR y.store LIKE '%{$search}%') 
-            GROUP BY a.barcode, x.size,x.storeid 
+                ) x ON a.barcode = x.barcode AND a.tanggal = x.tanggal
+            ) z ON a.barcode = z.barcode
+            WHERE x.storeid IS NOT NULL
+            GROUP BY a.barcode, x.size, x.storeid
             ORDER BY {$col} {$dir} 
             LIMIT {$start}, {$limit}";
 
@@ -336,45 +451,112 @@ public function posts_search($limit, $start, $search, $col, $dir)
 
 public function posts_search_count($search)
 {
-    $sql = "SELECT a.barcode,a.namaproduk, a.namabrand,b.size,IFNULL(SUM(x.total),0) AS stok,y.store
-            FROM {$this->produk} a 
-            INNER JOIN {$this->produksize} b ON a.barcode=b.barcode
+    $sql = "SELECT 
+                a.barcode,
+                a.namaproduk, 
+                a.namabrand,
+                b.size,
+                IFNULL(SUM(x.total),0) AS stok,
+                y.store,
+                z.harga
+            FROM produk a
+            INNER JOIN produksize b 
+                ON a.barcode = b.barcode
             LEFT JOIN (
-              SELECT barcode, SUM(jumlah)*-1 AS total,size, storeid 
-              FROM {$this->penjualan} c 
-              INNER JOIN {$this->penjualan_detail} d ON c.id=d.id 
-              GROUP BY barcode,size, storeid
-              UNION ALL
-              SELECT barcode, SUM(jumlah) AS total, size, storeid 
-              FROM {$this->penyesuaian} 
-              WHERE approved='1' 
-              GROUP BY barcode,size, storeid
-              UNION ALL
-              SELECT barcode, SUM(jumlah)*-1 AS total, size,dari AS storeid 
-              FROM {$this->pindah} e 
-              INNER JOIN {$this->pindah_detail} f ON e.mutasi_id=f.mutasi_id 
-              WHERE e.approved='1' 
-              GROUP BY barcode, size, storeid
-              UNION ALL
-              SELECT barcode, SUM(jumlah) AS total, size,tujuan AS storeid 
-              FROM {$this->pindah} e 
-              INNER JOIN {$this->pindah_detail} f ON e.mutasi_id=f.mutasi_id  
-              WHERE e.approved='1' 
-              GROUP BY barcode, size, storeid
-              UNION ALL
-              SELECT barcode, SUM(jumlah) AS total,size, storeid 
-              FROM retur a 
-              INNER JOIN retur_detail b ON a.id=b.id 
-              GROUP BY barcode,size, storeid
-              UNION ALL
-              SELECT barcode, SUM(jumlah)*-1 AS total, size, storeid 
-              FROM pinjam a 
-              INNER JOIN pinjam_detail b ON a.id=b.id 
-              WHERE (ISNULL(kembali) OR status='tidak') 
-              GROUP BY barcode,size, storeid 
-            ) x ON a.barcode=x.barcode AND b.size=x.size 
-            INNER JOIN {$this->store} y ON x.storeid=y.storeid
-            WHERE x.storeid IS NOT NULL  
+                -- penjualan
+                SELECT d.barcode, SUM(d.jumlah)*-1 AS total, d.size, c.storeid 
+                FROM penjualan c 
+                INNER JOIN penjualan_detail d ON c.id = d.id 
+                GROUP BY d.barcode, d.size, c.storeid
+
+                UNION ALL
+                -- penyesuaian
+                SELECT barcode, SUM(jumlah) AS total, size, storeid 
+                FROM penyesuaian
+                WHERE approved = '1'
+                GROUP BY barcode, size, storeid
+
+                UNION ALL
+                -- pindah keluar
+                SELECT f.barcode, SUM(f.jumlah)*-1 AS total, f.size, e.dari AS storeid
+                FROM pindah e 
+                INNER JOIN pindah_detail f ON e.mutasi_id = f.mutasi_id
+                WHERE e.approved = '1'
+                GROUP BY f.barcode, f.size, e.dari
+
+                UNION ALL
+                -- pindah masuk
+                SELECT f.barcode, SUM(f.jumlah) AS total, f.size, e.tujuan AS storeid
+                FROM pindah e 
+                INNER JOIN pindah_detail f ON e.mutasi_id = f.mutasi_id
+                WHERE e.approved = '1'
+                GROUP BY f.barcode, f.size, e.tujuan
+
+                UNION ALL
+                -- retur
+                SELECT b.barcode, SUM(b.jumlah) AS total, b.size, a.storeid
+                FROM retur a
+                INNER JOIN retur_detail b ON a.id = b.id
+                GROUP BY b.barcode, b.size, a.storeid
+
+                UNION ALL
+                -- pinjam
+                SELECT b.barcode, SUM(b.jumlah)*-1 AS total, b.size, a.storeid
+                FROM pinjam a
+                INNER JOIN pinjam_detail b ON a.id = b.id
+                WHERE (ISNULL(b.kembali) OR b.status='tidak')
+                GROUP BY b.barcode, b.size, a.storeid
+
+                UNION ALL
+                -- produksi complete masuk stok
+                SELECT pd.barcode, SUM(pd.jumlah) AS total, pd.size, p.storeid
+                FROM produksi p
+                INNER JOIN produksi_detail pd ON p.nonota = pd.nonota
+                WHERE p.is_complete = 1 AND p.status = 0
+                GROUP BY pd.barcode, pd.size, p.storeid
+
+                UNION ALL
+                -- DO Konsinyasi (barang keluar ke toko konsinyasi)
+                SELECT d.barcode, SUM(d.jumlah)*-1 AS total, d.size, a.storeid
+                FROM do_konsinyasi a 
+                INNER JOIN do_konsinyasi_detail d ON a.nonota = d.nonota
+                WHERE a.is_void = 0
+                GROUP BY d.barcode, d.size, a.storeid
+
+                UNION ALL
+                -- Retur Konsinyasi (barang kembali dari konsinyasi)
+                SELECT d.barcode, SUM(d.jumlah) AS total, d.size, a.storeid
+                FROM retur_konsinyasi a 
+                INNER JOIN retur_konsinyasi_detail d ON a.noretur = d.noretur
+                WHERE a.is_void = 0
+                GROUP BY d.barcode, d.size, a.storeid
+
+                UNION ALL
+                -- Nota Konsinyasi (terjual di toko konsinyasi, keluar stok)
+                SELECT barcode, SUM(jumlah)*-1 AS total, size, storeid
+                FROM nota_konsinyasi_detail a INNER JOIN nota_konsinyasi b ON a.notajual=b.notajual
+                WHERE a.notakonsinyasi IS NULL
+                GROUP BY barcode, size, storeid
+
+                UNION ALL
+                -- Wholesale order (barang keluar ke wholesale)
+                SELECT d.barcode, SUM(d.jumlah) AS total, d.size, a.storeid
+                FROM wholesale_order a 
+                INNER JOIN wholesale_order_detail d ON a.notaorder = d.notaorder
+                WHERE a.is_void = 0 AND a.is_complete = 1
+                GROUP BY d.barcode, d.size, a.storeid
+            ) x ON a.barcode = x.barcode AND b.size = x.size
+            INNER JOIN store y ON x.storeid = y.storeid
+            INNER JOIN (
+                SELECT a.harga, a.barcode
+                FROM harga a
+                INNER JOIN (
+                    SELECT MAX(tanggal) AS tanggal, barcode
+                    FROM harga
+                    GROUP BY barcode
+                ) x ON a.barcode = x.barcode AND a.tanggal = x.tanggal
+            ) z ON a.barcode = z.barcode
+            WHERE x.storeid IS NOT NULL
               AND (a.barcode LIKE '%{$search}%' OR a.namaproduk LIKE '%{$search}%' OR y.store LIKE '%{$search}%') 
             GROUP BY a.barcode, x.size,x.storeid";
 

@@ -48,15 +48,14 @@ class Stokbahanbaku extends BaseApiController
         }
 
         $bahanbaku  = $this->bahanbakuModel->Listbahanbaku();
-
         $data = [
             'title'      => 'Tambah Stok Bahan Baku',
             'content'    => 'admin/stokbahanbaku/tambah',
             'extra'      => 'admin/stokbahanbaku/js/js_tambah',
             'bahanbaku'  => $bahanbaku,
             'mn_master'  => 'active',
-            'colmas'     => 'collapse',
-            'colset'     => 'collapse in',
+            'colmas'     => 'collapse in',
+            'colset'     => 'collapse',
             'collap'     => 'collapse',
             'side16'     => 'active',
         ];
@@ -156,79 +155,4 @@ public function postAddData()
     }
 }
 
-
-    // public function postAddData()
-    // {
-    //     $rules = [
-    //         'idbahan' => [
-    //             'label' => 'Bahan Baku',
-    //             'rules' => 'required|integer',
-    //             'errors' => [
-    //                 'required' => '{field} wajib dipilih.',
-    //                 'integer'  => '{field} tidak valid.'
-    //             ]
-    //         ],
-    //         'jumlah' => [
-    //             'label' => 'Jumlah',
-    //             'rules' => 'required|numeric|greater_than[0]',
-    //             'errors' => [
-    //                 'required'     => '{field} wajib diisi.',
-    //                 'numeric'      => '{field} harus berupa angka.',
-    //                 'greater_than' => '{field} harus lebih dari 0.'
-    //             ]
-    //         ],
-    //         'satuan' => [
-    //             'label' => 'Satuan',
-    //             'rules' => 'required|in_list[yard,meter,pcs]',
-    //             'errors' => [
-    //                 'required' => '{field} wajib dipilih.',
-    //                 'in_list'  => '{field} tidak valid.'
-    //             ]
-    //         ],
-    //         'harga' => [
-    //             'label' => 'Harga',
-    //             'rules' => 'required|numeric|greater_than[0]',
-    //             'errors' => [
-    //                 'required'     => '{field} wajib diisi.',
-    //                 'numeric'      => '{field} harus berupa angka.',
-    //                 'greater_than' => '{field} harus lebih dari 0.'
-    //             ]
-    //         ],
-    //     ];
-
-    //     if (!$this->validate($rules)) {
-    //         $this->session->setFlashdata('message', implode('<br>', $this->validator->getErrors()));
-    //         return redirect()->to(base_url("admin/stokbahanbaku/tambah"))->withInput();
-    //     }
-
-    //     // Ambil input
-    //     $idbahan = (int) esc($this->request->getPost('idbahan'));
-    //     $jumlah  = (float) esc($this->request->getPost('jumlah'));
-    //     $satuan  = esc($this->request->getPost('satuan'));
-    //     $harga   = (int) esc($this->request->getPost('harga'));
-
-    //     // Konversi jumlah jika satuan = yard
-    //     if ($satuan === 'yard') {
-    //         $jumlah = $jumlah * 0.9144; // konversi ke meter
-    //         $satuan = 'meter';          // disimpan ke DB sebagai meter
-    //     }
-
-    //     $data = [
-    //         "tanggal" => date('Y-m-d'),
-    //         "idbahan" => $idbahan,
-    //         "jumlah"  => $jumlah,
-    //         "satuan"  => $satuan,
-    //         "harga"   => $harga
-    //     ];
-
-    //     $result = $this->stokbahanbakuModel->insertData($data);
-
-    //     if ($result["code"] == 0) {
-    //         $this->session->setFlashdata('message', 'Data berhasil disimpan.');
-    //         return redirect()->to(base_url("admin/stokbahanbaku"));
-    //     } else {
-    //         $this->session->setFlashdata('message', 'Data gagal disimpan.');
-    //         return redirect()->to(base_url("admin/stokbahanbaku/tambah"));
-    //     }
-    // }
 }

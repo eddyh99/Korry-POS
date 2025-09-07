@@ -17,7 +17,7 @@
 									<label class="col-sm-2 col-form-label">Bahan 1</label>
 									<div class="col-sm-3">
 										<select class="form-control bahan-select" name="idbahan[0]" required>
-											<option value="">-- Pilih Bahan Baku --</option>
+											<option value=""  disabled selected>-- Pilih Bahan Baku --</option>
 											<?php foreach($bahanbaku as $dt): ?>
 												<option value="<?= $dt['id']; ?>"><?= $dt['namabahan']; ?></option>
 											<?php endforeach; ?>
@@ -29,7 +29,7 @@
 									</div>
 									<div class="col-sm-2">
 										<select class="form-control satuan-select" name="satuan[0]" required>
-											<option value="">-- Satuan --</option>
+											<option value="" disabled selected>-- Satuan --</option>
 											<option value="yard">Yard</option>
 											<option value="meter">Meter</option>
 											<option value="pcs">Pcs</option>
@@ -37,7 +37,7 @@
 									</div>
 									<div class="col-sm-2">
 										<input type="text" class="form-control harga-input" name="harga[0]" 
-											placeholder="Harga" maxlength="11" required onkeypress="return isNumber(event)">
+											placeholder="Harga Satuan" maxlength="11" required onkeypress="return isNumber(event)">
 									</div>
 									<div class="col-sm-1">
 										<!-- tombol hapus hidden utk row pertama -->

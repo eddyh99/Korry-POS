@@ -40,9 +40,8 @@ class WholesalerModel extends Model
     }
 
     public function insertData($data)
-    {
-        $sql = $this->db->table($this->table)->set($data)->getCompiledInsert()
-             . " ON DUPLICATE KEY UPDATE alamat=?, kontak=?, status=0";
+    {        
+        $sql = $this->db->table($this->table)->insert($data);
 
         $query = $this->db->query($sql, [
             $data['alamat'],

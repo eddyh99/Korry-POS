@@ -74,7 +74,7 @@ $(document).ready(function(){
                 </div>
                 <div class="col-sm-2">
                     <input type="text" class="form-control harga-input" name="harga[]" 
-                           placeholder="Harga" maxlength="11" required onkeypress="return isNumber(event)">
+                           placeholder="Harga Satuan" maxlength="11" required onkeypress="return isNumber(event)">
                 </div>
                 <div class="col-sm-1">
                     <button type="button" class="btn btn-danger btn-sm btnRemove">X</button>

@@ -117,9 +117,8 @@ class Partner extends BaseApiController
             ],
             'kontak' => [
                 'label' => 'Nomor Telepon',
-                'rules' => 'required|regex_match[/^((\+62|62|0)8[1-9][0-9]{6,9}|0[2-9][0-9]{1,3}[0-9]{5,8})$/]',
+                'rules' => 'permit_empty|regex_match[/^((\+62|62|0)8[1-9][0-9]{6,9}|0[2-9][0-9]{1,3}[0-9]{5,8})$/]',
                 'errors' => [
-                    'required' => '{field} wajib diisi.',
                     'regex_match' => '{field} tidak valid. Gunakan format +62..., 08..., atau 0361....'
                 ]
             ]
@@ -171,9 +170,8 @@ class Partner extends BaseApiController
             ],
             'kontak' => [
                 'label' => 'Nomor Telepon',
-                'rules' => 'required|regex_match[/^((\+62|62|0)8[1-9][0-9]{6,9}|0[2-9][0-9]{1,3}[0-9]{5,8})$/]',
+                'rules' => 'permit_empty|regex_match[/^((\+62|62|0)8[1-9][0-9]{6,9}|0[2-9][0-9]{1,3}[0-9]{5,8})$/]',
                 'errors' => [
-                    'required' => '{field} wajib diisi.',
                     'regex_match' => '{field} tidak valid. Masukkan nomor HP atau telepon rumah yang benar.',
                 ]
             ]

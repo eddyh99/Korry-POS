@@ -26,10 +26,9 @@
         function checkProdukAvailable() {
             let selected = $("#produk").find(":selected");
             let harga = selected.data("harga"); // 👈 biaya/harga produksi
-            let biayaProduksi = selected.data("biayaproduksi");
             let maxJumlah = selected.data("jumlah");
 
-            if (!harga || !biayaProduksi) {
+            if (!harga) {
                 $("#btnAdd").hide();   // sembunyikan tombol
             } else {
                 $("#btnAdd").show();   // tampilkan tombol
@@ -40,7 +39,6 @@
         $("#produk").change(function(){
 			let selected = $(this).find(":selected");
 			let harga = selected.data("harga");
-            let biayaProduksi = selected.data("biayaproduksi");
 			let bahanList = selected.data("bahan");  // ini sudah array/object
 			let namaProduk = selected.data("nama");
 			let sizeStr   = selected.data("size");   // contoh: "S,M,L"
@@ -97,15 +95,13 @@
 
 			$('#content').html(html);
 
-			if (!harga || !biayaProduksi) {
+			if (!harga) {
 				$("#harga").val("");
-                $("#biayaproduksi").val("");
 				checkProdukAvailable();
 				return;
 			}
 
 			$("#harga").val(harga);
-            $("#biayaproduksi").val(biayaProduksi);
 			checkProdukAvailable();
 		});
 
@@ -117,7 +113,6 @@
             let jumlah  = parseInt($("#jumlah").val());
             let harga   = parseInt($("#harga").val());
             let size    = $("#size").val();   // 👈 ambil size yang dipilih
-            let biayaProduksi    = $("#biayaproduksi").val();   // 👈 ambil jenis biaya yang dipilih
 
             // --- ambil komposisi bahan (JSON)
             let bahanJson = $("#produk option:selected").attr("data-bahan");
@@ -132,8 +127,8 @@
                 }
             }
 
-            if (!barcode || !jumlah || !harga || !size || !biayaProduksi) {
-                alert("Produk, size, jumlah, jenis biaya, dan harga wajib diisi!");
+            if (!barcode || !jumlah || !harga || !size) {
+                alert("Produk, size, jumlah, dan harga wajib diisi!");
                 return;
             }
 
@@ -177,7 +172,6 @@
                     nama,
                     `<input type="hidden" name="jumlah[]" value="${totalJumlah}">${totalJumlah}`,
                     `<input type="hidden" name="size[]" value="${size}">${size}`, // 👈 tambahkan size
-                    `<input type="hidden" name="biayaproduksi[]" value="${biayaProduksi}">${biayaProduksi}`, // 👈 tambahkan jenis biaya
                     `<input type="hidden" name="harga[]" value="${harga}">${formatNumber(harga)}`,
                     `<input type="hidden" name="total[]" value="${total}">${formatNumber(total)}`,
                     `<button type="button" class="btn btn-danger btn-sm btnDelete">x</button>`
@@ -189,7 +183,6 @@
                     nama,
                     `<input type="hidden" name="jumlah[]" value="${jumlah}">${jumlah}`,
                     `<input type="hidden" name="size[]" value="${size}">${size}`, // 👈 tambahkan size
-                    `<input type="hidden" name="biayaproduksi[]" value="${biayaProduksi}">${biayaProduksi}`, // 👈 tambahkan jenis biaya
                     `<input type="hidden" name="harga[]" value="${harga}">${formatNumber(harga)}`,
                     `<input type="hidden" name="total[]" value="${jumlah * harga}">${formatNumber(jumlah * harga)}`,
                     `<button type="button" class="btn btn-danger btn-sm btnDelete">x</button>`
@@ -200,7 +193,6 @@
             $("#produk").val("").trigger("change");
             $("#size").empty().append('<option value="" disabled selected>-- Pilih Size --</option>');
             $("#jumlah").val(1);
-            $("#biayaproduksi").val("");
             $("#harga").val("");
 
             updateSubtotal();

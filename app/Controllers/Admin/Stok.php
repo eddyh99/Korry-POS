@@ -115,10 +115,9 @@ class Stok extends BaseApiController
             ],
             'size' => [
                 'label' => 'Size',
-                'rules' => 'required|regex_match[/^(XS|S|M|L|XL|XXL|XXXL|4XL|5XL|6XL|7XL)$/]',
+                'rules' => 'required',
                 'errors' => [
                     'required'    => '{field} wajib diisi.',
-                    'regex_match' => '{field} harus berupa ukuran baju yang valid (misal: S, M, L, XL, XXL, 3XL).'
                 ]
             ],
             'stok' => [

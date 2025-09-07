@@ -15,8 +15,8 @@ class StokbahanbakuModel extends Model
                     b.namabahan,
                     b.min,
                     s.satuan,
-                    COALESCE(stok.total_masuk, 0) - COALESCE(pakai.total_keluar, 0) AS stok_akhir,
-                    COALESCE(stok.total_masuk, 0) AS total_masuk,
+                    COALESCE(stok.total_jumlah, 0) - COALESCE(pakai.total_keluar, 0) AS stok_akhir,
+                    COALESCE(stok.total_jumlah, 0) AS total_masuk,
                     COALESCE(pakai.total_keluar, 0) AS total_keluar,
                     COALESCE(stok.avg_harga, 0) AS harga_rata2,
                     COALESCE(stok.last_harga, 0) AS harga_terakhir
@@ -25,8 +25,8 @@ class StokbahanbakuModel extends Model
                     -- total bahan masuk + harga
                     SELECT 
                         idbahan, 
-                        SUM(jumlah) AS total_masuk,
-                        AVG(harga) AS avg_harga,
+                        SUM(jumlah) AS total_jumlah,
+                        SUM(harga * jumlah) / SUM(jumlah) AS avg_harga,  -- rata-rata tertimbang
                         MAX(harga) AS last_harga
                     FROM stok_bahanbaku
                     GROUP BY idbahan
@@ -38,14 +38,17 @@ class StokbahanbakuModel extends Model
                         SUM(pd.jumlah * pb.jumlah) AS total_keluar
                     FROM produksi_detail pd
                     JOIN produk_bahan pb ON pb.barcode = pd.barcode
+                    JOIN produksi pr ON pr.nonota=pd.nonota
+                    WHERE status=0
                     GROUP BY pb.idbahan
                 ) pakai ON pakai.idbahan = b.id
                 LEFT JOIN (
-                    -- ambil satuan dari stok_bahanbaku (misal input terbaru)
+                    -- ambil satuan (sementara pakai MAX, sebaiknya pakai last transaksi)
                     SELECT idbahan, MAX(satuan) AS satuan
                     FROM stok_bahanbaku
                     GROUP BY idbahan
-                ) s ON s.idbahan = b.id;";
+                ) s ON s.idbahan = b.id;
+";
         $query = $this->db->query($sql);
 
         if ($query) {

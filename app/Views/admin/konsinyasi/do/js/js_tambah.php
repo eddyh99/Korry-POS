@@ -175,7 +175,7 @@ $(document).ready(function(){
         let namaProduk = $("#produk option:selected").text();
 
         if(max > 0 && val > max){
-            alert("Hanya boleh input jumlah " + namaProduk + " sebanyak " + max);
+            alert("Stok " + namaProduk.trim() + " tersisa " + max);
             $(this).val(max); // kembalikan ke max
         } else if(val < 1){
             $(this).val(1); // biar ga bisa nol/negatif

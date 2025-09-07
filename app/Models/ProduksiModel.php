@@ -70,11 +70,11 @@ class ProduksiModel extends Model
                 'barcode' => $row["barcode"],
                 'size'    => $row["size"],
                 'jumlah'  => $row["jumlah"],
+                'biaya'   => $row["biaya"],
                 'harga'   => $row["harga"],
-                'jenisbiaya'   => $row["biayaproduksi"],
             ];
-            $this->db->table($this->produksi_detail)->insert($detail);
         }
+        $this->db->table($this->produksi_detail)->insertBatch($detail);
 
         $this->db->transComplete();
 

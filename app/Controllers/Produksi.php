@@ -161,7 +161,6 @@ class Produksi extends BaseApiController
         $jumlahs  = $this->request->getPost("jumlah");
         $hargas   = $this->request->getPost("harga");
         $sizes   = $this->request->getPost("size");
-        $biayaproduksis   = $this->request->getPost("biayaproduksi");
 
         $data = [
             "idvendor" => esc($this->request->getPost("idvendor")),
@@ -177,8 +176,8 @@ class Produksi extends BaseApiController
                 "barcode" => esc($barcode),
                 "jumlah"  => (int) $jumlahs[$i],
                 'size'    => esc($sizes[$i]),
-                "harga"   => (int) $hargas[$i],
-                'biayaproduksi'    => esc($biayaproduksis[$i]),
+                'harga'   => $this->produkModel->getProduk($barcode)->total_biaya_bahan ?? 0,
+                "biaya"   => (int) $hargas[$i],
             ];
         }
 
