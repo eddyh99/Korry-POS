@@ -63,38 +63,7 @@ class Produksize extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
-    // public function postAddData()
-    // {
-    //     $rules = [
-    //         'size'    => 'trim|required',
-    //         'barcode' => 'trim|required',
-    //     ];
-
-    //     if (! $this->validate($rules)) {
-    //         session()->setFlashdata('message', $this->validation->listErrors());
-    //         return redirect()->to('/admin/produksize/tambah');
-    //     }
-
-    //     $barcode = esc($this->request->getPost('barcode'));
-    //     $size    = esc($this->request->getPost('size'));
-    //     $userid  = session()->get('logged_status')['username'];
-
-    //     $data = [
-    //         'barcode' => $barcode,
-    //         'size'    => $size,
-    //         'userid'  => $userid,
-    //     ];
-
-    //     $result = $this->produksizeModel->insertData($data);
-
-    //     if (isset($result['code']) && $result['code'] === 0) {
-    //         $this->session->setFlashdata('message', 'Data berhasil disimpan.');
-    //         return redirect()->to('/admin/produksize');
-    //     } else {
-    //         $this->session->setFlashdata('message', 'Data gagal disimpan.');
-    //         return redirect()->to('/admin/produksize/tambah');
-    //     }
-    // }
+  
     public function postAddData()
     {
         $rules = [
@@ -107,14 +76,6 @@ class Produksize extends BaseApiController
                     'numeric'      => '{field} hanya boleh berisi angka.'
                 ]
             ],
-            // 'size' => [
-            //     'label' => 'Size',
-            //     'rules' => 'required|regex_match[/^(XS|S|M|L|XL|XXL|XXXL|4XL|5XL|6XL|7XL)$/]',
-            //     'errors' => [
-            //         'required'    => '{field} wajib diisi.',
-            //         'regex_match' => '{field} harus berupa ukuran baju yang valid (misal: S, M, L, XL, XXL, 3XL).'
-            //     ]
-            // ]
             'size' => [
                 'label' => 'Size',
                 'rules' => 'required|regex_match[/^[A-Za-z0-9\s\-\/]{1,20}$/]',
@@ -135,6 +96,7 @@ class Produksize extends BaseApiController
             'size'    => esc($this->request->getPost('size')),
             'userid'  => session()->get('logged_status')['username'],
         ];
+
 
         $result = $this->produksizeModel->insertData($data);
 

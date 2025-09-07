@@ -37,6 +37,7 @@
 											<option 
 												data-barcode="<?= $dt["barcode"] ?>" 
 												data-brand="<?= $dt["namabrand"] ?>" 
+												data-size="<?= $dt["sizes"] ?>" 
 												value="<?= $dt["namaproduk"] ?>">
 											<?php } ?>
 									</datalist>
@@ -52,11 +53,7 @@
                 				<label class="col-sm-4 col-form-label">Size</label>
                 				<div class="col-sm-3">
                 				    <select name="size" class="form-control" id="size">
-    									<?php
-    										foreach($size as $dt) {
-    											echo "<option value='".$dt["nama"]."' >".$dt["nama"]."</option>";
-    										}
-    									?>
+										<option value="" disabled selected>-- Pilih Size --</option>
                 				    </select>
                 				</div>
                 			  </div>

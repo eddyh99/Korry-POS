@@ -17,10 +17,6 @@ class Store extends BaseApiController
 
     public function getIndex()
     {
-        if (!$this->session->get('logged_status')) {
-            return redirect()->to(base_url());
-        }
-
         $data = [
             'title'      => 'Data Store',
             'content'    => 'admin/store/index',
@@ -58,41 +54,6 @@ class Store extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
-    // public function postAddData()
-    // {
-    //     $rules = [
-    //         'store'      => 'required',
-    //         'alamat'     => 'required',
-    //         'kontak'     => 'required',
-    //         'keterangan' => 'required'
-    //     ];
-
-    //     if (!$this->validate($rules)) {
-    //         $this->session->setFlashdata(
-    //             'message',
-    //             $this->message->error_msg($this->validation->listErrors())
-    //         );
-    //         return redirect()->to(base_url("admin/store/tambah"));
-    //     }
-
-    //     $data = [
-    //         "store"      => esc($this->request->getPost('store')),
-    //         "alamat"     => esc($this->request->getPost('alamat')),
-    //         "kontak"     => esc($this->request->getPost('kontak')),
-    //         "keterangan" => esc($this->request->getPost('keterangan')),
-    //         "userid"     => $this->session->get('logged_status')['username']
-    //     ];
-
-    //     $result = $this->storeModel->insertData($data);
-
-    //     if ($result["code"] == 0) {
-    //         $this->session->setFlashdata('message', 'Data berhasil disimpan.');
-    //         return redirect()->to(base_url("admin/store"));
-    //     } else {
-    //         $this->session->setFlashdata('message', 'Data gagal disimpan.');
-    //         return redirect()->to(base_url("admin/store/tambah"));
-    //     }
-    // }
     public function postAddData()
     {
         $rules = [
@@ -124,7 +85,7 @@ class Store extends BaseApiController
             ],
             'keterangan' => [
                 'label' => 'Keterangan',
-                'rules' => 'required|trim|max_length[100]|alpha_numeric_punct',
+                'rules' => 'permit_empty|trim|max_length[100]|alpha_numeric_punct',
                 'errors' => [
                     'required' => '{field} wajib diisi.',
                     'alpha_numeric_punct' => '{field} hanya boleh berisi huruf, angka, spasi, dan tanda baca tertentu.',
@@ -175,43 +136,7 @@ class Store extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
-    // public function postUpdateData()
-    // {
-    //     $rules = [
-    //         'store'      => 'required',
-    //         'alamat'     => 'required',
-    //         'kontak'     => 'required',
-    //         'keterangan' => 'required'
-    //     ];
-
-    //     $storeid = esc($this->request->getPost('storeid'));
-
-    //     if (!$this->validate($rules)) {
-    //         $this->session->setFlashdata(
-    //             'message',
-    //             $this->message->error_msg($this->validation->listErrors())
-    //         );
-    //         return redirect()->to(base_url("admin/store/ubah/" . base64_encode($storeid)));
-    //     }
-
-    //     $data = [
-    //         "store"      => esc($this->request->getPost('store')),
-    //         "alamat"     => esc($this->request->getPost('alamat')),
-    //         "kontak"     => esc($this->request->getPost('kontak')),
-    //         "keterangan" => esc($this->request->getPost('keterangan')),
-    //         "userid"     => $this->session->get('logged_status')['username']
-    //     ];
-
-    //     $result = $this->storeModel->updateData($data, $storeid);
-
-    //     if ($result["code"] == 0) {
-    //         $this->session->setFlashdata('message', 'Data berhasil diubah.');
-    //         return redirect()->to(base_url("admin/store"));
-    //     } else {
-    //         $this->session->setFlashdata('message', 'Data gagal diubah.');
-    //         return redirect()->to(base_url("admin/store/ubah/" . base64_encode($storeid)));
-    //     }
-    // }
+    
     public function postUpdateData()
     {
         $rules = [
@@ -241,7 +166,7 @@ class Store extends BaseApiController
             ],
             'keterangan' => [
                 'label' => 'Keterangan',
-                'rules' => 'required|max_length[100]|alpha_numeric_space',
+                'rules' => 'permit_empty|max_length[100]|alpha_numeric_space',
                 'errors' => [
                     'required' => '{field} wajib diisi.',
                     'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.',

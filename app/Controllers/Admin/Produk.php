@@ -51,32 +51,7 @@ class Produk extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
-    // public function postListdata()
-    // {
-    //     $columns = ['barcode', 'namaproduk', 'namabrand', 'namakategori', 'harga'];
-
-    //     $start  = $this->request->getPost('start');
-    //     $limit  = $this->request->getPost('length');
-    //     $order  = $columns[$this->request->getPost('order')[0]['column']];
-    //     $dir    = $this->request->getPost('order')[0]['dir'];
-
-    //     $totalData = $this->produkModel->allposts_count();
-    //     $totalFiltered = $totalData;
-
-    //     if (empty($this->request->getPost('search')['value'])) {
-    //         $result = $this->produkModel->allposts($limit, $start, $order, $dir);
-    //     } else {
-    //         $search = $this->request->getPost('search')['value'];
-    //         $result = $this->produkModel->posts_search($limit, $start, $search, $order, $dir);
-    //         $totalFiltered = $this->produkModel->posts_search_count($search);
-    //     }
-
-    //     return $this->response->setJSON([
-    //         "recordsTotal"    => $totalData,
-    //         "recordsFiltered" => $totalFiltered,
-    //         "produk"          => $result
-    //     ]);
-    // }
+    
     public function postListdata()
     {
         $columns = ['barcode', 'namaproduk', 'namabrand', 'namakategori', 'harga', 'harga_konsinyasi', 'harga_wholesale'];
@@ -289,10 +264,10 @@ class Produk extends BaseApiController
             ],
             'sku' => [
                 'label'  => 'SKU',
-                'rules'  => 'required|trim|alpha_numeric|min_length[10]|max_length[10]',
+                'rules'  => 'required|trim|alpha_dash|max_length[10]',
                 'errors' => [
                     'required'    => '{field} wajib diisi.',
-                    'alpha_numeric' => '{field} hanya boleh huruf dan angka.',
+                    'alpha_numeric' => '{field} hanya boleh huruf, dash, underscore dan angka.',
                     'min_length'  => '{field} harus 10 karakter.',
                     'max_length'  => '{field} harus 10 karakter.'
                 ]
@@ -461,10 +436,10 @@ class Produk extends BaseApiController
             ],
             'sku' => [
                 'label'  => 'SKU',
-                'rules'  => 'required|trim|alpha_numeric|min_length[10]|max_length[10]',
+                'rules'  => 'required|trim|alpha_dash|max_length[10]',
                 'errors' => [
                     'required'      => '{field} wajib diisi.',
-                    'alpha_numeric' => '{field} hanya boleh huruf dan angka.',
+                    'alpha_dash'    => '{field} hanya boleh huruf, dash, underscore dan angka.',
                     'min_length'    => '{field} harus 10 karakter.',
                     'max_length'    => '{field} harus 10 karakter.'
                 ]

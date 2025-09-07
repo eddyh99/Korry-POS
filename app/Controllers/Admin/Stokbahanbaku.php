@@ -21,9 +21,6 @@ class Stokbahanbaku extends BaseApiController
 
     public function getIndex()
     {
-        if (!$this->session->get('logged_status')) {
-            return redirect()->to(base_url());
-        }
 
         $data = [
             'title'      => 'Data Stok Bahan Baku',

@@ -4,7 +4,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4 col-sm-6 col-md-offset-4 col-sm-offset-3">
-                    <form action="<?= site_url('auth/auth_login') ?>" method="post">
+                    <form action="<?= base_url()?>auth/auth_login" method="post">
                         <div class="card card-login card-hidden">
                             <div class="card-header text-center" data-background-color="rose">
                                 <h4 class="card-title">Login</h4>

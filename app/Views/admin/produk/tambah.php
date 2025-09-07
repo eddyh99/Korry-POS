@@ -88,7 +88,7 @@
 									<label class="col-sm-3 col-form-label">Diskon</label>
 									<div class="col-sm-7">
 										<input type="text" class="form-control" id="diskon" name="diskon" 
-											maxlength="7" required onkeypress="return isNumber(event)" 
+											maxlength="7" onkeypress="return isNumber(event)" 
 											value="<?=old('diskon')?>">
 									</div>
 								</div>
@@ -123,11 +123,11 @@
 								<div class="form-group row">
 									<label class="col-sm-3 col-form-label">SKU</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control" id="sku" name="sku" minlength="10" maxlength="10" 
+										<input type="text" class="form-control" id="sku" name="sku" maxlength="10" 
 											required value="<?=old('sku')?>">
 									</div>
 								</div>
-
+								<hr>
 								<!-- input baru: Dynamic Bahan Baku -->
 								<div class="form-group row">
 									<label class="col-sm-3 col-form-label">Bahan Baku</label>

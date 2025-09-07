@@ -1,7 +1,6 @@
 <div class="content">
     <div class="container-fluid">
 <!-- Start -->
-        asd
         <div class="row">
             <div class="card">
                 <?php if (isset($_SESSION["message"])){?>

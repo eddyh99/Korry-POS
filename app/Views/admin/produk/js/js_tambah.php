@@ -57,7 +57,7 @@ $(document).ready(function(){
     $(document).on("change", ".bahan-select", function(){
         let selectedText = $(this).find("option:selected").text();
         if(selectedText && selectedText !== "-- Pilih Bahan --") {
-            $(this).closest(".form-group").find(".lbl-bahan").text(selectedText);
+            $(this).closest(".form-group").find(".lbl-bahan").text("Bahan");
         } else {
             $(this).closest(".form-group").find(".lbl-bahan").text("Bahan");
         }

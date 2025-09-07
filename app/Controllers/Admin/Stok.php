@@ -80,7 +80,7 @@ class Stok extends BaseApiController
     {
         $size   = $this->sizeModel->Listsize();
         $store  = $this->storeModel->Liststore();
-        $produk = $this->produkModel->listproduk();
+        $produk = $this->produkModel->listproduksize();
 
         $data = [
             'title'     => 'Tambah Data Stok',
@@ -100,51 +100,7 @@ class Stok extends BaseApiController
         echo view('layout/wrapper', $data);
     }
 
-    // public function postAddData()
-    // {
-    //     $rules = [
-    //         'barcode' => 'trim|required',
-    //         'size'    => 'trim|required',
-    //         'stok'    => 'trim|required|numeric',
-    //         'store'   => 'trim|required',
-    //     ];
-
-    //     if (! $this->validate($rules)) {
-    //         session()->setFlashdata('message', $this->message->error_msg($this->validator->listErrors()));
-    //         return redirect()->to('/admin/stok/tambah');
-    //     }
-
-    //     $barcode = esc($this->request->getPost('barcode'));
-    //     $size    = esc($this->request->getPost('size'));
-    //     $stok    = esc($this->request->getPost('stok'));
-    //     $storeid = esc($this->request->getPost('store'));
-    //     $restock = esc($this->request->getPost('restock'));
-    //     $userid  = session()->get('logged_status')['username'];
-
-    //     $keterangan = ($restock == 0) ? 'Stok Awal' : 'Restock';
-
-    //     $data = [
-    //         'barcode'   => $barcode,
-    //         'storeid'   => $storeid,
-    //         'size'      => $size,
-    //         'tanggal'   => date('Y-m-d'),
-    //         'jumlah'    => $stok,
-    //         'keterangan'=> $keterangan,
-    //         'approved'  => 1,
-    //         'userid'    => $userid,
-    //     ];
-
-    //     $result = $this->stokModel->insertData($data);
-
-    //     if (isset($result['code']) && $result['code'] == 0) {
-    //         // $this->session->setFlashdata('idstore', $storeid);
-    //         $this->session->setFlashdata('message', 'Data berhasil disimpan.');
-    //         return redirect()->to('/admin/stok');
-    //     } else {
-    //         $this->session->setFlashdata('message', 'Data gagal disimpan.');
-    //         return redirect()->to('/admin/stok/tambah');
-    //     }
-    // }
+   
     public function postAddData()
     {
         $rules = [

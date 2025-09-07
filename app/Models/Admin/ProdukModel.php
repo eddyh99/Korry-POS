@@ -28,6 +28,23 @@ class ProdukModel extends Model
         }
     }
 
+    public function listproduksize(){
+        $sql = "SELECT p.*, GROUP_CONCAT(ps.size ORDER BY ps.size SEPARATOR ', ') AS sizes
+            FROM {$this->produk} p
+            LEFT JOIN produksize ps ON p.barcode = ps.barcode AND ps.status = '0'
+            WHERE p.status = '0'
+            GROUP BY p.barcode
+        ";
+        $query = $this->db->query($sql);
+
+        if ($query) {
+            return $query->getResultArray();
+        } else {
+            return $this->db->error();
+        }
+
+    }
+
     public function ListProdukProduksi()
     {
         $sql = "SELECT

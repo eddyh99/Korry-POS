@@ -50,37 +50,6 @@ class Brand extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
-    // public function postAddData()
-    // {
-    //     $rules = [
-    //         'brand' => 'trim|required',
-    //     ];
-
-    //     if (! $this->validate($rules)) {
-    //         session()->setFlashdata('message', $this->message->error_msg($this->validator->listErrors()));
-    //         return redirect()->to('/admin/brand/tambah');
-    //     }
-
-    //     $brand      = esc($this->request->getPost('brand'));
-    //     $keterangan = esc($this->request->getPost('keterangan'));
-    //     $userid     = session()->get('logged_status')['username'];
-
-    //     $data = [
-    //         'namabrand'  => ucfirst($brand),
-    //         'keterangan' => $keterangan,
-    //         'userid'     => $userid
-    //     ];
-
-    //     $result = $this->brandModel->insertData($data);
-
-    //     if ($result['code'] == 0) {
-    //         $this->session->setFlashdata('message', 'Data berhasil disimpan.');
-    //         return redirect()->to('/admin/brand');
-    //     } else {
-    //         $this->session->setFlashdata('message', 'Data gagal disimpan.');
-    //         return redirect()->to('/admin/brand/tambah');
-    //     }
-    // }
     public function postAddData()
     {
         $rules = [
@@ -95,7 +64,7 @@ class Brand extends BaseApiController
             ],
             'keterangan' => [
                 'label'  => 'Keterangan',
-                'rules'  => 'required|trim|max_length[100]|alpha_numeric_punct',
+                'rules'  => 'permit_empty|trim|max_length[100]|alpha_numeric_punct',
                 'errors' => [
                     'required'             => '{field} wajib diisi.',
                     'alpha_numeric_punct'  => '{field} hanya boleh berisi huruf, angka, spasi, dan tanda baca tertentu.',
@@ -144,39 +113,6 @@ class Brand extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
-    // public function postUpdateData()
-    // {
-    //     $rules = [
-    //         'brand' => 'trim|required',
-    //     ];
-
-    //     $oldbrand = esc($this->request->getPost('oldbrand'));
-
-    //     if (! $this->validate($rules)) {
-    //         session()->setFlashdata('message', $this->message->error_msg($this->validator->listErrors()));
-    //         return redirect()->to('/admin/brand/ubah/' . base64_encode($oldbrand));
-    //     }
-
-    //     $brand      = esc($this->request->getPost('brand'));
-    //     $keterangan = esc($this->request->getPost('keterangan'));
-    //     $userid     = session()->get('logged_status')['username'];
-
-    //     $data = [
-    //         'namabrand'  => ucfirst($brand),
-    //         'keterangan' => $keterangan,
-    //         'userid'     => $userid
-    //     ];
-
-    //     $result = $this->brandModel->updateData($data, $oldbrand);
-
-    //     if ($result['code'] == 0) {
-    //         $this->session->setFlashdata('message', 'Data berhasil diubah.');
-    //         return redirect()->to('/admin/brand');
-    //     } else {
-    //         $this->session->setFlashdata('message', 'Data gagal diubah.');
-    //         return redirect()->to('/admin/brand/ubah/' . base64_encode($oldbrand));
-    //     }
-    // }
     public function postUpdateData()
     {
         $rules = [
@@ -191,7 +127,7 @@ class Brand extends BaseApiController
             ],
             'keterangan' => [
                 'label'  => 'Keterangan',
-                'rules'  => 'required|trim|max_length[100]|alpha_numeric_punct',
+                'rules'  => 'permit_empty|trim|max_length[100]|alpha_numeric_punct',
                 'errors' => [
                     'required'             => '{field} wajib diisi.',
                     'alpha_numeric_punct'  => '{field} hanya boleh berisi huruf, angka, spasi, dan tanda baca tertentu.',

@@ -36,7 +36,7 @@ $(document).ready(function(){
                            value="${jumlah}" required>
                 </div>
                 <div class="col-sm-2">
-                    <button type="button" class="btn btn-danger btn-sm btnRemove" data-id="${index}">❌</button>
+                    <button type="button" class="btn btn-danger btn-sm btnRemove" data-id="${index}">X</button>
                 </div>
             </div>
         `;
@@ -46,7 +46,7 @@ $(document).ready(function(){
         let $select = $(`#row-${index} .bahan-select`);
         let selectedText = $select.find("option:selected").text();
         if (selectedText && selectedText !== "-- Pilih Bahan --") {
-            $(`#row-${index} .lbl-bahan`).text(selectedText);
+            $(`#row-${index} .lbl-bahan`).text("Bahan");
         }
     }
 
@@ -82,7 +82,7 @@ $(document).ready(function(){
     $(document).on("change", ".bahan-select", function(){
         let selectedText = $(this).find("option:selected").text();
         if(selectedText && selectedText !== "-- Pilih Bahan --") {
-            $(this).closest(".form-group").find(".lbl-bahan").text(selectedText);
+            $(this).closest(".form-group").find(".lbl-bahan").text("Bahan");
         } else {
             $(this).closest(".form-group").find(".lbl-bahan").text("Bahan");
         }

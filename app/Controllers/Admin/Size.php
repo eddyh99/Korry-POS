@@ -17,9 +17,6 @@ class Size extends BaseApiController
 
     public function getIndex()
     {
-        if (!session()->get('logged_status')) {
-            return redirect()->to('/');
-        }
 
         $data = [
             'title'      => 'Data Size',

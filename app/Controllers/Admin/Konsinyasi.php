@@ -31,9 +31,6 @@ class Konsinyasi extends BaseApiController
 
     public function getDo()
     {
-        if (!$this->session->get('logged_status')) {
-            return redirect()->to(base_url());
-        }
 
         $data = [
             'title'      => 'Data Do Konsinyasi',

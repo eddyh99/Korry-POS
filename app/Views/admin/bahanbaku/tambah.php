@@ -12,13 +12,13 @@
         		        <div class="col-lg-6">
                 			<div class="card-body">
                 			  <div class="form-group row">
-                				<label class="col-sm-3 col-form-label">Nama Bahan Baku</label>
+                				<label class="col-sm-4 col-form-label">Nama Bahan Baku</label>
                 				<div class="col-sm-7">
                 				  <input type="text" class="form-control" id="bahanbaku" name="bahanbaku" maxlength="50">
                 				</div>
                 			  </div>
                 			  <div class="form-group row">
-                				<label class="col-sm-3 col-form-label">Stok Minimal</label>
+                				<label class="col-sm-4 col-form-label">Stok Minimal</label>
                 				<div class="col-sm-7">
                 				  <input type="text" class="form-control" id="stok_min" name="stok_min" maxlength="100">
                 				</div>

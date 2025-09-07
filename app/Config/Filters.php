@@ -12,6 +12,7 @@ use CodeIgniter\Filters\InvalidChars;
 use CodeIgniter\Filters\PageCache;
 use CodeIgniter\Filters\PerformanceMetrics;
 use CodeIgniter\Filters\SecureHeaders;
+use App\Filters\Loginfilter;
 
 class Filters extends BaseFilters
 {
@@ -34,6 +35,7 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
+        'islogin'       => Loginfilter::class,
     ];
 
     /**
@@ -106,5 +108,17 @@ class Filters extends BaseFilters
      *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        'islogin' => [
+            'before' => [
+                'admin/*',
+                'admin',
+                'staff/*',
+                'staff',
+                'dashboard',
+                'produksi',
+                'produksi/*'
+            ],
+        ],
+    ];
 }

@@ -10,16 +10,9 @@ class Pengguna extends BaseApiController
 {
     protected $penggunaModel;
 
-    public function initController(\CodeIgniter\HTTP\RequestInterface $request, \CodeIgniter\HTTP\ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
+     public function __construct()
     {
-        parent::initController($request, $response, $logger);
-
-        // Cek login
-        if (!$this->session->get('logged_status')) {
-            return redirect()->to(base_url());
-        }
-
-        $this->penggunaModel = new PenggunaModel();
+         $this->penggunaModel = new PenggunaModel();
     }
 
     public function getIndex()

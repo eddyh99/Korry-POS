@@ -17,9 +17,6 @@ class Vendorproduksi extends BaseApiController
 
     public function getIndex()
     {
-        if (!$this->session->get('logged_status')) {
-            return redirect()->to(base_url());
-        }
 
         $data = [
             'title'      => 'Data Vendor Produksi',
@@ -42,9 +39,6 @@ class Vendorproduksi extends BaseApiController
 
     public function getTambah()
     {
-        if (!$this->session->get('logged_status')) {
-            return redirect()->to(base_url());
-        }
 
         $data = [
             'title'      => 'Tambah Vendor Produksi',

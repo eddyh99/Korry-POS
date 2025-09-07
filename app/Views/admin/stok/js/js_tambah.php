@@ -1,6 +1,6 @@
 <script src="<?=base_url()?>assets/bootstrap/plugins/select2/js/select2.full.min.js"></script>
 <script>
-$("#barcode").on("keyup",function(e){
+$("#barcode").on("keypress",function(e){
 	$.get( "<?=base_url()?>admin/stok/get-detail/"+$(this).val(), function( data ) {
 		var res=JSON.parse(data);
 		$("#produk").val(res.namaproduk);
@@ -19,7 +19,15 @@ $('#produk').on('input', function() {
 
     var xyz = opt.data('barcode');
     var brand = opt.data('brand');
-
+    let sizeStr = opt.data("size"); 
+    // -------- TAMPILKAN SIZE KE SELECT --------
+    $("#size").empty().append('<option value="" disabled selected>-- Pilih Size --</option>');
+    if (sizeStr) {
+        let sizeArr = sizeStr.split(",");
+        sizeArr.forEach(function (sz) {
+            $("#size").append(`<option value="${sz}">${sz}</option>`);
+        });
+    }
     $("#barcode").val(xyz);
     $("#brand").val(brand); // langsung isi brand tanpa Ajax
 

@@ -108,9 +108,10 @@
 								<div class="form-group row">
 									<label class="col-sm-3 col-form-label">SKU</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control" id="sku" name="sku" minlength="10" maxlength="10" required value="<?=$produk->sku?>">
+										<input type="text" class="form-control" id="sku" name="sku" maxlength="10" required value="<?=$produk->sku?>">
 									</div>
 								</div>
+								<hr>
 
 								<!-- input baru: Dynamic Bahan Baku -->
 								<div class="form-group row">

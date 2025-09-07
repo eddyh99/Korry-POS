@@ -4,8 +4,14 @@ namespace App\Controllers;
 
 class Home extends BaseController
 {
-    public function index(): string
+    public function getIndex()
     {
-        return view('welcome_message');
+        $data = [
+            'title'    => 'Login',
+            'is_login' => false,
+            'content'  => 'login/index',
+        ];
+
+        return view('layout/wrapper', $data);
     }
 }

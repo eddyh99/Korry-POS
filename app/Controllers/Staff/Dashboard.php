@@ -12,13 +12,6 @@ class Dashboard extends BaseController
 
     public function __construct()
     {
-        $this->session = session();
-
-        // Cek apakah sudah login
-        if (!$this->session->has('logged_status')) {
-            return redirect()->to('/')->send();
-        }
-
         // Load model
         $this->dashboard = new DashboardModel();
     }

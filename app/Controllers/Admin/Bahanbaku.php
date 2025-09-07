@@ -17,10 +17,6 @@ class Bahanbaku extends BaseApiController
 
     public function getIndex()
     {
-        if (!$this->session->get('logged_status')) {
-            return redirect()->to(base_url());
-        }
-
         $data = [
             'title'      => 'Data Bahan Baku', // ✅ ganti judul
             'content'    => 'admin/bahanbaku/index',     // ✅ ganti view
