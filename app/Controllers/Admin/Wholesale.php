@@ -535,6 +535,7 @@ class Wholesale extends BaseApiController
         $data = [
             'title'    => 'Detail Cicilan',
             'content'  => 'admin/wholesale/cicilan/detail',
+            'extra'    => 'admin/wholesale/cicilan/js/js_index',
             'notaorder' => $notaorder,
             'mn_wholesale'   => 'active',
             'colmas'   => 'collapse',
