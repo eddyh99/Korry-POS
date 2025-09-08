@@ -551,4 +551,10 @@ class Wholesale extends BaseApiController
         $result = $this->wholesaleModel->complete_wholesale($nonota);
         return $this->response->setJSON($result);
     }
+
+    public function getNotaorderdetail($notaorder)
+    {
+        $data = $this->wholesaleModel->getAllNotaOrder($notaorder);
+        return $this->response->setJSON($data);
+    }
 }

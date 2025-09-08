@@ -701,4 +701,11 @@ class Konsinyasi extends BaseApiController
 
     //     return view('staff/cashier/print', $nota);
     // }
+
+    public function getNotadodetail($nonota_do)
+    {
+        $data = $this->konsinyasiModel->getAllNotaDo($nonota_do);
+        return $this->response->setJSON($data);
+    }
+
 }

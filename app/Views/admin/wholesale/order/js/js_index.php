@@ -5,101 +5,135 @@
     }
 </style>
 <script>
-	var table;
-	$(function(){
-		console.log("Inisialisasi DataTable untuk Order Wholsale...");
+var table;
+$(function(){
+    console.log("Inisialisasi DataTable untuk Order Wholesale...");
 
-		table = $('#table_data').DataTable({
-			"order": [[ 0, "asc" ]],
-			"scrollX": true,
-			"ajax": {
-				"url": "<?=base_url()?>admin/wholesale/orderlistdata",
-				"type": "POST",
-				"dataSrc": function (data){
-					console.log("Data diterima dari server:", data);
-					return data;                            
-				},
-				"error": function (xhr, error, code) {
-					console.error("AJAX error:", error, "Code:", code, "Response:", xhr.responseText);
-				}
-			},
-			"columns": [
-				{ "data": "notaorder" },
-				{ "data": "nama_partner" },   // sudah join, bukan id lagi
-				{ "data": "tanggal" },
-				{ "data": "lama" },
-				{ "data": "subtotal", "render": function(data){ return new Intl.NumberFormat('id-ID').format(data); } },
-				{ "data": "dp", "render": function(data){ return new Intl.NumberFormat('id-ID').format(data); }},		
-				{ "data": "notaorder",
-					"render": function (data, type, full, meta){
-						let button = '';
-						if (full.is_complete!=="1"){
-							button += '<button type="button" class="btn btn-simple btn-info btn-icon btnPrint" title="Print Ulang" data-notaorder="' + data + '"><i class="material-icons">print</i></button>';
-							//button += '<button type="button" class="btn btn-simple btn-info btn-icon btnBP" title="Cetak BP" data-notaorder="' + data + '"><i class="material-icons">account_balance</i></button>';
-							button += '<button type="button" class="btn btn-simple btn-danger btn-icon btnDelete" title="Hapus" data-notaorder="' + data + '"><i class="material-icons">close</i></button>';
-						}
-						return button;
-					}
-				}
-			]
-		});
-
-		table.on('error.dt', function(e, settings, techNote, message) {
-			console.error("DataTables error:", message);
-		});
-
-		// === Handle Print Ulang ===
-		$('#table_data').on("click", ".btnPrint", function () {
-			const notaorder = $(this).data("notaorder");
-			if (notaorder) {
-				// langsung buka jendela cetak
-				window.open("<?=base_url('admin/wholesale/cetaknotaorder')?>/" + notaorder, "_blank");
-			}
-		});
-
-		// === Handle Print Balance ===
-		$('#table_data').on("click", ".btnBP", function () {
-			const notaorder = $(this).data("notaorder");
-            $.ajax({
-                url: "<?=base_url()?>/admin/wholesale/complete/"+notaorder,  // ganti sesuai route kamu
-                type: "GET",                          // biasanya POST untuk update
-                success: function (response) {
-                    // misalnya refresh tabel setelah update
-                    alert("Produksi " + notaorder + " sudah complete!");
-                    $('#table_data').DataTable().ajax.reload(); 
-					if (notaorder) {
-						// langsung buka jendela cetak
-						window.open("<?=base_url('admin/wholesale/cetakbalancepayment')?>/" + notaorder, "_blank");
-					}
-                },
-                error: function (xhr, status, error) {
-                    console.error(error);
-                    alert("Gagal update status!");
+    table = $('#table_data').DataTable({
+        "order": [[ 0, "asc" ]],
+        "scrollX": true,
+        "ajax": {
+            "url": "<?=base_url()?>admin/wholesale/orderlistdata",
+            "type": "POST",
+            "dataSrc": function (data){
+                console.log("Data diterima dari server:", data);
+                return data;                            
+            },
+            "error": function (xhr, error, code) {
+                console.error("AJAX error:", error, "Code:", code, "Response:", xhr.responseText);
+            }
+        },
+        "columns": [
+            { "data": "notaorder" },
+            { "data": "nama_partner" },
+            { "data": "tanggal" },
+            { "data": "lama" },
+            { "data": "subtotal", "render": function(data){ return new Intl.NumberFormat('id-ID').format(data); } },
+            { "data": "dp", "render": function(data){ return new Intl.NumberFormat('id-ID').format(data); }},
+            { "data": "notaorder",
+                "render": function (data, type, full, meta){
+                    let button = '';
+                    button += '<button type="button" class="btn btn-simple btn-info btn-icon btnDetail" title="Detail Nota" data-notaorder="' + data + '"><i class="material-icons">info_outline</i></button>';
+                    if (full.is_complete!=="1"){
+                        button += '<button type="button" class="btn btn-simple btn-info btn-icon btnPrint" title="Print Ulang" data-notaorder="' + data + '"><i class="material-icons">print</i></button>';
+                        button += '<button type="button" class="btn btn-simple btn-danger btn-icon btnDelete" title="Hapus" data-notaorder="' + data + '"><i class="material-icons">close</i></button>';
+                    }
+                    return button;
                 }
-            });
+            }
+        ]
+    });
 
-		});
+    // === Handle Detail Nota ===
+    $('#table_data').on("click", ".btnDetail", function () {
+        const notaorder = $(this).data("notaorder");
+        if (!notaorder) return;
 
-		// === Handle Hapus Modal (Bootstrap 4) ===
-		$('#table_data').on("click", ".btnDelete", function () {
-			const notaorder = $(this).data("notaorder");
-			const encoded = btoa(notaorder); // base64 encode
+        $.ajax({
+            url: "<?=base_url()?>admin/wholesale/notaorderdetail/" + notaorder,
+            type: "GET",
+            success: function (res) {
+                console.log("Detail Nota diterima:", res);
 
-			// set ke modal
-			$("#notaOrderToDelete").text(notaorder);
-			$("#notaOrderHidden").val(encoded);
+                // Header
+                $("#detail_nonota").text(res.header.notaorder);
+                $("#detail_tanggal").text(res.header.tanggal);
+                $("#detail_lama").text(res.header.lama);
+                $("#detail_user").text(res.header.nama_user);
+                $("#detail_partner").text(res.header.nama_wholesaler);
+                $("#detail_alamat").text(res.header.alamat_wholesaler);
+                $("#detail_kontak").text(res.header.kontak_wholesaler);
 
-			// munculkan modal
-			$("#modal_deleteOrder").modal("show");
-		});
+                // Detail Barang
+                let rows = "";
+                let totalJumlah = 0;
+                let totalHarga = 0;
 
-		// Saat konfirmasi hapus ditekan
-		$("#confirmDeleteOrderBtn").on("click", function () {
-			const encodedNota = $("#notaOrderHidden").val();
-			if (encodedNota) {
-				window.location.href = "<?=base_url()?>admin/wholesale/orderhapus/" + encodedNota;
-			}
-		});
-	});
+                res.detail.forEach(function (item) {
+                    const subtotal = (item.jumlah * item.harga) - item.potongan;
+                    totalJumlah += parseInt(item.jumlah);
+                    totalHarga += subtotal;
 
+                    rows += `
+                        <tr>
+                          <td>${item.barcode}</td>
+                          <td>${item.namaproduk}</td>
+                          <td>${item.sku}</td>
+                          <td>${item.brand}</td>
+                          <td>${item.kategori}</td>
+                          <td>${item.fabric}</td>
+                          <td>${item.size ?? "-"}</td>
+                          <td>${item.warna}</td>
+                          <td class="text-center">${item.jumlah}</td>
+                          <td class="text-right">${new Intl.NumberFormat('id-ID').format(item.harga)}</td>
+                          <td class="text-right">${new Intl.NumberFormat('id-ID').format(item.potongan)}</td>
+                          <td class="text-right">${new Intl.NumberFormat('id-ID').format(subtotal)}</td>
+                        </tr>`;
+                });
+
+                $("#detail_tableBody").html(rows);
+                $("#detail_totalJumlah").text(totalJumlah);
+                $("#detail_totalHarga").text(new Intl.NumberFormat('id-ID').format(totalHarga));
+
+                // Informasi Pembayaran
+                $("#detail_diskon").text(new Intl.NumberFormat('id-ID').format(res.header.diskon));
+                $("#detail_ppn").text(new Intl.NumberFormat('id-ID').format(res.header.ppn));
+                $("#detail_dp").text(new Intl.NumberFormat('id-ID').format(res.header.dp));
+
+                // Show modal
+                $("#modal_detailOrder").modal("show");
+            },
+            error: function (xhr, status, error) {
+                console.error("Gagal load detail:", error);
+                alert("Gagal load detail nota order!");
+            }
+        });
+    });
+
+    // === Handle Print Ulang ===
+    $('#table_data').on("click", ".btnPrint", function () {
+        const notaorder = $(this).data("notaorder");
+        if (notaorder) {
+            window.open("<?=base_url('admin/wholesale/cetaknotaorder')?>/" + notaorder, "_blank");
+        }
+    });
+
+    // === Handle Delete ===
+    $('#table_data').on("click", ".btnDelete", function () {
+        const notaorder = $(this).data("notaorder");
+        const encoded = btoa(notaorder);
+
+        $("#notaOrderToDelete").text(notaorder);
+        $("#notaOrderHidden").val(encoded);
+        $("#modal_deleteOrder").modal("show");
+    });
+
+    $("#confirmDeleteOrderBtn").on("click", function () {
+        const encodedNota = $("#notaOrderHidden").val();
+        if (encodedNota) {
+            window.location.href = "<?=base_url()?>admin/wholesale/orderhapus/" + encodedNota;
+        }
+    });
+});
 </script>
+
