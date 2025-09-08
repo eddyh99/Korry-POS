@@ -28,9 +28,11 @@ class Assignstaff extends BaseApiController
             'content'   => 'admin/assignstaff/index',
             'extra'     => 'admin/assignstaff/js/js_index',
             'mn_master' => 'active',
-            'colmas'    => 'collapse in',
-            'colset'    => 'collapse',
-            'collap'    => 'collapse',
+            'colset'     => 'collapse',
+            'colmas'     => 'collapse in',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
+            'collap'     => 'collapse',
             'side12'     => 'active',
         ];
 
@@ -52,10 +54,12 @@ class Assignstaff extends BaseApiController
             'store'     => $this->storeModel->Liststore(),
             'staff'     => $this->penggunaModel->getNonAdmin(),
             'mn_master' => 'active',
-            'colmas'    => 'collapse in',
-            'colset'    => 'collapse',
-            'collap'    => 'collapse',
-            'side12'     => 'active',
+            'colset'     => 'collapse',
+            'colmas'     => 'collapse in',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
+            'collap'     => 'collapse',
+            'side12'    => 'active',
         ];
 
         return view('layout/wrapper', $data);

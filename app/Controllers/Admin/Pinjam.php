@@ -39,6 +39,8 @@ class Pinjam extends BaseApiController
             'colmas'    => 'collapse',
             'colset'    => 'collapse',
             'collap'    => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
         ];
 
         return view('layout/wrapper', $data);
@@ -76,6 +78,8 @@ class Pinjam extends BaseApiController
             'colmas'    => 'collapse',
             'colset'    => 'collapse',
             'collap'    => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'produk'    => $produk,
             'key'       => $key,
         ];
@@ -102,6 +106,8 @@ class Pinjam extends BaseApiController
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
             'collap'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'produk'     => $produk,
         ];
 

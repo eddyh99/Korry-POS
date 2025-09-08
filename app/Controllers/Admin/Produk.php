@@ -43,10 +43,12 @@ class Produk extends BaseApiController
             'content'    => 'admin/produk/index',
             'extra'      => 'admin/produk/js/js_index',
             'mn_master'  => 'active',
-            'colmas'     => 'collapse in',
             'colset'     => 'collapse',
+            'colmas'     => 'collapse in',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
-            'side13'      => 'active',
+            'side13'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -101,9 +103,11 @@ class Produk extends BaseApiController
             'bahanbaku' => $bahanbaku,
             'biayaproduksi' => $biayaproduksi,
             'mn_master' => 'active',
-            'colmas'   => 'collapse in',
-            'colset'   => 'collapse',
-            'collap'   => 'collapse',
+            'colset'    => 'collapse',
+            'colmas'    => 'collapse in',
+            'colkonsi'  => 'collapse',
+            'colwho'    => 'collapse',
+            'collap'    => 'collapse',
             'side13'    => 'active',
         ];
         return view('layout/wrapper', $data);
@@ -140,9 +144,11 @@ class Produk extends BaseApiController
             'produkBahan'=> $produkBahan,
             'biayaproduksi' => $biayaproduksi,
             'mn_master' => 'active',
-            'colmas'   => 'collapse in',
-            'colset'   => 'collapse',
-            'collap'   => 'collapse',
+            'colset'    => 'collapse',
+            'colmas'    => 'collapse in',
+            'colkonsi'  => 'collapse',
+            'colwho'    => 'collapse',
+            'collap'    => 'collapse',
             'side13'    => 'active',
         ];
         return view('layout/wrapper', $data);

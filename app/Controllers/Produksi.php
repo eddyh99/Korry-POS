@@ -35,6 +35,8 @@ class Produksi extends BaseApiController
             'collap'     => 'collapse',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
+            'colkonsi' => 'collapse',
+            'colwho'   => 'collapse'
         ];
         return view('layout/wrapper', $data);
     }
@@ -63,9 +65,10 @@ class Produksi extends BaseApiController
             'produk'     => $produk,
             'mn_master'  => 'active',
             'colmas'     => 'collapse',
-            'colset'     => 'collapse in',
+            'colset'     => 'collapse',
             'collap'     => 'collapse',
-            'side11'     => 'active',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse'
         ];
         return view('layout/wrapper', $data);
     }

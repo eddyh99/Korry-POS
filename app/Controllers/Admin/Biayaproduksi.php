@@ -22,10 +22,12 @@ class Biayaproduksi extends BaseApiController
             'content'    => 'admin/biayaproduksi/index',
             'extra'      => 'admin/biayaproduksi/js/js_index',
             'mn_setting' => 'active',
-            'colmas'     => 'collapse',
             'colset'     => 'collapse in',
+            'colmas'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
-            'side11'      => 'active',
+            'side11'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -42,10 +44,12 @@ class Biayaproduksi extends BaseApiController
             'title'      => 'Tambah Data Biaya Produksi',
             'content'    => 'admin/biayaproduksi/tambah',
             'mn_setting' => 'active',
-            'colmas'     => 'collapse',
             'colset'     => 'collapse in',
+            'colmas'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
-            'side11'      => 'active',
+            'side11'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -96,10 +100,12 @@ class Biayaproduksi extends BaseApiController
             'content'    => 'admin/biayaproduksi/ubah',
             'detail'     => $result,
             'mn_setting' => 'active',
-            'colmas'     => 'collapse',
             'colset'     => 'collapse in',
+            'colmas'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
-            'side11'      => 'active',
+            'side11'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }

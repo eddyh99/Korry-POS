@@ -50,6 +50,8 @@ class Moving extends BaseApiController
             'colmas'    => 'collapse',
             'colset'    => 'collapse',
             'collap'    => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
         ];
         return view('layout/wrapper', $data);
     }
@@ -126,6 +128,8 @@ class Moving extends BaseApiController
             'colmas'   => 'collapse',
             'colset'   => 'collapse',
             'collap'   => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
         ];
 
         return view('layout/wrapper', $data);
@@ -203,6 +207,8 @@ class Moving extends BaseApiController
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
             'collap'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
         ];
 
         return view('layout/wrapper', $data);
@@ -263,6 +269,8 @@ class Moving extends BaseApiController
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
             'collap'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
         ];
 
         return view('layout/wrapper', $data);

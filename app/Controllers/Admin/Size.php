@@ -23,8 +23,10 @@ class Size extends BaseApiController
             'content'    => 'admin/size/index',
             'extra'      => 'admin/size/js/js_index',
             'mn_setting' => 'active',
-            'colmas'     => 'collapse',
             'colset'     => 'collapse in',
+            'colmas'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
             'side5'      => 'active',
         ];
@@ -48,8 +50,10 @@ class Size extends BaseApiController
             'title'      => 'Tambah Data Size',
             'content'    => 'admin/size/tambah',
             'mn_setting' => 'active',
-            'colmas'     => 'collapse',
             'colset'     => 'collapse in',
+            'colmas'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
             'side5'      => 'active',
         ];
@@ -144,7 +148,11 @@ class Size extends BaseApiController
             'content'    => 'admin/size/ubah',
             'detail'     => $result,
             'mn_setting' => 'active',
-            'colset'     => 'collapse-in',
+            'colset'     => 'collapse in',
+            'colmas'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
+            'collap'     => 'collapse',
             'side5'      => 'active',
         ];
 

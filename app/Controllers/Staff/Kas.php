@@ -30,6 +30,8 @@ class Kas extends BaseApiController
             'colmas'  => 'collapse',
             'colset'  => 'collapse',
             'collap'  => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
         ];
         return view('layout/wrapper', $data);
     }
@@ -52,6 +54,8 @@ class Kas extends BaseApiController
             'colmas'  => 'collapse',
             'colset'  => 'collapse',
             'collap'  => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
         ];
         return view('layout/wrapper', $data);
     }
@@ -120,6 +124,8 @@ class Kas extends BaseApiController
             'colmas'    => 'collapse',
             'colset'    => 'collapse',
             'collap'    => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
         ];
         return view('layout/wrapper', $data);
     }

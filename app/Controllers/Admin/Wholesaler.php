@@ -22,9 +22,11 @@ class Wholesaler extends BaseApiController
             'title'      => 'Data Whole Saler',
             'content'    => 'admin/wholesaler/index',
             'extra'      => 'admin/wholesaler/js/js_index', 
-            'mn_master' => 'active',
-            'colmas'     => 'collapse',
-            'colset'     => 'collapse in',
+            'mn_master'  => 'active',
+            'colset'     => 'collapse',
+            'colmas'     => 'collapse in',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
             'side19'     => 'active',
         ];
@@ -44,10 +46,12 @@ class Wholesaler extends BaseApiController
             'title'      => 'Tambah Whole Saler',
             'content'    => 'admin/wholesaler/tambah',
             'mn_master'  => 'active',
-            'colmas'     => 'collapse',
-            'colset'     => 'collapse in',
+            'colset'     => 'collapse',
+            'colmas'     => 'collapse in',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
-            'side19'      => 'active',
+            'side19'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -62,10 +66,12 @@ class Wholesaler extends BaseApiController
             'content'    => 'admin/wholesaler/ubah',
             'detail'     => $result,
             'mn_master'  => 'active',
-            'colmas'     => 'collapse',
-            'colset'     => 'collapse in',
+            'colset'     => 'collapse',
+            'colmas'     => 'collapse in',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
-            'side19'      => 'active',
+            'side19'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }

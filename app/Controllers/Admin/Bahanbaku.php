@@ -22,8 +22,10 @@ class Bahanbaku extends BaseApiController
             'content'    => 'admin/bahanbaku/index',     // ✅ ganti view
             'extra'      => 'admin/bahanbaku/js/js_index', 
             'mn_setting' => 'active',
-            'colmas'     => 'collapse',
             'colset'     => 'collapse in',
+            'colmas'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
             'side6'     => 'active',
         ];
@@ -51,8 +53,10 @@ class Bahanbaku extends BaseApiController
             'title'      => 'Tambah Bahan Baku',
             'content'    => 'admin/bahanbaku/tambah',
             'mn_master'  => 'active',
-            'colmas'     => 'collapse',
             'colset'     => 'collapse in',
+            'colmas'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
             'side6'      => 'active',
         ];
@@ -69,8 +73,10 @@ class Bahanbaku extends BaseApiController
             'content'    => 'admin/bahanbaku/ubah',     
             'detail'     => $result,
             'mn_master'  => 'active',
-            'colmas'     => 'collapse',
             'colset'     => 'collapse in',
+            'colmas'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
             'side2'      => 'active',
         ];

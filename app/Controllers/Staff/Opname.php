@@ -18,11 +18,15 @@ class Opname extends BaseApiController
     public function index()
     {
         $data = [
-            'title'   => 'Hanaka - Point Of Sales',
+            'title'   => 'Korry - Point Of Sales',
             'content' => 'staff/opname/index',
             'extra'   => 'staff/opname/js/js_index',
-            'mn_cash' => 'active',
-            'collap'  => 'collapse',
+            'mn_cash'  => 'active',
+            'colset'   => 'collapse',
+            'colmas'   => 'collapse',
+            'colkonsi' => 'collapse',
+            'colwho'   => 'collapse',
+            'collap'   => 'collapse',
         ];
 
         return view('layout/wrapper', $data);

@@ -23,9 +23,11 @@ class Dashboard extends BaseController
             'content' => 'admin/dashboard/index',
             'extra'   => 'admin/dashboard/js/js_index',
             'mn_dash' => 'active',
-            'collap'  => 'collapse',
-            'colmas'  => 'collapse',
             'colset'  => 'collapse',
+            'colmas'  => 'collapse',
+            'colkonsi' => 'collapse',
+            'colwho'   => 'collapse',
+            'collap'   => 'collapse',
         ];
 
         return view('layout/wrapper', $data);

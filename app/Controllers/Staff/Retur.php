@@ -34,6 +34,8 @@ class Retur extends BaseApiController
             'colmas'    => 'collapse',
             'colset'    => 'collapse',
             'collap'    => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
         ];
 
         return view('layout/wrapper', $data);
@@ -57,6 +59,8 @@ class Retur extends BaseApiController
             'colmas'    => 'collapse',
             'colset'    => 'collapse',
             'collap'    => 'collapse',
+            'colkonsi'  => 'collapse',
+            'colwho'    => 'collapse',
             'produk'    => $produk,
             'key'       => $key,
             'memberid'  => $member
@@ -80,6 +84,8 @@ class Retur extends BaseApiController
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
             'collap'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
         ];
         return view('layout/wrapper', $data);
     }
@@ -127,6 +133,8 @@ class Retur extends BaseApiController
             'colmas'    => 'collapse',
             'colset'    => 'collapse',
             'collap'    => 'collapse',
+            'colkonsi'  => 'collapse',
+            'colwho'    => 'collapse',
         ];
         return view('layout/wrapper', $data);
     }
