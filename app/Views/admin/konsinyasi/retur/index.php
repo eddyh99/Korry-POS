@@ -55,3 +55,56 @@
     </div>
   </div>
 </div>
+
+<!-- Modal Detail Retur Konsinyasi -->
+<div class="modal fade" id="modal_detailRetur" tabindex="-1" role="dialog" aria-labelledby="detailReturLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document" style="max-width:95%;">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="detailReturLabel">Detail Retur Konsinyasi</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p><b>No Retur:</b> <span id="detail_noretur"></span></p>
+            <p><b>Tanggal:</b> <span id="detail_tanggal"></span></p>
+          </div>
+          <div class="col-md-6">
+            <p><b>No DO Konsinyasi:</b> <span id="detail_nokonsinyasi"></span></p>
+            <p><b>User:</b> <span id="detail_user"></span></p>
+          </div>
+        </div>
+
+        <hr>
+        <h6>Detail Barang Retur</h6>
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered" style="width:100%;">
+            <thead class="thead-light">
+              <tr>
+                <th>Barcode</th>
+                <th>Produk</th>
+                <th>SKU</th>
+                <th>Size</th>
+                <th>Warna</th>
+                <th>Jumlah</th>
+                <th>Alasan Retur</th>
+              </tr>
+            </thead>
+            <tbody id="detail_tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>

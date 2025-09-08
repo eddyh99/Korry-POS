@@ -198,4 +198,10 @@ class Produksi extends BaseApiController
         $result = $this->produksiModel->complete_produksi($nonota);
         return $this->response->setJSON($result);
     }
+
+    public function getProduksidetail($nonota)
+    {
+        $data = $this->produksiModel->getProduksiDetail($nonota);
+        return $this->response->setJSON($data);
+    }
 }

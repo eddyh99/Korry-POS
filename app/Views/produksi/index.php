@@ -58,3 +58,57 @@
     </div>
   </div>
 </div>
+
+<!-- Modal Detail Produksi -->
+<!-- Modal Detail Produksi -->
+<div class="modal fade" id="modal_detailProduksi" tabindex="-1" role="dialog" aria-labelledby="detailProduksiLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document" style="max-width:95%;">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="detailProduksiLabel">Detail Produksi</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p><b>No Nota:</b> <span id="detail_nonota"></span></p>
+            <p><b>Tanggal:</b> <span id="detail_tanggal"></span></p>
+            <p><b>Estimasi (hari):</b> <span id="detail_estimasi"></span></p>
+          </div>
+          <div class="col-md-6">
+            <p><b>Vendor:</b> <span id="detail_vendor"></span></p>
+            <p><b>Tipe Vendor:</b> <span id="detail_tipevendor"></span></p>
+            <p><b>User:</b> <span id="detail_user"></span></p>
+          </div>
+        </div>
+
+        <hr>
+        <h6>Detail Barang Produksi</h6>
+        <table class="table table-sm table-bordered" style="width:100%; table-layout:auto;">
+          <thead class="thead-light">
+            <tr>
+              <th>Barcode</th>
+              <th>Produk</th>
+              <th>SKU</th>
+              <th>Size</th>
+              <th>Jumlah</th>
+              <th>Harga</th>
+              <th>Biaya</th>
+            </tr>
+          </thead>
+          <tbody id="detailProduksi_tableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>

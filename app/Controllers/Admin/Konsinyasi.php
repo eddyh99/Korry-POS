@@ -708,4 +708,10 @@ class Konsinyasi extends BaseApiController
         return $this->response->setJSON($data);
     }
 
+    public function getReturdetail($noretur)
+    {
+        $data = $this->konsinyasiModel->getReturKonsinyasiDetail($noretur);
+        return $this->response->setJSON($data);
+    }
+
 }
