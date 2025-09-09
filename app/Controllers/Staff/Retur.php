@@ -47,7 +47,7 @@ class Retur extends BaseApiController
         return $this->response->setJSON($result);
     }
 
-    public function detailretur($key, $member)
+    public function getDetailretur($key, $member)
     {
         $produk = $this->produkModel->listproduk();
         $data = [
@@ -197,7 +197,7 @@ class Retur extends BaseApiController
         return $this->response->setBody("0");
     }
 
-    public function batalnota($id)
+    public function getBatalnota($id)
     {
         $retur = [
             "storeid"   => $_SESSION["logged_status"]["storeid"],
