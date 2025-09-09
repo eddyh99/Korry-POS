@@ -32,18 +32,18 @@ class Cashier extends BaseApiController
 
     public function getIndex()
     {
-        // $cekstatus = $this->kasModel->openkas();
+        $cekstatus = $this->kasModel->openkas();
 
-        // if ($cekstatus == 5051) {
-        //     $this->session->setFlashdata('message', 'Silahkan masukkan kas awal dulu');
-        //     return redirect()->to(base_url('staff/kas'));
-        // } elseif ($cekstatus == 5052) {
-        //     $this->session->setFlashdata('message', 'Silahkan tutup kas, dengan menghubungi store manager');
-        //     return redirect()->to(base_url('staff/kas/tutupharian'));
-        // } elseif ($cekstatus == 5053) {
-        //     $this->session->setFlashdata('message', 'Store sudah di tutup, silahkan buka kembali besok');
-        //     return redirect()->to(base_url('staff/dashboard'));
-        // }
+        if ($cekstatus == 5051) {
+            $this->session->setFlashdata('message', 'Silahkan masukkan kas awal dulu');
+            return redirect()->to(base_url('staff/kas'));
+        } elseif ($cekstatus == 5052) {
+            $this->session->setFlashdata('message', 'Silahkan tutup kas, dengan menghubungi store manager');
+            return redirect()->to(base_url('staff/kas/tutupharian'));
+        } elseif ($cekstatus == 5053) {
+            $this->session->setFlashdata('message', 'Store sudah di tutup, silahkan buka kembali besok');
+            return redirect()->to(base_url('staff/dashboard'));
+        }
 
         $produk = $this->stokModel->listproduk_withstok();
 

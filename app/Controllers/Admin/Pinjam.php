@@ -53,7 +53,7 @@ class Pinjam extends BaseApiController
         return $this->response->setJSON($result);
     }
 
-    public function tutup($id)
+    public function getTutup($id)
     {
         $id = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
         $result = $this->pinjamModel->setTutup($id);
@@ -67,7 +67,7 @@ class Pinjam extends BaseApiController
         return redirect()->to(base_url('admin/pinjam'));
     }
 
-    public function detailpinjam($key)
+    public function getDetailpinjam($key)
     {
         $produk = $this->produkModel->listproduk();
         $data = [
@@ -87,7 +87,7 @@ class Pinjam extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
-    public function listpinjam()
+    public function postListpinjam()
     {
         $key = $this->request->getPost('key', FILTER_SANITIZE_STRING);
         $result = $this->pinjamModel->getDetail($key);
@@ -141,7 +141,7 @@ class Pinjam extends BaseApiController
         return redirect()->to(base_url('admin/pinjam'));
     }
 
-    public function simpandata()
+    public function postSimpandata()
     {
         $id = $this->request->getPost('id', FILTER_SANITIZE_NUMBER_INT);
         $barang = json_decode($this->request->getPost('barang'), true);

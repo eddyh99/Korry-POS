@@ -118,9 +118,14 @@
 			"ajax": {
 					"url": "<?=base_url()?>admin/stok/listdata",
 					"type": "POST",
-					"dataSrc":function (data){
-							return data["produk"];							
-						  }
+					// "dataSrc":function (data){
+					// 		return data["produk"];							
+					// 	  }
+					"dataSrc": function (json) {
+						// ✅ DataTables butuh recordsTotal & recordsFiltered
+						// pastikan backend balikin 3 key: recordsTotal, recordsFiltered, produk
+						return json.produk;
+					}
 			},
             "columns": [
 				  { "data": "barcode"},
