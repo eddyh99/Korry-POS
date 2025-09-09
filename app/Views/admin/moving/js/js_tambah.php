@@ -67,14 +67,14 @@
 				type: "post",
 				data: "barcode="+$(this).val() ,
 				success: function (data) {
-					data=JSON.parse(data);
+					console.log(data);				
     					results=$.map(data, function (item) {
     								return {
     							   id: item.size,
     							   text: item.size
     								};
     							})
-    					$('#size').select2({data:results});
+    					$('#size').select2({data:results,width: '100%'});
     					$("#modalsize").modal("show");
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
@@ -98,7 +98,7 @@
 		$.ajax({
 			url: "<?=base_url()?>admin/opname/cekstok",
             async: false,
-			type: "post",
+			type: "POST",
 			data: "barcode="+barcode+"&tujuan="+$("#tujuan").val()+"&size="+size,
 			success: function (data) {
                 stok = data;
@@ -182,7 +182,7 @@
 		var barang=JSON.stringify(Object);
 
 		$.ajax({
-			url: "<?=base_url()?>admin/moving/addData",
+			url: "<?=base_url()?>admin/moving/adddata",
 			type: "post",
 			data: "asal="+asal+"&tujuan="+tujuan+"&barang="+barang,
 			success: function (data) {

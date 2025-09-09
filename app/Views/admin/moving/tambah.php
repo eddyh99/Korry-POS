@@ -94,7 +94,7 @@
 						<div class="col-sm-4">
 							<label class="col-form-label">Size</label>
 						</div>
-						<div class="col-sm-4">
+						<div class="col-sm-8">
 							<select id="size" class="form-control" name="size"></select>
 						</div>
 					</div>

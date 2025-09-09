@@ -135,7 +135,7 @@ class Moving extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
-    public function postAddData()
+    public function postAdddata()
     {
         $asal   = $this->request->getPost('asal', FILTER_SANITIZE_STRING);
         $tujuan = $this->request->getPost('tujuan', FILTER_SANITIZE_STRING);
