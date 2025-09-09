@@ -138,4 +138,72 @@ class ProduksiModel extends Model
             return ["code" => 1, "message" => $this->db->error()];
         }
     }
+
+    public function getProduksiDetail($nonota)
+    {
+        $mdata = [
+            "header" => null,
+            "detail" => []
+        ];
+
+        // === Ambil header produksi
+        $sql1 = "SELECT 
+                    p.nonota,
+                    p.tanggal,
+                    p.estimasi,
+                    p.dp,
+                    p.total,
+                    p.user_id,
+                    v.nama AS vendor_nama,
+                    v.tipe AS vendor_tipe
+                FROM {$this->produksi} p
+                INNER JOIN {$this->vendor} v ON v.id = p.idvendor
+                WHERE p.nonota = ?
+                LIMIT 1";
+        $header = $this->db->query($sql1, [$nonota])->getRow();
+
+        if ($header) {
+            $mdata["header"] = $header;
+        } else {
+            // fallback kalau data header tidak ada
+            $mdata["header"] = (object) [
+                "nonota"     => $nonota,
+                "tanggal"    => null,
+                "estimasi"   => null,
+                "dp"         => null,
+                "total"      => null,
+                "user_id"    => null,
+                "vendor_nama"=> "-",
+                "vendor_tipe"=> "-"
+            ];
+        }
+
+        // === Ambil detail produksi
+        $sql2 = "SELECT 
+                    d.barcode,
+                    pr.namaproduk,
+                    pr.sku,
+                    d.size,
+                    d.jumlah,
+                    d.harga,
+                    d.biaya
+                FROM {$this->produksi_detail} d
+                INNER JOIN produk pr ON pr.barcode = d.barcode
+                WHERE d.nonota = ?";
+        $detail = $this->db->query($sql2, [$nonota])->getResultArray();
+
+        foreach ($detail as $i => $det) {
+            $mdata["detail"][$i] = [
+                "barcode"    => $det["barcode"],
+                "namaproduk" => $det["namaproduk"],
+                "sku"        => $det["sku"],
+                "size"       => $det["size"],
+                "jumlah"     => $det["jumlah"],
+                "harga"      => $det["harga"],
+                "biaya"      => $det["biaya"]
+            ];
+        }
+
+        return $mdata;
+    }
 }

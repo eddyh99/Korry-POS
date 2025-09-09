@@ -34,6 +34,42 @@
                         <p>Dashboard</p>
                     </a>
                 </li>
+                <li class="<?=@$mn_cashier?>">
+    				<a href="<?=base_url()?>staff/cashier">
+    					<i class="fas fa-money-bill-wave"></i>
+    					<p>Penjualan</p>
+    				</a>
+    			</li>
+    			<li class="<?=@$mn_bayar?>">
+    				<a href="<?=base_url()?>admin/bayar">
+    					<i class="fas fa-undo"></i>
+    					<p>Ganti Cara Bayar</p>
+    				</a>
+    			</li>
+    			<li class="<?=@$mn_produksi?>">
+    				<a href="<?=base_url()?>produksi">
+    					<i class="material-icons">business</i>
+    					<p>Produksi</p>
+    				</a>
+    			</li>
+                <li class="<?=@$mn_member?>">
+    				<a href="<?=base_url()?>member">
+    					<i class="material-icons">people</i>
+    					<p>Member</p>
+    				</a>
+    			</li>
+    			<li class="<?=@$mn_opname?>">
+    				<a href="<?=base_url()?>admin/opname">
+    					<i class="fas fa-box"></i>
+    					<p>Stok Opname</p>
+    				</a>
+    			</li>
+                <li class="<?=@$mn_appopname?>">
+    				<a href="<?=base_url()?>admin/opname/konfirm">
+    					<i class="fas fa-truck-moving"></i>
+    					<p>Konfirm Opname</p>
+    				</a>
+    			</li>
                 <li class="<?=@$mn_setting?>">
                     <a data-toggle="collapse" href="#settings" aria-expanded="<?php echo (@$mn_setting=="active")?"true":"false" ?>">
                         <i class="material-icons">settings</i>
@@ -115,12 +151,6 @@
                         </ul>
                     </div>
                 </li>
-    			<li class="<?=@$mn_produksi?>">
-    				<a href="<?=base_url()?>produksi">
-    					<i class="material-icons">business</i>
-    					<p>Produksi</p>
-    				</a>
-    			</li>
                 <li class="<?=@$mn_konsinyasi?>">
                     <a data-toggle="collapse" href="#konsinyasi" aria-expanded="<?php echo (@$mn_konsinyasi=="active")?"true":"false" ?>">
                         <i class="material-icons">group</i>
@@ -128,7 +158,7 @@
                             <b class="caret"></b>
                         </p>
                     </a>
-                    <div class="<?=@$collap?>" id="konsinyasi">
+                    <div class="<?=@$colkonsi?>" id="konsinyasi">
                         <ul class="nav">
                             <li class="<?=@$side20?>">
                                 <a href="<?=base_url()?>admin/konsinyasi/do">Delivery Order</a>
@@ -149,7 +179,7 @@
                             <b class="caret"></b>
                         </p>
                     </a>
-                    <div class="<?=@$collap?>" id="wholesale">
+                    <div class="<?=@$colwho?>" id="wholesale">
                         <ul class="nav">
                             <li class="<?=@$side23?>">
                                 <a href="<?=base_url()?>admin/wholesale/order">Order</a>
@@ -178,49 +208,47 @@
                             <li class="<?=@$side27?>">
                                 <a href="<?=base_url()?>admin/laporan/penjualan">Penjualan</a>
                             </li>
+
                             <li class="<?=@$side28?>">
-                                <a href="<?=base_url()?>admin/laporan/penjualandetail">Penjualan Detail</a>
-                            </li>
-                            <li class="<?=@$side29?>">
                                 <a href="<?=base_url()?>admin/laporan/brand">Penjualan Brand</a>
                             </li>
-                            <li class="<?=@$side30?>">
+                            <li class="<?=@$side29?>">
                                 <a href="<?=base_url()?>admin/laporan/barang">Drop In/Drop Out</a>
                             </li>
-                            <li class="<?=@$side31?>">
+                            <li class="<?=@$side30?>">
                                 <a href="<?=base_url()?>admin/laporan/nontunai">Non Tunai</a>
                             </li>
-                            <li class="<?=@$side32?>">
+                            <li class="<?=@$side31?>">
                                 <a href="<?=base_url()?>admin/laporan/request">Permintaan</a>
                             </li>
-                            <li class="<?=@$side33?>">
+                            <li class="<?=@$side32?>">
                                 <a href="<?=base_url()?>admin/laporan/retur">Retur Konsumen</a>
                             </li>
-                            <li class="<?=@$side34?>">
+                            <li class="<?=@$side33?>">
                                 <a href="<?=base_url()?>admin/laporan/stokout">Stok Out</a>
                             </li>
-                            <li class="<?=@$side35?>">
+                            <li class="<?=@$side34?>">
                                 <a href="<?=base_url()?>admin/laporan/kaskeluar">Kas</a>
                             </li>
-                            <li class="<?=@$side36?>">
+                            <li class="<?=@$side35?>">
                                 <a href="<?=base_url()?>admin/laporan/pospengeluaran">Pos Pengeluaran</a>
                             </li>
-                            <li class="<?=@$side37?>">
+                            <li class="<?=@$side36?>">
                                 <a href="<?=base_url()?>admin/laporan/produkterlaris">Produk Terlaris</a>
                             </li>
-                            <li class="<?=@$side38?>">
+                            <li class="<?=@$side37?>">
                                 <a href="<?=base_url()?>admin/laporan/neraca">Neraca</a>
                             </li>
-                            <li class="<?=@$side39?>">
+                            <li class="<?=@$side38?>">
                                 <a href="<?=base_url()?>admin/laporan/labarugi">Laba-Rugi</a>
                             </li>
                         </ul>
                     </div>
                 </li>
-    			<li class="<?=@$mn_member?>">
-    				<a href="<?=base_url()?>member">
-    					<i class="material-icons">people</i>
-    					<p>Member</p>
+                <li class="<?=@$mn_cash?>">
+    				<a href="<?=base_url()?>staff/kas">
+    					<i class="fas fa-wallet"></i>
+    					<p>Kas</p>
     				</a>
     			</li>
     			<li class="<?=@$mn_tutup?>">
@@ -247,6 +275,18 @@
     					<p>Konfirmasi Permintaan</p>
     				</a>
     			</li>
+    			<li class="<?=@$mn_retur?>">
+    				<a href="<?=base_url()?>staff/retur">
+                        <i class="fas fa-exchange-alt"></i>
+    					<p>Retur Customer</p>
+    				</a>
+    			</li>
+    			<li class="<?=@$mn_cari?>">
+    				<a href="<?=base_url()?>staff/pencarian">
+    					<i class="material-icons">zoom_in</i>
+    					<p>Pencarian</p>
+    				</a>
+    			</li>                
             <?php }elseif (@$_SESSION["logged_status"]["role"]=="Office Manager"){?>
                 <li class="<?=@$mn_dash?>">
                     <a href="<?=base_url()?>dashboard">

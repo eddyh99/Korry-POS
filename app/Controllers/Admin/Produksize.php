@@ -28,10 +28,12 @@ class Produksize extends BaseApiController
             'content'    => 'admin/produksize/index',
             'extra'      => 'admin/produksize/js/js_index',
             'mn_master'  => 'active',
-            'colmas'     => 'collapse in',
             'colset'     => 'collapse',
+            'colmas'     => 'collapse in',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
-            'side14'      => 'active',
+            'side14'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -54,10 +56,12 @@ class Produksize extends BaseApiController
             'size'       => $size,
             'produk'     => $produk,
             'mn_master'  => 'active',
-            'colmas'     => 'collapse in',
             'colset'     => 'collapse',
+            'colmas'     => 'collapse in',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
-            'side14'      => 'active',
+            'side14'     => 'active',
         ];
 
         return view('layout/wrapper', $data);

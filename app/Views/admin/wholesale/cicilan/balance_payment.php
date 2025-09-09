@@ -147,9 +147,8 @@
 
 <?php 
   // Ambil diskon & ppn dari header
-  $diskonNominal = floatval($data["header"]->diskon); // ini nominal, bukan persen
+  $diskonNominal = floatval($data["header"]->diskon); // nominal, bukan persen
   $ppnPersen     = floatval($data["header"]->ppn);
-  $down_payment  = floatval($data["header"]->dp);
 
   // Hitung subtotal setelah diskon
   $afterDiskon = $subtotal - $diskonNominal;
@@ -171,8 +170,8 @@
       }
   }
 
-  // Hitung amount due
-  $amountDue = $grandTotal - $down_payment - $totalPaid;
+  // Amount Due = Grand Total - Total Cicilan (bukan dikurang DP lagi)
+  $amountDue = $grandTotal - $totalPaid;
 ?>
 
 <!-- summary -->
@@ -206,7 +205,8 @@
     <td class="label">Down Payment</td>
     <td class="value">
       <span class="currency">IDR</span>
-      <span class="amount">-<?=number_format($down_payment)?></span>
+      <!-- tampilkan total cicilan sebagai Down Payment -->
+      <span class="amount">-<?=number_format($totalPaid)?></span>
     </td>
   </tr>
 

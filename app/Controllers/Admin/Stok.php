@@ -39,10 +39,12 @@ class Stok extends BaseApiController
             'content'    => 'admin/stok/index',
             'extra'      => 'admin/stok/js/js_index',
             'mn_master'  => 'active',
-            'colmas'     => 'collapse in',
             'colset'     => 'collapse',
+            'colmas'     => 'collapse in',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
-            'side15'      => 'active'
+            'side15'     => 'active'
         ];
         echo view('layout/wrapper', $data);
     }
@@ -92,9 +94,11 @@ class Stok extends BaseApiController
             'produk'    => $produk,
             'restock'   => 0,
             'mn_master' => 'active',
-            'colmas'    => 'collapse in',
-            'colset'    => 'collapse',
-            'collap'    => 'collapse',
+            'colset'     => 'collapse',
+            'colmas'     => 'collapse in',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
+            'collap'     => 'collapse',
             'side15'     => 'active',
         ];
         echo view('layout/wrapper', $data);
@@ -194,9 +198,12 @@ class Stok extends BaseApiController
             'produk'    => $produk,
             'restock'   => 1,
             'mn_master' => 'active',
-            'colmas'    => 'collapse in',
-            'colset'    => 'collapse',
-            'side15'    => 'active',
+            'colset'     => 'collapse',
+            'colmas'     => 'collapse in',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
+            'collap'     => 'collapse',
+            'side15'     => 'active',
         ];
         echo view('layout/wrapper', $data);
     }

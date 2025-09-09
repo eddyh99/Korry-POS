@@ -35,6 +35,8 @@ class Produksi extends BaseApiController
             'collap'     => 'collapse',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
+            'colkonsi' => 'collapse',
+            'colwho'   => 'collapse'
         ];
         return view('layout/wrapper', $data);
     }
@@ -63,9 +65,10 @@ class Produksi extends BaseApiController
             'produk'     => $produk,
             'mn_master'  => 'active',
             'colmas'     => 'collapse',
-            'colset'     => 'collapse in',
+            'colset'     => 'collapse',
             'collap'     => 'collapse',
-            'side11'     => 'active',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse'
         ];
         return view('layout/wrapper', $data);
     }
@@ -194,5 +197,11 @@ class Produksi extends BaseApiController
     public function getComplete($nonota=null){
         $result = $this->produksiModel->complete_produksi($nonota);
         return $this->response->setJSON($result);
+    }
+
+    public function getProduksidetail($nonota)
+    {
+        $data = $this->produksiModel->getProduksiDetail($nonota);
+        return $this->response->setJSON($data);
     }
 }

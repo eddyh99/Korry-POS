@@ -1080,4 +1080,56 @@ class KonsinyasiModel extends Model
 
         return $mdata;
     }
+
+    public function getReturKonsinyasiDetail($noretur)
+    {
+        $mdata = [
+            "header" => null,
+            "detail" => []
+        ];
+
+        // === Ambil header retur konsinyasi
+        $sql1 = "SELECT r.noretur, r.tanggal, r.nokonsinyasi, r.userid,
+                        u.nama AS nama_user
+                FROM {$this->retur_konsinyasi} r
+                INNER JOIN {$this->pengguna} u ON r.userid = u.username
+                WHERE r.noretur = ? AND r.is_void = 0
+                LIMIT 1";
+        $header = $this->db->query($sql1, [$noretur])->getRow();
+
+        if ($header) {
+            $mdata["header"] = $header;
+        } else {
+            $mdata["header"] = (object) [
+                "noretur"      => $noretur,
+                "tanggal"      => null,
+                "nokonsinyasi" => null,
+                "userid"       => null,
+                "nama_user"    => "-"
+            ];
+        }
+
+        // === Ambil detail retur (barang yang dikembalikan)
+        $sql2 = "SELECT d.barcode, d.jumlah, d.size, d.alasan,
+                        p.namaproduk, p.sku, p.namawarna
+                FROM {$this->retur_konsinyasi_detail} d
+                INNER JOIN {$this->produk} p ON d.barcode = p.barcode
+                WHERE d.noretur = ?";
+        $detail = $this->db->query($sql2, [$noretur])->getResultArray();
+
+        foreach ($detail as $i => $det) {
+            $mdata["detail"][$i] = [
+                "barcode"    => $det["barcode"],
+                "namaproduk" => $det["namaproduk"],
+                "sku"        => $det["sku"],
+                "jumlah"     => $det["jumlah"],
+                "size"       => $det["size"],
+                "warna"      => $det["namawarna"],
+                "alasan"     => $det["alasan"]
+            ];
+        }
+
+        return $mdata;
+    }
+
 }

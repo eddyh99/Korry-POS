@@ -22,10 +22,12 @@ class Metodebayar extends BaseApiController
             'content'    => 'admin/metodebayar/index',
             'extra'      => 'admin/metodebayar/js/js_index',
             'mn_setting' => 'active',
-            'colmas'     => 'collapse',
             'colset'     => 'collapse in',
+            'colmas'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
-            'side10'      => 'active',
+            'side10'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }
@@ -46,10 +48,12 @@ class Metodebayar extends BaseApiController
             'content'    => 'admin/metodebayar/ubah',
             'detail'     => $result,
             'mn_setting' => 'active',
-            'colmas'     => 'collapse',
             'colset'     => 'collapse in',
+            'colmas'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'collap'     => 'collapse',
-            'side10'      => 'active',
+            'side10'     => 'active',
         ];
         return view('layout/wrapper', $data);
     }

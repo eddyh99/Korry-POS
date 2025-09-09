@@ -22,8 +22,10 @@ class Bayar extends BaseApiController
             'content'  => 'admin/bayar/index',
             'extra'    => 'admin/bayar/js/js_index',
             'mn_bayar' => 'active',
-            'colmas'   => 'collapse',
             'colset'   => 'collapse',
+            'colmas'   => 'collapse',
+            'colkonsi' => 'collapse',
+            'colwho'   => 'collapse',
             'collap'   => 'collapse',
         ];
 
@@ -47,8 +49,10 @@ class Bayar extends BaseApiController
             'extra'    => 'admin/bayar/js/js_ganti',
             'mn_bayar' => 'active',
             'detail'   => $detail,
-            'colmas'   => 'collapse',
             'colset'   => 'collapse',
+            'colmas'   => 'collapse',
+            'colkonsi' => 'collapse',
+            'colwho'   => 'collapse',
             'collap'   => 'collapse',
         ];
 

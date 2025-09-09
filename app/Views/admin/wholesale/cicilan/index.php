@@ -33,28 +33,3 @@
 <!-- End Container -->
     </div>
 </div>
-
-<!-- Modal Confirm Delete Cicilan Wholesale -->
-<div class="modal fade" id="modal_deleteCicilan" tabindex="-1" role="dialog" aria-labelledby="deleteCicilanLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <!-- Header -->
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteCicilanLabel">Konfirmasi Hapus Cicilan</h5>
-      </div>
-      <!-- Body -->
-      <div class="modal-body">
-        <p>
-          Apakah Anda yakin ingin menghapus Cicilan Wholesale dengan No. Nota:
-          <strong id="nonotaCicilanToDelete"></strong>?
-        </p>
-        <input type="hidden" id="nonotaCicilanHidden">
-      </div>
-      <!-- Footer -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-        <button type="button" class="btn btn-danger" id="confirmDeleteCicilanBtn">Ya, Hapus</button>
-      </div>
-    </div>
-  </div>
-</div>

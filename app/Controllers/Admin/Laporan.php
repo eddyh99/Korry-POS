@@ -45,6 +45,8 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'side25'     => 'active'
         ];
 
@@ -79,6 +81,8 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'side26'     => 'active'
         ];
 
@@ -112,6 +116,8 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
             'side27'     => 'active'
         ];
 
@@ -142,7 +148,8 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side28'     => 'active'
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
         ];
 
         return view('layout/wrapper', $data);
@@ -173,7 +180,9 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side29'     => 'active'
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
+            'side28'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -207,7 +216,9 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side30'     => 'active'
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
+            'side29'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -240,7 +251,9 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side31'     => 'active'
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
+            'side30'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -272,7 +285,9 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side32'     => 'active'
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
+            'side31'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -306,7 +321,9 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side33'     => 'active'
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
+            'side32'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -339,7 +356,9 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side34'     => 'active'
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
+            'side33'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -372,7 +391,9 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side35'     => 'active'
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
+            'side34'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -391,14 +412,7 @@ class Laporan extends BaseApiController
         return $this->response->setJSON($result);
     }
 
-    // 4 Sept 2025 
-
-    // Laporan Neraca,
-    // Laporan Laba Rugi,
-    // Laporan Produk Terlaris + 10 Margin Untung
-
     // Laporan Pos Bulanan
-
     public function getPospengeluaran()
     {
         $data = [
@@ -411,7 +425,9 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side36'     => 'active'
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
+            'side35'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -429,6 +445,7 @@ class Laporan extends BaseApiController
         return $this->response->setJSON($result);
     }
 
+    // Laporan 10 Produk Terlaris
     public function getProdukterlaris()
     {
         $data = [
@@ -439,7 +456,9 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side37'     => 'active'
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
+            'side36'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -455,6 +474,7 @@ class Laporan extends BaseApiController
         return $this->response->setJSON($result);
     }
 
+    // Laporan Neraca
     public function getNeraca()
     {
         $data = [
@@ -465,7 +485,9 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side38'     => 'active'
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
+            'side37'     => 'active'
         ];
 
         return view('layout/wrapper', $data);
@@ -480,6 +502,7 @@ class Laporan extends BaseApiController
         return $this->response->setJSON($result);
     }
 
+    // Laporan Laba Rugi
     public function getLabarugi()
     {
         $data = [
@@ -490,7 +513,9 @@ class Laporan extends BaseApiController
             'collap'     => 'collapse in',
             'colmas'     => 'collapse',
             'colset'     => 'collapse',
-            'side39'     => 'active'
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse',
+            'side38'     => 'active'
         ];
 
         return view('layout/wrapper', $data);

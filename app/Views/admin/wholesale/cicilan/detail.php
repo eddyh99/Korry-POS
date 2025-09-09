@@ -8,7 +8,7 @@
 
                     <div class="col-sm-12">
 
-                        <form id="form_cicilan" method="post" action="<?=base_url()?>admin/wholesale/add-data-cicilan">
+<form id="form_cicilan" method="post" action="<?=base_url()?>admin/wholesale/add-data-cicilan">
 
                             <div class="col-lg-6">
                                 <div class="card-body">
@@ -69,7 +69,8 @@
                                 <a name="btnBack" href="<?=base_url()?>admin/wholesale/cicilan" class="btn btn-warning"><i class="material-icons">reply</i>Kembali</a>
                             </div>
 
-                        </form>
+</form>
+
 
                     </div>
 

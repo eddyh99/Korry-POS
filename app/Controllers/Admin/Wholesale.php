@@ -34,8 +34,10 @@ class Wholesale extends BaseApiController
             'content'    => 'admin/wholesale/order/index',
             'extra'      => 'admin/wholesale/order/js/js_index', 
             'mn_wholesale' => 'active',
+            'colset'     => 'collapse',
             'colmas'     => 'collapse',
-            'colset'     => 'collapse in',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse in',
             'collap'     => 'collapse',
             'side23'     => 'active',
         ];
@@ -63,8 +65,10 @@ class Wholesale extends BaseApiController
             'wholesaler'    => $wholesaler,
             'produk'        => $produk,
             'mn_wholesale'   => 'active',
+            'colset'   => 'collapse',
             'colmas'   => 'collapse',
-            'colset'   => 'collapse in',
+            'colkonsi' => 'collapse',
+            'colwho'   => 'collapse in',
             'collap'   => 'collapse',
             'side23'   => 'active',
         ];
@@ -342,8 +346,10 @@ class Wholesale extends BaseApiController
             'content'    => 'admin/wholesale/cicilan/index',
             'extra'      => 'admin/wholesale/cicilan/js/js_index', 
             'mn_wholesale' => 'active',
+            'colset'     => 'collapse',
             'colmas'     => 'collapse',
-            'colset'     => 'collapse in',
+            'colkonsi'   => 'collapse',
+            'colwho'     => 'collapse in',
             'collap'     => 'collapse',
             'side24'     => 'active',
         ];
@@ -368,8 +374,10 @@ class Wholesale extends BaseApiController
             'extra'    => 'admin/wholesale/cicilan/js/js_tambah',
             'wholesale_order' => $wholesale_order,
             'mn_wholesale'   => 'active',
+            'colset'   => 'collapse',
             'colmas'   => 'collapse',
-            'colset'   => 'collapse in',
+            'colkonsi' => 'collapse',
+            'colwho'   => 'collapse in',
             'collap'   => 'collapse',
             'side24'   => 'active',
         ];
@@ -527,6 +535,7 @@ class Wholesale extends BaseApiController
         $data = [
             'title'    => 'Detail Cicilan',
             'content'  => 'admin/wholesale/cicilan/detail',
+            'extra'    => 'admin/wholesale/cicilan/js/js_index',
             'notaorder' => $notaorder,
             'mn_wholesale'   => 'active',
             'colmas'   => 'collapse',
@@ -541,5 +550,11 @@ class Wholesale extends BaseApiController
     public function getComplete($nonota=null){
         $result = $this->wholesaleModel->complete_wholesale($nonota);
         return $this->response->setJSON($result);
+    }
+
+    public function getNotaorderdetail($notaorder)
+    {
+        $data = $this->wholesaleModel->getAllNotaOrder($notaorder);
+        return $this->response->setJSON($data);
     }
 }

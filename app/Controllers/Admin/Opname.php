@@ -35,8 +35,10 @@ class Opname extends BaseApiController
             'extracss'  => 'admin/opname/css/css_index',
             'mn_opname' => 'active',
             'produk'    => $produk,
-            'colmas'    => 'collapse',
             'colset'    => 'collapse',
+            'colmas'    => 'collapse',
+            'colkonsi'  => 'collapse',
+            'colwho'    => 'collapse',
             'collap'    => 'collapse',
         ];
 
@@ -53,8 +55,10 @@ class Opname extends BaseApiController
             'extra'        => 'admin/opname/js/js_konfirm',
             'mn_appopname' => 'active',
             'store'        => $store,
-            'colmas'       => 'collapse',
             'colset'       => 'collapse',
+            'colmas'       => 'collapse',
+            'colkonsi'     => 'collapse',
+            'colwho'       => 'collapse',
             'collap'       => 'collapse',
         ];
 
