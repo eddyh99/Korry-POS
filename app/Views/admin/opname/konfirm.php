@@ -34,6 +34,7 @@
                         			<th>Size</th>
                         			<th>Stok Lama</th>
                         			<th>Stok Baru</th>
+                        			<th>Alasan</th>
                         		</tr>
                         	    </thead>
                         	    <tbody>

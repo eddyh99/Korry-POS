@@ -178,7 +178,7 @@ class Moving extends BaseApiController
         return redirect()->to(base_url('/admin/moving'));
     }
 
-    public function terima($mutasi_id)
+    public function getTerima($mutasi_id)
     {
         $mutasi_id = base64_decode($mutasi_id);
         $data = [
@@ -233,7 +233,7 @@ class Moving extends BaseApiController
         return redirect()->to(base_url('/admin/moving/konfirm'));
     }
 
-    public function terimakonfirm($mutasi_id)
+    public function getTerimakonfirm($mutasi_id)
     {
         $mutasi_id = base64_decode($mutasi_id);
         $data = [
@@ -252,7 +252,7 @@ class Moving extends BaseApiController
         return redirect()->to(base_url('/admin/moving/konfirm'));
     }
 
-    public function detail($mutasi_id, $stat)
+    public function getDetail($mutasi_id, $stat)
     {
         $mutasi_id = base64_decode($mutasi_id);
         $permintaan = $this->movingModel->getMoving($mutasi_id);
@@ -276,7 +276,7 @@ class Moving extends BaseApiController
         return view('layout/wrapper', $data);
     }
 
-    public function listdetail()
+    public function postListdetail()
     {
         $mutasi_id = $this->request->getPost('mutasi_id');
         return $this->response->setJSON($this->movingModel->getdetail($mutasi_id));
