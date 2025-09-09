@@ -59,12 +59,13 @@
                 	    <thead>
                 		<tr>
                 			<th>Nama Produk</th>
-                			<th>Nama Brand</th>
-                			<th>Harga</th>
+                			<th>SKU</th>
                 			<th>Awal</th>
                 			<th>Masuk</th>
                 			<th>Keluar</th>
                 			<th>Terjual</th>
+                			<th>Retur</th>
+                			<th>Consig</th>
                 			<th>Penyesuaian</th>
                 			<th>Sisa</th>
                 		</tr>
@@ -73,6 +74,7 @@
                 	    </tbody>
                 	    <tfoot>
                 		<tr>
+                			<th></th>
                 			<th></th>
                 			<th></th>
                 			<th></th>
