@@ -12,7 +12,6 @@ $("#produk").on("change",function(){
 		type: "post",
 		data: "barcode="+$(this).val() ,
 		success: function (data) {
-			data=JSON.parse(data);
 			results=$.map(data, function (item) {
 						return {
 					   id: item.size,

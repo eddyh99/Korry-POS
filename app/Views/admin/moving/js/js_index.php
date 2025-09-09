@@ -26,9 +26,12 @@ $(function(){
 				"aTargets": [4],
 				"mData": "mutasi_id",
 				"mRender": function (data, type, full, meta){
+					console.log(full);
 					var button='';
 					<?php if($_SESSION["logged_status"]["role"]!="Office Staff"){?>
-    					if ((full.status=="Belum") || (full.status=="Dikirim"))
+    					if (full.status=="Belum"){
+    				        button=button+'<a href="<?=base_url()?>admin/moving/batal/'+encodeURI(btoa(full.mutasi_id))+'" class="btn btn-simple btn-danger btn-icon"><i class="material-icons">close</i></a>';
+						}else if (full.status=="Dikirim")
     					{
     						button='<a href="<?=base_url()?>admin/moving/terima/'+encodeURI(btoa(full.mutasi_id))+'" class="btn btn-simple btn-success btn-icon"><i class="material-icons">check_circle</i></a>';
     				        button=button+'<a href="<?=base_url()?>admin/moving/batal/'+encodeURI(btoa(full.mutasi_id))+'" class="btn btn-simple btn-danger btn-icon"><i class="material-icons">close</i></a>';

@@ -10,8 +10,10 @@
 					    "storeid":function(){return $("#store").val()}
 					},
 					"dataSrc":function (data){
-							return data;							
-						  }
+							return data.filter(function(row){
+								return row.old != row.baru;
+							});							
+					}
 			},
             "columns": [
 				  { "data": "barcode"},
@@ -19,6 +21,7 @@
                   { "data": "size" },
                   { "data": "old"},
                   { "data": "baru"},
+                  { "data": "keterangan"},
 			]
 	});
 	
