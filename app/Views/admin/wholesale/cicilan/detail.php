@@ -53,7 +53,6 @@
                                     <tr>
                                         <th>Tanggal</th>
                                         <th>Besar Cicilan</th>
-                                        <th>Aksi</th>
                                     </tr>
                                     </thead>
                                     <tbody>

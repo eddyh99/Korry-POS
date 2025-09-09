@@ -130,6 +130,81 @@ class KonsinyasiModel extends Model
         return $query->getResultArray();
     }
 
+    public function listDoinvoice()
+    {
+        $sql = "SELECT 
+                    a.nonota,
+                    a.tanggal,
+                    p.nama AS partner,
+                    COALESCE(SUM((d.jumlah 
+                                - IFNULL(rkd.total_retur,0) 
+                                - IFNULL(nkd.total_invoiced,0)) * h.harga_konsinyasi), 0) AS total_sisa,
+                    CONCAT(
+                        '[',
+                        GROUP_CONCAT(
+                            CONCAT(
+                                '{',
+                                    '\"barcode\":', '\"', d.barcode, '\"', ',',
+                                    '\"namaproduk\":', '\"', IFNULL(pr.namaproduk,''), '\"', ',',
+                                    '\"size\":', '\"', d.size, '\"', ',',
+                                    '\"jumlah_do\":', d.jumlah, ',', 
+                                    '\"jumlah_retur\":', IFNULL(rkd.total_retur,0), ',', 
+                                    '\"jumlah_invoice\":', IFNULL(nkd.total_invoiced,0), ',', 
+                                    '\"sisa\":', (d.jumlah - IFNULL(rkd.total_retur,0) - IFNULL(nkd.total_invoiced,0)),
+                                '}'
+                            )
+                            SEPARATOR ','
+                        ),
+                        ']'
+                    ) AS list_barang_sisa
+                FROM do_konsinyasi a
+                INNER JOIN partner_konsinyasi p 
+                    ON a.id_partnerkonsinyasi = p.id
+                INNER JOIN do_konsinyasi_detail d 
+                    ON a.nonota = d.nonota
+                LEFT JOIN (
+                    SELECT rk.noretur, barcode, size, SUM(jumlah) AS total_retur
+                    FROM retur_konsinyasi_detail rkd
+                    INNER JOIN retur_konsinyasi rk 
+                        ON rkd.noretur = rk.noretur
+                    WHERE rk.is_void = 0
+                    GROUP BY noretur, barcode, size
+                ) rkd ON rkd.noretur IN (
+                            SELECT noretur 
+                            FROM retur_konsinyasi 
+                            WHERE nokonsinyasi = a.nonota
+                        )
+                    AND d.barcode = rkd.barcode 
+                    AND d.size = rkd.size
+                LEFT JOIN (
+                    SELECT notakonsinyasi, barcode, size, SUM(jumlah) AS total_invoiced
+                    FROM nota_konsinyasi_detail
+                    GROUP BY notakonsinyasi, barcode, size
+                ) nkd ON d.nonota = nkd.notakonsinyasi 
+                    AND d.barcode = nkd.barcode 
+                    AND d.size = nkd.size
+                INNER JOIN (
+                    SELECT hh.barcode, hh.harga_konsinyasi, hh.tanggal
+                    FROM harga hh
+                    INNER JOIN (
+                        SELECT barcode, MAX(tanggal) AS maxtgl
+                        FROM harga
+                        GROUP BY barcode
+                    ) xx ON hh.barcode = xx.barcode AND hh.tanggal = xx.maxtgl
+                ) h ON d.barcode = h.barcode
+                LEFT JOIN produk pr 
+                    ON d.barcode = pr.barcode
+                WHERE a.is_void = 0
+                AND (d.jumlah - IFNULL(rkd.total_retur,0) - IFNULL(nkd.total_invoiced,0)) > 0
+                GROUP BY a.nonota, a.tanggal, p.nama
+                ORDER BY a.tanggal DESC;
+        ";
+
+        $query = $this->db->query($sql);
+
+        return $query->getResultArray();
+    }
+
     // === DO Konsinyasi: Tambah ===
 
     public function insertDoKonsinyasi($data)

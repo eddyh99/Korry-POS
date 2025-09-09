@@ -8,7 +8,154 @@
 
                     <div class="col-sm-12">
 
-                        <form id="form_nota">
+                            <form id="form_order" class="form-horizontal">
+            <div class="row">
+                <div class="card">
+                    <?php if (isset($_SESSION["message"])){?>
+                        <div class="alert alert-warning"><?=$_SESSION["message"]?></div>
+                    <?php } ?>
+                    <div class="card-header">
+                        <h5 class="card-title">Customer</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group row">
+                                    <label for="produk" class="col-sm-2 control-label">No. DO Konsinyasi</label>
+                                    <div class="col-sm-10">
+                                        <select id="do_konsinyasi" name="do_konsinyasi" class="form-control select2">
+                                            <option value="" selected>--Tanpa DO--</option>
+                                            <?php foreach ($do_konsinyasi as $dt){?>
+                                                <option value="<?=$dt["nonota"]?>"><?=$dt["nonota"]?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-2 control-label">Size</label>
+                                    <div class="col-sm-10">
+                                        <select id="size" class="form-control"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-2 control-label">Jumlah</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" id="jumlah" class="form-control" min="1" value="1">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-2 control-label">Harga</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="harga" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                       </div>
+                    </div>
+                </div>
+
+                <!-- ADD PRODUCT -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Add Product</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Kiri -->
+                            <div class="col-sm-6">
+                                <div class="form-group row">
+                                    <label for="produk" class="col-sm-2 control-label">No. DO Konsinyasi</label>
+                                    <div class="col-sm-10">
+                                        <select id="do_konsinyasi" name="do_konsinyasi" class="form-control select2">
+                                            <option value="" selected>--Tanpa DO--</option>
+                                            <?php foreach ($do_konsinyasi as $dt){?>
+                                                <option value="<?=$dt["nonota"]?>"><?=$dt["nonota"]?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-2 control-label">Size</label>
+                                    <div class="col-sm-10">
+                                        <select id="size" class="form-control"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-2 control-label">Jumlah</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" id="jumlah" class="form-control" min="1" value="1">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-2 control-label">Harga</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" id="harga" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Kanan -->
+                            <div class="col-sm-6">
+                                <div id="content"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group text-right">
+                            <button type="button" id="btnAdd" class="btn btn-success">
+                                <i class="material-icons" style="font-size: 18px; vertical-align: middle;">add</i>
+                                Tambah
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRODUCT LIST -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Product List</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="table_data" class="table table-striped nowrap" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Barcode</th>
+                                        <th>Nama Barang</th>
+                                        <th>Size</th>
+                                        <th>Jumlah</th>
+                                        <th>Harga</th>
+                                        <th>Total</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="4">
+                                        <th>Total</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- BUTTONS -->
+                <div class="row">
+                    <div class="col-xs-6">
+                        <a href="<?=base_url()?>admin/konsinyasi/do" class="btn btn-default btn-block">
+                            <i class="material-icons" style="font-size: 18px; vertical-align: middle;">reply</i>
+                            Kembali
+                        </a>
+                    </div>
+                    <div class="col-xs-6">
+                        <button type="submit" class="btn btn-primary btn-block">Simpan Delivery Order</button>
+                    </div>
+                </div>
+            </div>
+            <!-- End Container -->
+        </form>
+                        <form id="form_nota" class="form-horizontal">
                             <!-- Bagian Header Nota Konsinyasi -->
                             <div class="row form-group">
                                 <div class="col-sm-2">
