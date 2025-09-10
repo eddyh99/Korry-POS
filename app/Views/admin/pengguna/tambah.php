@@ -33,10 +33,6 @@
                 				<label class="col-sm-3 col-form-label">Role</label>
                 				<div class="col-sm-7">
                 					<select name="role" id="role" class="form-control">
-                						<option value="Owner">Owner</option>
-                						<option value="Store Manager">Store Manager</option>
-                						<option value="Office Manager">Office Manager</option>
-                						<option value="Office Staff">Office Staff</option>
                 						<option value="Staff">Staff</option>
                 						<option value="Admin">Admin</option>
                 					</select>

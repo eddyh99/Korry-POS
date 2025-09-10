@@ -37,43 +37,79 @@ var table;
 						return data;
 					  }
 			},
-    		"drawCallback": function () {
-    			  var api = this.api();
-    			  var awal=api.column( 3,{filter:'applied'} ).data().sum();
-    			  var masuk=api.column( 4,{filter:'applied'} ).data().sum();
-    			  var keluar=api.column( 5,{filter:'applied'} ).data().sum();
-    			  var jual=api.column( 6,{filter:'applied'} ).data().sum();
-    			  var sesuai=api.column( 7,{filter:'applied'} ).data().sum();
-    			  var sisa=api.column( 8,{filter:'applied'} ).data().sum();
-    			  $( api.column( 3 ).footer() ).html(
-    			    awal.toLocaleString("en")
-    			  );
-    			  $( api.column( 4 ).footer() ).html(
-                    masuk.toLocaleString("en")
-    			  );
-    			  $( api.column( 5 ).footer() ).html(
-    				keluar.toLocaleString("en")
-    			  );
-    			  $( api.column( 6 ).footer() ).html(
-    				jual.toLocaleString("en")
-    			  );
-    			  $( api.column( 7 ).footer() ).html(
-    				sesuai.toLocaleString("en")
-    			  );
-    			  $( api.column( 8 ).footer() ).html(
-    				sisa.toLocaleString("en")
-    			  );
-    		},
-            "columns": [
-				  { "data": "namaproduk"},
-				  { "data": "namabrand"},
-				  { "data": "size"},
-                  { "data": "awal","className": "text-right" },
-                  { "data": "masuk","className": "text-right" },
-                  { "data": "keluar","className": "text-right" },
-                  { "data": "jual","className": "text-right" },
-                  { "data": "sesuai","className": "text-right" },
-                  { "data": "sisa","className": "text-right" },
+			"footerCallback": function ( row, data, start, end, display ) {
+				var api = this.api();
+
+				// fungsi helper parse angka
+				var numVal = function (val) {
+					return typeof val === 'string' ? parseFloat(val.replace(/[^0-9.-]/g, '')) || 0 : (typeof val === 'number' ? val : 0);
+				};
+
+				// hitung per kolom
+				var total_awal = api.column(2, { filter:'applied'}).data()
+					.reduce(function(a, b){ return numVal(a) + numVal(b); }, 0);
+
+				var total_masuk = data.reduce(function(a, row){
+					return a + (Number(row.produksi_in) + Number(row.pindah_in));
+				}, 0);
+
+				var total_keluar = data.reduce(function(a, row){
+					return a + (Number(row.pindah_out) + Number(row.pinjam_out));
+				}, 0);
+
+				var total_jual = data.reduce(function(a, row){
+					return a + (
+						Number(row.wholesale_out) +
+						Number(row.consignment_sold) +
+						Number(row.consignment_sold_non) +
+						Number(row.penjualan)
+					);
+				}, 0);
+
+				var total_retur = data.reduce(function(a, row){
+					return a + (Number(row.retur) + Number(row.retur_konsinyasi_in));
+				}, 0);
+
+				var total_konsinyasi = data.reduce(function(a, row){
+					return a + (
+						Number(row.do_konsinyasi_out) -
+						Number(row.consignment_sold)
+					);
+				}, 0);
+
+				var total_sesuai = api.column(8, { filter:'applied'}).data()
+					.reduce(function(a, b){ return numVal(a) + numVal(b); }, 0);
+
+				var total_sisa = api.column(9, { filter:'applied'}).data()
+					.reduce(function(a, b){ return numVal(a) + numVal(b); }, 0);
+
+				// isi footer
+				$(api.column(2).footer()).html(total_awal.toLocaleString("en"));
+				$(api.column(3).footer()).html(total_masuk.toLocaleString("en"));
+				$(api.column(4).footer()).html(total_keluar.toLocaleString("en"));
+				$(api.column(5).footer()).html(total_jual.toLocaleString("en"));
+				$(api.column(6).footer()).html(total_retur.toLocaleString("en"));
+				$(api.column(7).footer()).html(total_konsinyasi.toLocaleString("en"));
+				$(api.column(8).footer()).html(total_sesuai.toLocaleString("en"));
+				$(api.column(9).footer()).html(total_sisa.toLocaleString("en"));
+			},
+
+			"columns": [
+				{ "data": "namaproduk" },
+				{ "data": "size" },
+				{ "data": "stok_awal" },
+				{ "data": null, "render": function (d,t,row){ return Number(row.produksi_in) + Number(row.pindah_in); }},
+				{ "data": null, "render": function (d,t,row){ return Number(row.pindah_out) + Number(row.pinjam_out); }},
+				{ "data": null, "render": function (d,t,row){ 
+					return Number(row.wholesale_out) +
+							Number(row.consignment_sold) +
+							Number(row.consignment_sold_non) +
+							Number(row.penjualan);
+				}},
+				{ "data": null, "render": function (d,t,row){ return Number(row.retur) + Number(row.retur_konsinyasi_in); }},
+				{ "data": null, "render": function (d,t,row){ return Number(row.do_konsinyasi_out) - Number(row.consignment_sold); }},
+				{ "data": "penyesuaian" },
+				{ "data": "sisa" }
 			]
 	});
 	

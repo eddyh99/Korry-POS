@@ -34,10 +34,7 @@
                 				<label class="col-sm-3 col-form-label">Role</label>
                 				<div class="col-sm-7">
                 					<select name="role" id="role" class="form-control">
-                						<option value="Owner" <?php echo ($detail[0]->role=="Owner") ? "selected": "" ?>>Owner</option>
-                						<option value="Store Manager" <?php echo ($detail[0]->role=="Store Manager") ? "selected": "" ?>>Store Manager</option>
-                						<option value="Office Manager" <?php echo ($detail[0]->role=="Office Manager") ? "selected": "" ?>>Office Manager</option>
-                						<option value="Office Staff" <?php echo ($detail[0]->role=="Office Staff") ? "selected": "" ?>>Office Staff</option>                						<option value="Staff" <?php echo ($detail[0]->role=="Staff") ? "selected": "" ?>>Staff</option>
+										<option value="Staff" <?php echo ($detail[0]->role=="Staff") ? "selected": "" ?>>Staff</option>
                 						<option value="Admin" <?php echo ($detail[0]->role=="Admin") ? "selected": "" ?>>Admin</option>
                 					</select>
                 				</div>
