@@ -8,11 +8,9 @@ use App\Models\Admin\DashboardModel;
 class Dashboard extends BaseController
 {
     protected $dashboard;
-    protected $session;
 
     public function __construct()
     {
-        // Load model
         $this->dashboard = new DashboardModel();
     }
 
@@ -30,35 +28,43 @@ class Dashboard extends BaseController
         return view('layout/wrapper', $data);
     }
 
-    public function penjualan()
+    public function getPenjualan()
     {
         $month = date('m');
+        $year  = date('Y');
 
-        $result = $this->dashboard->getPenjualan($month);
-
-        $data = (count($result) === 0) ? 0 : $result;
+        $result = $this->dashboard->getPenjualan($month, $year);
+        $data   = (count($result) === 0) ? [] : $result;
 
         return $this->response->setJSON($data);
     }
 
-    public function jualbrand()
+    public function getJualbrand()
     {
         $month = date('m');
+        $year  = date('Y');
 
-        $result = $this->dashboard->getBrand($month);
-
-        $data = (count($result) === 0) ? 0 : $result;
+        $result = $this->dashboard->getBrand($month, $year);
+        $data   = (count($result) === 0) ? [] : $result;
 
         return $this->response->setJSON($data);
     }
 
-    public function brandstore()
+    public function getBrandstore()
     {
         $month = date('m');
+        $year  = date('Y');
 
-        $result = $this->dashboard->getBrandstore($month);
+        $result = $this->dashboard->getBrandstore($month, $year);
+        $data   = (count($result) === 0) ? [] : $result;
 
-        $data = (count($result) === 0) ? 0 : $result;
+        return $this->response->setJSON($data);
+    }
+
+    public function getToptenpenjualan()
+    {
+        $result = $this->dashboard->toptenpenjualan();
+        $data   = (count($result) === 0) ? [] : $result;
 
         return $this->response->setJSON($data);
     }
