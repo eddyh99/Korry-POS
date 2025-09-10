@@ -1635,31 +1635,35 @@ class LaporanModel extends Model
                 FROM penjualan_detail d
                 JOIN penjualan p ON p.id = d.id
                 WHERE p.tanggal BETWEEN ? AND ?
-
+                
                 UNION ALL
-
+                
                 -- Konsinyasi sales
                 SELECT d.barcode, d.size, d.jumlah AS qty
                 FROM nota_konsinyasi_detail d
                 JOIN nota_konsinyasi n ON n.notajual = d.notajual
                 WHERE n.status = 'paid'
                 AND n.tanggal BETWEEN ? AND ?
-
+                
                 UNION ALL
-
+                
                 -- Wholesale sales
                 SELECT d.barcode, d.size, d.jumlah AS qty
                 FROM wholesale_order_detail d
                 JOIN wholesale_order wo ON wo.notaorder = d.notaorder
                 WHERE wo.is_complete = 1
                 AND wo.tanggal BETWEEN ? AND ?
-
+                
+                UNION ALL
+                
                 -- Retur retail (qty negative)
                 SELECT r.barcode, r.size, -1 * r.jumlah AS qty
                 FROM retur_detail r
                 JOIN retur rt ON rt.id = r.id
                 WHERE rt.tanggal BETWEEN ? AND ?
-
+                
+                UNION ALL
+                
                 -- Retur konsinyasi (qty negative)
                 SELECT r.barcode, r.size, -1 * r.jumlah AS qty
                 FROM retur_konsinyasi_detail r
@@ -1670,11 +1674,11 @@ class LaporanModel extends Model
         ";
         
         $qtyTerjual = $this->db->query($sqlQtyTerjual, [
-            $tgl_awal, $tgl_akhir,
-            $tgl_awal, $tgl_akhir,
-            $tgl_awal, $tgl_akhir,
-            $tgl_awal, $tgl_akhir,
-            $tgl_awal, $tgl_akhir
+            $tgl_awal, $tgl_akhir,  // Retail
+            $tgl_awal, $tgl_akhir,  // Konsinyasi
+            $tgl_awal, $tgl_akhir,  // Wholesale
+            $tgl_awal, $tgl_akhir,  // Retur retail
+            $tgl_awal, $tgl_akhir   // Retur konsinyasi
         ])->getResultArray();
 
         // Hitung HPP

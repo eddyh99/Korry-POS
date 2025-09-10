@@ -9,8 +9,8 @@
         <div class="card-content">
             <div class="row form-group">
                 <label class="col-form-label col-sm-1">Tahun</label>
-                <div class="col-sm-2">
-                    <input type="text" name="tahun" id="tahun" class="form-control" value="<?= date("Y") ?>">
+                <div class="col-sm-3">
+                    <input type="text" id="tanggal" name="tanggal" class="form-control">
                 </div>
                 <div class="col-sm-1">
                     <button id="lihat" class="btn btn-primary">Lihat</button>

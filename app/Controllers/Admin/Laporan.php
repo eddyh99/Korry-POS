@@ -520,9 +520,11 @@ class Laporan extends BaseApiController
 
     public function postListlabarugi()
     {
-        $tahun    = $this->request->getPost('tahun');
+        $tgl     = explode("-", $this->request->getPost('tanggal'));
+        $awal  = date_format(date_create(trim($tgl[0])), "Y-m-d");
+        $akhir = date_format(date_create(trim($tgl[1])), "Y-m-d");
 
-        $result = $this->laporan->getlabarugi($tahun);
+        $result = $this->laporan->getlabarugi($awal, $akhir);
 
         return $this->response->setJSON($result);
     }
