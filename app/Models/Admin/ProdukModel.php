@@ -670,8 +670,6 @@ class ProdukModel extends Model
 
         return $this->db->query($sql, [$barcode])->getResult();
     }
-
-
     public function setProdukBahan($barcode, $idbahanArr, $jumlahArr)
     {
         // hapus dulu bahan lama
@@ -696,6 +694,32 @@ class ProdukModel extends Model
         }
     }
 
+    public function getProdukBiaya($barcode)
+    {
+        $sql = "SELECT pb.namabiaya, pb.nominal, bp.namabiayaproduksi
+                FROM produk_biaya pb
+                LEFT JOIN biaya_produksi bp ON bp.namabiayaproduksi = pb.namabiaya
+                WHERE pb.barcode = ?";
+
+        return $this->db->query($sql, [$barcode])->getResult();
+    }
+    public function setProdukBiaya($barcode, $namaBiayaArr, $nominalArr)
+    {
+        // hapus dulu biaya lama
+        $this->db->table('produk_biaya')->where('barcode', $barcode)->delete();
+
+        if (!empty($namaBiayaArr) && is_array($namaBiayaArr)) {
+            foreach ($namaBiayaArr as $idx => $namabiaya) {
+                if (!empty($namabiaya) && !empty($nominalArr[$idx])) {
+                    $this->db->table('produk_biaya')->insert([
+                        'barcode'  => $barcode,
+                        'namabiaya'=> $namabiaya,
+                        'nominal'  => $nominalArr[$idx]
+                    ]);
+                }
+            }
+        }
+    }
 }
 
 

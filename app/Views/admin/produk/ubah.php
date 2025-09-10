@@ -126,26 +126,21 @@
 								<!-- container baris bahan -->
 								<div id="bahan-container"></div>
 
-								<!-- input baru Biaya Produksi -->
+								<!-- input baru: Dynamic Biaya Produksi -->
 								<div class="form-group row">
 									<label class="col-sm-3 col-form-label">Biaya Produksi</label>
 									<div class="col-sm-7">
-									  <input type="text" class="form-control" id="biayaproduksi" name="biayaproduksi" maxlength="50" list="biayaproduksilist" required value="<?=@$produk->namabiayaproduksi?>">
-									  <datalist name="biayaproduksilist" id="biayaproduksilist">
-										<?php
-											foreach($biayaproduksi as $dt) {
-												echo "<option value='".$dt["namabiayaproduksi"]."' />";
-											}
-										?>
-										</datalist>
+										<button type="button" id="btnAddBiaya" class="btn btn-secondary btn-sm">
+											+ Tambah Biaya Produksi
+										</button>
 									</div>
 								</div>
-								<div class="form-group row">
-									<label class="col-sm-3 col-form-label">Harga Produksi</label>
-									<div class="col-sm-7">
-									  <input type="text" class="form-control" id="hargaproduksi" name="hargaproduksi" maxlength="7" required value="<?=@$produk->harga_produksi?>" onkeypress="return isNumber(event)">
-									</div>
-                				</div>
+
+								<!-- container baris biaya produksi -->
+								<div id="biayaproduksi-container"></div>
+
+								<!-- input baru Biaya Produksi -->
+
 
                 			</div>
         		        </div>
