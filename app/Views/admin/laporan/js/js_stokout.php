@@ -51,8 +51,8 @@ var table;
 			},
     		"drawCallback": function () {
     			  var api = this.api();
-    			  var total=api.column( 6,{filter:'applied'} ).data().sum();
-    			  $( api.column( 6 ).footer() ).html(
+    			  var total=api.column( 5,{filter:'applied'} ).data().sum();
+    			  $( api.column( 5 ).footer() ).html(
     				total.toLocaleString("en")
     			  );
     		},
@@ -63,7 +63,6 @@ var table;
                   { "data": "namaproduk" },
                   { "data": "size" },
                   { "data": "jumlah"},
-                  { "data": "status"},
 			]
 	});
 	

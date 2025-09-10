@@ -13,16 +13,16 @@
                     <div class="form-group row">
         				<div class="col-sm-4">
         				    <?php 
-        				    if ($_SESSION["logged_status"]["role"]=="Store Manager"){?>
-        				        <input type="hidden" name="store" id="store" value="<?=$_SESSION["logged_status"]["storeid"]?>">
-        				    <?}else{?>
+        				    	if ($_SESSION["logged_status"]["role"]=="Store Manager"): ?>
+        				        	<input type="hidden" name="store" id="store" value="<?=$_SESSION["logged_status"]["storeid"]?>">
+        				    <?php else:?>
         					<select id="store" class="form-control" name="store">
         					    <option value="all">Semua Toko</option>
             					<?php foreach ($store as $dt){?>
             							<option value="<?=$dt["storeid"]?>"><?=$dt["store"]?></option>
             					<?php }?>
         					</select>
-        					<?php }?>
+        					<?php endif?>
         				</div>
         				<div class="col-sm-1"><button id="lihat" class="btn btn-primary">Lihat</button></div>
                     </div>

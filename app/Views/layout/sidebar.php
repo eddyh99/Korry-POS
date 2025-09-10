@@ -235,17 +235,11 @@
                             <li class="<?=@$side30?>">
                                 <a href="<?=base_url()?>admin/laporan/nontunai">Non Tunai</a>
                             </li>
-                            <li class="<?=@$side31?>">
-                                <a href="<?=base_url()?>admin/laporan/request">Permintaan</a>
-                            </li>
                             <li class="<?=@$side32?>">
                                 <a href="<?=base_url()?>admin/laporan/retur">Retur Konsumen</a>
                             </li>
                             <li class="<?=@$side33?>">
                                 <a href="<?=base_url()?>admin/laporan/stokout">Stok Out</a>
-                            </li>
-                            <li class="<?=@$side34?>">
-                                <a href="<?=base_url()?>admin/laporan/kaskeluar">Pengeluaran</a>
                             </li>
                             <li class="<?=@$side35?>">
                                 <a href="<?=base_url()?>admin/laporan/pospengeluaran">Pos Pengeluaran</a>

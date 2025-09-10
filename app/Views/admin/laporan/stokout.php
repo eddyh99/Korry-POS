@@ -31,14 +31,12 @@
                 			<th>Nama Barang</th>
                 			<th>Size</th>
                 			<th>Jumlah</th>
-                			<th>Status</th>
                 		</tr>
                 	    </thead>
                 	    <tbody>
                 	    </tbody>
                 	    <tfoot>
                 	    <tr>
-                			<th></th>
                 			<th></th>
                 			<th></th>
                 			<th></th>

@@ -6,10 +6,9 @@ use App\Models\Admin\StoreModel;
 use App\Models\Admin\BrandModel;
 use App\Models\Admin\KategoriModel;
 use App\Models\Admin\LaporanModel;
-
 use App\Models\Admin\PengeluaranModel;
-
 use App\Controllers\BaseApiController;
+use DateTime;
 
 class Laporan extends BaseApiController
 {
@@ -208,7 +207,7 @@ class Laporan extends BaseApiController
         $toko = $this->store->liststore();
 
         $data = [
-            'title'      => 'Laporan Mutasi Barang',
+            'title'      => 'Laporan Drop in/Drop Out',
             'content'    => 'admin/laporan/barang',
             'extra'      => 'admin/laporan/js/js_barang',
             'store'      => $toko,
@@ -406,7 +405,6 @@ class Laporan extends BaseApiController
 
         $awal  = date_format(date_create(trim($tgl[0])), "Y-m-d");
         $akhir = date_format(date_create(trim($tgl[1])), "Y-m-d");
-
         $result = $this->laporan->getKaskeluar($awal, $akhir, $storeid);
 
         return $this->response->setJSON($result);
@@ -495,9 +493,8 @@ class Laporan extends BaseApiController
 
     public function postListneraca()
     {
-        $tahun    = $this->request->getPost('tahun');
-
-        $result = $this->laporan->getneraca($tahun);
+        $tanggal = $this->request->getPost('tanggal');
+        $result = $this->laporan->getneraca($tanggal);
 
         return $this->response->setJSON($result);
     }

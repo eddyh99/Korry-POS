@@ -8,9 +8,9 @@
         </div>
         <div class="card-content">
             <div class="row form-group">
-                <label class="col-form-label col-sm-1">Tahun</label>
+                <label class="col-form-label col-sm-1">Tanggal</label>
                 <div class="col-sm-2">
-                    <input type="text" name="tahun" id="tahun" class="form-control" value="<?= date("Y") ?>">
+                    <input type="date" name="tanggal" id="tanggal" class="form-control" value="<?=date("Y-m-d")?>">
                 </div>
                 <div class="col-sm-1">
                     <button id="lihat" class="btn btn-primary">Lihat</button>

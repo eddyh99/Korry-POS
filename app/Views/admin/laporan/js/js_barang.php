@@ -58,7 +58,6 @@ var table;
     			  );
     		},
             "columns": [
-				  { "data": "mutasi_id"},
                   { "data": "tanggal" },
                   { "data": "barcode" },
                   { "data": "namaproduk"},
