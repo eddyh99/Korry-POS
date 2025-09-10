@@ -135,6 +135,30 @@
 		   alert("Daftar barang masih kosong"); 
 		    return;
 		}
+
+		// ambil dan trim input wajib
+		var nama = $.trim($("#nama").val() || "");
+		var keterangan = $.trim($("#keterangan").val() || "");
+
+		// reset kelas validasi sebelumnya
+		$("#nama, #keterangan").removeClass("is-invalid");
+
+		// validasi
+		if (nama === "") {
+			$("#nama").addClass("is-invalid").focus();
+			alert("Nama wajib diisi.");
+			return;
+		}
+		if (keterangan === "") {
+			$("#keterangan").addClass("is-invalid").focus();
+			alert("Keterangan wajib diisi.");
+			return;
+		}
+
+		// hapus tanda is-invalid saat user mengetik
+		$("#nama, #keterangan").on("input", function () {
+			if ($.trim($(this).val()) !== "") $(this).removeClass("is-invalid");
+		});
 		
 		for (i=0;i<Object.length ;i++ )
 		{

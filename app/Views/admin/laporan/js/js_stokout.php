@@ -57,7 +57,6 @@ var table;
     			  );
     		},
             "columns": [
-				  { "data": "id"},
                   { "data": "tanggal" },
                   { "data": "nama" },
                   { "data": "keterangan" },

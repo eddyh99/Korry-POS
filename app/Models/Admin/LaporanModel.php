@@ -1014,12 +1014,11 @@ class LaporanModel extends Model
             SELECT 
                 a.*,
                 b.store
-            FROM {$this->kas} a
-            INNER JOIN {$this->store} b ON a.storeid = b.storeid
+            FROM kas a
+            INNER JOIN store b ON a.storeid = b.storeid
             WHERE 
                 IF (? != 'All', a.storeid, 'All') = ?
                 AND (DATE(a.tanggal) BETWEEN ? AND ?)
-                AND (a.jenis = 'Keluar' OR a.jenis = 'Masuk')
         ";
 
         return $this->db->query($sql, [$storeid, $storeid, $awal, $akhir])->getResultArray();

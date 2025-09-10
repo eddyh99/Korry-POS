@@ -25,7 +25,6 @@
                 	<table id="table_data" class="mt-3 table table-striped nowrap" width="100%">
                 	    <thead>
                 		<tr>
-                			<th>ID</th>
                 			<th>Tanggal</th>
                 			<th>Nama</th>
                 			<th>Keterangan</th>
@@ -39,7 +38,6 @@
                 	    </tbody>
                 	    <tfoot>
                 	    <tr>
-                			<th></th>
                 			<th></th>
                 			<th></th>
                 			<th></th>
