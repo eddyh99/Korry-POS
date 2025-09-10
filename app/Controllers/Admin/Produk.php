@@ -130,6 +130,8 @@ class Produk extends BaseApiController
         
         $biayaproduksi  = $this->biayaproduksiModel->listBiayaproduksi();
 
+        $produkBiaya = $this->produkModel->getProdukBiaya($barcode);
+
         $data = [
             'title'    => 'Ubah Data Produk',
             'content'  => 'admin/produk/ubah',
@@ -143,6 +145,7 @@ class Produk extends BaseApiController
             'bahanbaku' => $bahanbaku,
             'produkBahan'=> $produkBahan,
             'biayaproduksi' => $biayaproduksi,
+            'produkBiaya'=> $produkBiaya,
             'mn_master' => 'active',
             'colset'    => 'collapse',
             'colmas'    => 'collapse in',
@@ -295,22 +298,20 @@ class Produk extends BaseApiController
                     'greater_than' => '{field} harus lebih dari 0.'
                 ]
             ],
-            'biayaproduksi' => [
-                'label'  => 'Nama Biaya Produksi',
-                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
+            'biayaproduksi.*' => [
+                'label'  => 'Jenis Biaya Produksi',
+                'rules'  => 'required|trim',
                 'errors' => [
-                    'required'            => '{field} wajib diisi.',
-                    'max_length'          => '{field} maksimal 50 karakter.',
-                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                    'required' => '{field} wajib dipilih.'
                 ]
             ],
-            'hargaproduksi' => [
-                'label'  => 'Harga Produksi',
-                'rules'  => 'required|trim|numeric|max_length[10]',
+            'hargaproduksi.*' => [
+                'label'  => 'Nominal Biaya Produksi',
+                'rules'  => 'required|trim|numeric|greater_than[0]',
                 'errors' => [
-                    'required'   => '{field} wajib diisi.',
-                    'numeric'    => '{field} hanya boleh berisi angka.',
-                    'max_length' => '{field} maksimal 10 digit.'
+                    'required'     => '{field} wajib diisi.',
+                    'numeric'      => '{field} hanya boleh berisi angka.',
+                    'greater_than' => '{field} harus lebih dari 0.'
                 ]
             ]
         ];
@@ -358,13 +359,12 @@ class Produk extends BaseApiController
         if (!empty($biayaproduksi) && is_array($biayaproduksi)) {
             foreach ($biayaproduksi as $i => $namabiaya) {
                 $data['biayaproduksi'][] = [
+                    "barcode" => $data['barcode'],
                     "namabiaya"     => esc($namabiaya),
-                    "hargaproduksi" => isset($hargaproduksi[$i]) ? esc($hargaproduksi[$i]) : 0,
+                    "nominal" => isset($hargaproduksi[$i]) ? esc($hargaproduksi[$i]) : 0,
                 ];
             }
         }
-
-        
 
         $result = $this->produkModel->insertData($data);
 
@@ -487,22 +487,20 @@ class Produk extends BaseApiController
                     'greater_than' => '{field} harus lebih dari 0.'
                 ]
             ],
-            'biayaproduksi' => [
-                'label'  => 'Nama Biaya Produksi',
-                'rules'  => 'required|trim|max_length[50]|alpha_numeric_space',
+            'biayaproduksi.*' => [
+                'label'  => 'Jenis Biaya Produksi',
+                'rules'  => 'required|trim',
                 'errors' => [
-                    'required'            => '{field} wajib diisi.',
-                    'max_length'          => '{field} maksimal 50 karakter.',
-                    'alpha_numeric_space' => '{field} hanya boleh berisi huruf, angka, dan spasi.'
+                    'required' => '{field} wajib dipilih.'
                 ]
             ],
-            'hargaproduksi' => [
-                'label'  => 'Harga Produksi',
-                'rules'  => 'required|trim|numeric|max_length[10]',
+            'hargaproduksi.*' => [
+                'label'  => 'Nominal Biaya Produksi',
+                'rules'  => 'required|trim|numeric|greater_than[0]',
                 'errors' => [
-                    'required'   => '{field} wajib diisi.',
-                    'numeric'    => '{field} hanya boleh berisi angka.',
-                    'max_length' => '{field} maksimal 10 digit.'
+                    'required'     => '{field} wajib diisi.',
+                    'numeric'      => '{field} hanya boleh berisi angka.',
+                    'greater_than' => '{field} harus lebih dari 0.'
                 ]
             ]
         ];
@@ -557,8 +555,9 @@ class Produk extends BaseApiController
         if (!empty($biayaproduksi) && is_array($biayaproduksi)) {
             foreach ($biayaproduksi as $i => $namabiaya) {
                 $data['biayaproduksi'][] = [
+                    "barcode" => $barcode,
                     "namabiaya"     => esc($namabiaya),
-                    "hargaproduksi" => isset($hargaproduksi[$i]) ? esc($hargaproduksi[$i]) : 0,
+                    "nominal" => isset($hargaproduksi[$i]) ? esc($hargaproduksi[$i]) : 0,
                 ];
             }
         }
@@ -568,6 +567,8 @@ class Produk extends BaseApiController
         if ($result["code"] == 0) {
             // update relasi produk_bahan
             $this->produkModel->setProdukBahan($barcode, $bahanbaku, $jumlah);
+            // update relasi produk_biaya
+            $this->produkModel->setProdukBiaya($barcode, $biayaproduksi, $hargaproduksi);
 
             $this->session->setFlashdata('message', 'Data berhasil diubah.');
             return redirect()->to('/admin/produk');

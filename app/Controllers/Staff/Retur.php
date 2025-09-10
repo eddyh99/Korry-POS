@@ -162,7 +162,48 @@ class Retur extends BaseApiController
         return redirect()->to('/staff/kas/tutupharian');
     }
 
-    public function postAddRetur()
+    public function postAddretur()
+    {
+        $id         = $this->request->getPost('id');
+        $memberid   = $this->request->getPost('memberid');
+        $fee        = $this->request->getPost('fee');
+        $method     = $this->request->getPost('method');
+
+        // decode jadi array (TRUE)
+        $barang     = json_decode($this->request->getPost('barang'), true) ?? [];
+        $barangretur= json_decode($this->request->getPost('brgretur'), true) ?? [];
+
+        if ($memberid === 'null') {
+            $memberid = null;
+        }
+
+        $nota = $this->cashierModel->getLastnota();
+
+        $jual = [
+            "nonota"    => $nota,
+            "storeid"   => $_SESSION["logged_status"]["storeid"],
+            "tanggal"   => date("Y-m-d H:i:s"),
+            "method"    => $method,
+            "fee"       => $fee,
+            "member_id" => $memberid,
+            "userid"    => $_SESSION["logged_status"]["username"]
+        ];
+
+        $retur = [
+            "storeid"   => $_SESSION["logged_status"]["storeid"],
+            "jual_id"   => $id,
+            "userid"    => $_SESSION["logged_status"]["username"]
+        ];
+
+        $result = $this->returModel->insertData($jual, $barang, $retur, $barangretur);
+
+        if ($result["code"] === 0) {
+            return $this->response->setBody("0");
+        } else {
+            return $this->response->setStatusCode(500)->setJSON($result);
+        }
+    }
+    public function postAddretur1()
     {
         $id         = $this->request->getPost('id');
         $memberid   = $this->request->getPost('memberid');

@@ -1,41 +1,48 @@
 <div class="content">
     <div class="container-fluid">
-<!-- Start -->
+        <!-- Start -->
         <?php if (isset($_SESSION["message"])){?>
-        <div class="alert alert-success"><?=$_SESSION["message"]?></div>
+            <div class="alert alert-success"><?=$_SESSION["message"]?></div>
         <?php } ?>
         <?php if (isset($_SESSION["gagal"])){?>
-        <div class="alert alert-danger"><?=$_SESSION["gagal"]?></div>
+            <div class="alert alert-danger"><?=$_SESSION["gagal"]?></div>
         <?php } ?>
 
         <div class="card">
             <div class="card-content">
                 <form action="<?=base_url()?>staff/kas/tutupharian" method="get">
-                    <?php if (($_SESSION["logged_status"]["role"]=="Office Manager")||($_SESSION["logged_status"]["role"]=="Office Staff")||($_SESSION["logged_status"]["role"]=="Owner")){?>
-                    <div class="row form-group">
-        				<label class="col-form-label col-sm-1">Store</label>
-    	                <div class="col-sm-3">
-    	                    <select class="form-control" name="store" id="store">
-    	                        <?php foreach($store as $dt){?>
-    	                                <option value="<?=$dt["storeid"]?>" <?php echo ($dt["storeid"]==$storeid) ? "selected":"" ?>><?=$dt["store"]?></option>
-    	                        <?php }?>
-    	                    </select>
+                    <?php if (($_SESSION["logged_status"]["role"]=="Office Manager")
+                            ||($_SESSION["logged_status"]["role"]=="Office Staff")
+                            ||($_SESSION["logged_status"]["role"]=="Owner")){?>
+                        <div class="row form-group">
+                            <label class="col-form-label col-sm-1">Store</label>
+                            <div class="col-sm-3">
+                                <select class="form-control" name="store" id="store">
+                                    <?php foreach($store as $dt){?>
+                                        <option value="<?=$dt["storeid"]?>" <?php echo ($dt["storeid"]==$storeid) ? "selected":"" ?>>
+                                            <?=$dt["store"]?>
+                                        </option>
+                                    <?php }?>
+                                </select>
+                            </div>
                         </div>
-                    </div>
                     <?php }?>
                     <div class="row form-group">
-        				<label class="col-form-label col-sm-1">Tanggal</label>
-    	                <div class="col-sm-3">
+                        <label class="col-form-label col-sm-1">Tanggal</label>
+                        <div class="col-sm-3">
                             <input type="text" id="tgl" name="tgl" class="form-control" value="<?=$tgl?>">
                         </div>
-    	                <div class="col-sm-1">
+                        <div class="col-sm-1">
                             <button type="submit" class="btn btn-primary">Lihat</button>
                         </div>
                     </div>
                 </form>
 
+                <!-- Hanya isi laporan di printarea -->
                 <div class="row" id="printarea">
-                    <div class="col-sm-12 col-md-6 text-center"><h3>Laporan Penjualan Harian</h3></div>
+                    <div class="col-sm-12 col-md-6 text-center">
+                        <h3>Laporan Penjualan Harian</h3>
+                    </div>
                     <div class="col-sm-12">
                         <div class="form-group">
                             <label class="col-form-label col-sm-3">Tanggal</label>
@@ -69,38 +76,38 @@
                         <label class="col-form-label col-sm-12"><b>KAS KELUAR</b></label>
                         <div class="col-sm-12">
                             <table border="0">
-                            <?php 
-                                $kaskeluar=0;
-                                foreach($penjualan["kas"] as $dt){
-                                    if ($dt["jenis"]=="Keluar"){
-                                        $kaskeluar=$kaskeluar+$dt["nominal"];
-                            ?>
-                                        <tr>
-                                            <td class="col-sm-10"><label class="col-form-label"><?=$dt["keterangan"]?></label></td>
-                                            <td align="right"><?=number_format($dt["nominal"])?></td>
-                                        </tr>
-                            <?php   }
-                                  }
-                            ?>
+                                <?php 
+                                    $kaskeluar=0;
+                                    foreach($penjualan["kas"] as $dt){
+                                        if ($dt["jenis"]=="Keluar"){
+                                            $kaskeluar=$kaskeluar+$dt["nominal"];
+                                ?>
+                                    <tr>
+                                        <td class="col-sm-10"><label class="col-form-label"><?=$dt["keterangan"]?></label></td>
+                                        <td align="right"><?=number_format($dt["nominal"])?></td>
+                                    </tr>
+                                <?php   }
+                                    }
+                                ?>
                             </table>
                         </div>
                         <br>
                         <label class="col-form-label col-sm-12"><b>KAS MASUK</b></label>
                         <div class="col-sm-12">
                             <table border="0">
-                            <?php 
-                                $kasmasuk=0;
-                                foreach($penjualan["kas"] as $dt){
-                                    if ($dt["jenis"]=="Masuk"){
-                                        $kasmasuk=$kasmasuk+$dt["nominal"];
-                            ?>
-                                        <tr>
-                                            <td class="col-sm-10"><label class="col-form-label"><?=$dt["keterangan"]?></label></td>
-                                            <td align="right"><?=number_format($dt["nominal"])?></td>
-                                        </tr>
-                            <?php   }
-                                  }
-                            ?>
+                                <?php 
+                                    $kasmasuk=0;
+                                    foreach($penjualan["kas"] as $dt){
+                                        if ($dt["jenis"]=="Masuk"){
+                                            $kasmasuk=$kasmasuk+$dt["nominal"];
+                                ?>
+                                    <tr>
+                                        <td class="col-sm-10"><label class="col-form-label"><?=$dt["keterangan"]?></label></td>
+                                        <td align="right"><?=number_format($dt["nominal"])?></td>
+                                    </tr>
+                                <?php   }
+                                    }
+                                ?>
                             </table>
                         </div>
                         <br>
@@ -124,33 +131,38 @@
                             </label>
                             <label class="col-sm-7">&nbsp;</label>
                         </div>
-                        <form action="<?=base_url()?>staff/kas/sisakas" method="POST">
-                            <input type="hidden" name="tglback" value="<?=$tgl?>">
-                            <input type="hidden" name="storeid" value="<?=$storeid?>">
-                            <div class="form-group">
-                                <label class="col-form-label col-sm-3"><b>SISA</b></label>
-                                <label class="col-form-label col-sm-2 text-right">
-                                    <input type="hidden" name="sisa" value="<?=($totaltunai-$setor)?>">
-                                    <b><?php echo number_format($totaltunai-$setor)?></b>
-                                </label>
-                                <label class="col-sm-7">&nbsp;</label>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-sm-3">
-                                    <input type="button" class="btn btn-primary" onclick="printDiv('printarea')" value="Print">
-                                    <input type="button" class="btn btn-primary" onclick="printPDF('printarea')" value="PDF">
-                                </div>
-                                <?php if (($tgl==date("d M Y")) || ($_SESSION["logged_status"]["role"]=="Store Manager") || ($_SESSION["logged_status"]["role"]=="Office Manager")){?>
-                                <div class="col-sm-2 text-right">
-                                    <button type="submit" class="btn btn-primary">Simpan</button>
-                                </div>
-                                <?php }?>
-                            </div>
-                        </form>
+                        <div class="form-group">
+                            <label class="col-form-label col-sm-3"><b>SISA</b></label>
+                            <label class="col-form-label col-sm-2 text-right">
+                                <b><?php echo number_format($totaltunai-$setor)?></b>
+                            </label>
+                            <label class="col-sm-7">&nbsp;</label>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Tombol dipindahkan ke luar printarea -->
+                <form action="<?=base_url()?>staff/kas/sisakas" method="POST">
+                    <input type="hidden" name="tglback" value="<?=$tgl?>">
+                    <input type="hidden" name="storeid" value="<?=$storeid?>">
+                    <input type="hidden" name="sisa" value="<?=($totaltunai-$setor)?>">
+                    
+                    <div class="form-group mt-3">
+                        <div class="col-sm-3">
+                            <input type="button" class="btn btn-primary" onclick="printDiv('printarea')" value="Print">
+                            <input type="button" class="btn btn-primary" onclick="printPDF('printarea')" value="PDF">
+                        </div>
+                        <?php if (($tgl==date("d M Y")) 
+                                || ($_SESSION["logged_status"]["role"]=="Store Manager") 
+                                || ($_SESSION["logged_status"]["role"]=="Office Manager")){?>
+                            <div class="col-sm-2 text-right">
+                                <button type="submit" class="btn btn-primary">Simpan</button>
+                            </div>
+                        <?php }?>
+                    </div>
+                </form>
             </div>
         </div>
-<!-- End Container -->
+        <!-- End Container -->
     </div>
 </div>

@@ -93,11 +93,15 @@ class MovingModel extends Model
         $role    = @$_SESSION["logged_status"]["role"];
         $month   = date("m");
         $year    = date("Y");
-        $like    = "%{$search}%";
+
+        // escape LIKE biar aman
+        $like = "%" . $this->db->escapeLikeString($search) . "%";
 
         if ($role == "Store Manager" || $role == "Staff") {
-            $sql = "SELECT x.mutasi_id, x.tanggal, y.store as dari, x.tujuan, 
-                        IF(x.approved=1, 'Diterima', IF(x.approved=2, 'Batal', IF(x.approved=3, 'Dikirim', 'Belum'))) as status
+            $sql = "SELECT x.mutasi_id, x.tanggal, y.store as dari, x.tujuan,
+                        IF(x.approved=1,'Diterima',
+                            IF(x.approved=2,'Batal',
+                                IF(x.approved=3,'Dikirim','Belum'))) as status
                     FROM (
                         SELECT a.mutasi_id, a.tanggal, a.approved, a.dari, b.store as tujuan
                         FROM {$this->pindah} a
@@ -106,12 +110,23 @@ class MovingModel extends Model
                     ) x
                     INNER JOIN {$this->store} y ON x.dari=y.storeid
                     WHERE MONTH(x.tanggal)=? AND YEAR(x.tanggal)=?
-                    AND (mutasi_id LIKE ? OR tanggal LIKE ? OR dari LIKE ? OR tujuan LIKE ?)
-                    ORDER BY {$col} {$dir} LIMIT {$start}, {$limit}";
-            $query = $this->db->query($sql, [$storeid, $month, $year, $like, $like, $like, $like]);
+                    AND (
+                            x.mutasi_id LIKE ? OR
+                            x.tanggal LIKE ? OR
+                            y.store LIKE ? OR
+                            x.tujuan LIKE ? OR
+                            IF(x.approved=1,'Diterima',
+                            IF(x.approved=2,'Batal',
+                                IF(x.approved=3,'Dikirim','Belum'))) LIKE ?
+                    )
+                    ORDER BY {$col} {$dir}
+                    LIMIT {$start}, {$limit}";
+            $query = $this->db->query($sql, [$storeid, $month, $year, $like, $like, $like, $like, $like]);
         } else {
-            $sql = "SELECT x.mutasi_id, x.tanggal, y.store as dari, x.tujuan, 
-                        IF(x.approved=1, 'Diterima', IF(x.approved=2, 'Batal', IF(x.approved=3, 'Dikirim', 'Belum'))) as status
+            $sql = "SELECT x.mutasi_id, x.tanggal, y.store as dari, x.tujuan,
+                        IF(x.approved=1,'Diterima',
+                            IF(x.approved=2,'Batal',
+                                IF(x.approved=3,'Dikirim','Belum'))) as status
                     FROM (
                         SELECT a.mutasi_id, a.tanggal, a.approved, a.dari, b.store as tujuan
                         FROM {$this->pindah} a
@@ -119,52 +134,167 @@ class MovingModel extends Model
                     ) x
                     INNER JOIN {$this->store} y ON x.dari=y.storeid
                     WHERE MONTH(x.tanggal)=? AND YEAR(x.tanggal)=?
-                    AND (mutasi_id LIKE ? OR tanggal LIKE ? OR dari LIKE ? OR tujuan LIKE ?)
-                    ORDER BY {$col} {$dir} LIMIT {$start}, {$limit}";
-            $query = $this->db->query($sql, [$month, $year, $like, $like, $like, $like]);
+                    AND (
+                            x.mutasi_id LIKE ? OR
+                            x.tanggal LIKE ? OR
+                            y.store LIKE ? OR
+                            x.tujuan LIKE ? OR
+                            IF(x.approved=1,'Diterima',
+                            IF(x.approved=2,'Batal',
+                                IF(x.approved=3,'Dikirim','Belum'))) LIKE ?
+                    )
+                    ORDER BY {$col} {$dir}
+                    LIMIT {$start}, {$limit}";
+            $query = $this->db->query($sql, [$month, $year, $like, $like, $like, $like, $like]);
         }
 
-        return $query->getResultArray(); // CI4 style
+        return $query->getResultArray();
     }
-    // 
+
     public function posts_search_count($search)
-{
-    $storeid = @$_SESSION["logged_status"]["storeid"];
-    $role    = @$_SESSION["logged_status"]["role"];
-    $month   = date("m");
-    $year    = date("Y");
-    $like    = "%{$search}%";
+    {
+        $storeid = @$_SESSION["logged_status"]["storeid"];
+        $role    = @$_SESSION["logged_status"]["role"];
+        $month   = date("m");
+        $year    = date("Y");
 
-    if ($role == "Store Manager" || $role == "Staff") {
-        $sql = "SELECT x.mutasi_id, x.tanggal, y.store as dari, x.tujuan,
-                    IF(x.approved=1,'Diterima',IF(x.approved=2,'Batal',IF(x.approved=3,'Dikirim','Belum'))) as status
-                FROM (
-                    SELECT a.mutasi_id, a.tanggal, a.approved, a.dari, b.store as tujuan
-                    FROM {$this->pindah} a
-                    INNER JOIN {$this->store} b ON a.tujuan=b.storeid
-                    WHERE a.tujuan=?
-                ) x
-                INNER JOIN {$this->store} y ON x.dari=y.storeid
-                WHERE MONTH(x.tanggal)=? AND YEAR(x.tanggal)=?
-                  AND (mutasi_id LIKE ? OR tanggal LIKE ? OR dari LIKE ? OR tujuan LIKE ?)";
-        $params = [$storeid, $month, $year, $like, $like, $like, $like];
-    } else {
-        $sql = "SELECT x.mutasi_id, x.tanggal, y.store as dari, x.tujuan,
-                    IF(x.approved=1,'Diterima',IF(x.approved=2,'Batal',IF(x.approved=3,'Dikirim','Belum'))) as status
-                FROM (
-                    SELECT a.mutasi_id, a.tanggal, a.approved, a.dari, b.store as tujuan
-                    FROM {$this->pindah} a
-                    INNER JOIN {$this->store} b ON a.tujuan=b.storeid
-                ) x
-                INNER JOIN {$this->store} y ON x.dari=y.storeid
-                WHERE MONTH(x.tanggal)=? AND YEAR(x.tanggal)=?
-                  AND (mutasi_id LIKE ? OR tanggal LIKE ? OR dari LIKE ? OR tujuan LIKE ?)";
-        $params = [$month, $year, $like, $like, $like, $like];
+        $like = "%" . $this->db->escapeLikeString($search) . "%";
+
+        if ($role == "Store Manager" || $role == "Staff") {
+            $sql = "SELECT COUNT(*) as cnt
+                    FROM (
+                        SELECT x.mutasi_id, x.tanggal, y.store as dari, x.tujuan,
+                            IF(x.approved=1,'Diterima',
+                                IF(x.approved=2,'Batal',
+                                    IF(x.approved=3,'Dikirim','Belum'))) as status
+                        FROM (
+                            SELECT a.mutasi_id, a.tanggal, a.approved, a.dari, b.store as tujuan
+                            FROM {$this->pindah} a
+                            INNER JOIN {$this->store} b ON a.tujuan=b.storeid
+                            WHERE a.tujuan=?
+                        ) x
+                        INNER JOIN {$this->store} y ON x.dari=y.storeid
+                        WHERE MONTH(x.tanggal)=? AND YEAR(x.tanggal)=?
+                        AND (
+                                x.mutasi_id LIKE ? OR
+                                x.tanggal LIKE ? OR
+                                y.store LIKE ? OR
+                                x.tujuan LIKE ? OR
+                                IF(x.approved=1,'Diterima',
+                                IF(x.approved=2,'Batal',
+                                    IF(x.approved=3,'Dikirim','Belum'))) LIKE ?
+                        )
+                    ) as t";
+            $params = [$storeid, $month, $year, $like, $like, $like, $like, $like];
+        } else {
+            $sql = "SELECT COUNT(*) as cnt
+                    FROM (
+                        SELECT x.mutasi_id, x.tanggal, y.store as dari, x.tujuan,
+                            IF(x.approved=1,'Diterima',
+                                IF(x.approved=2,'Batal',
+                                    IF(x.approved=3,'Dikirim','Belum'))) as status
+                        FROM (
+                            SELECT a.mutasi_id, a.tanggal, a.approved, a.dari, b.store as tujuan
+                            FROM {$this->pindah} a
+                            INNER JOIN {$this->store} b ON a.tujuan=b.storeid
+                        ) x
+                        INNER JOIN {$this->store} y ON x.dari=y.storeid
+                        WHERE MONTH(x.tanggal)=? AND YEAR(x.tanggal)=?
+                        AND (
+                                x.mutasi_id LIKE ? OR
+                                x.tanggal LIKE ? OR
+                                y.store LIKE ? OR
+                                x.tujuan LIKE ? OR
+                                IF(x.approved=1,'Diterima',
+                                IF(x.approved=2,'Batal',
+                                    IF(x.approved=3,'Dikirim','Belum'))) LIKE ?
+                        )
+                    ) as t";
+            $params = [$month, $year, $like, $like, $like, $like, $like];
+        }
+
+        $query = $this->db->query($sql, $params);
+        return (int) $query->getRow()->cnt;
     }
 
-    $query = $this->db->query($sql, $params);
-    return $query->getNumRows();
-}
+//     public function posts_search($limit, $start, $search, $col, $dir)
+//     {
+//         $storeid = @$_SESSION["logged_status"]["storeid"];
+//         $role    = @$_SESSION["logged_status"]["role"];
+//         $month   = date("m");
+//         $year    = date("Y");
+//         $like    = "%{$search}%";
+
+//         if ($role == "Store Manager" || $role == "Staff") {
+//             $sql = "SELECT x.mutasi_id, x.tanggal, y.store as dari, x.tujuan, 
+//                         IF(x.approved=1, 'Diterima', IF(x.approved=2, 'Batal', IF(x.approved=3, 'Dikirim', 'Belum'))) as status
+//                     FROM (
+//                         SELECT a.mutasi_id, a.tanggal, a.approved, a.dari, b.store as tujuan
+//                         FROM {$this->pindah} a
+//                         INNER JOIN {$this->store} b ON a.tujuan=b.storeid
+//                         WHERE a.tujuan=?
+//                     ) x
+//                     INNER JOIN {$this->store} y ON x.dari=y.storeid
+//                     WHERE MONTH(x.tanggal)=? AND YEAR(x.tanggal)=?
+//                     AND (mutasi_id LIKE ? OR tanggal LIKE ? OR dari LIKE ? OR tujuan LIKE ?)
+//                     ORDER BY {$col} {$dir} LIMIT {$start}, {$limit}";
+//             $query = $this->db->query($sql, [$storeid, $month, $year, $like, $like, $like, $like]);
+//         } else {
+//             $sql = "SELECT x.mutasi_id, x.tanggal, y.store as dari, x.tujuan, 
+//                         IF(x.approved=1, 'Diterima', IF(x.approved=2, 'Batal', IF(x.approved=3, 'Dikirim', 'Belum'))) as status
+//                     FROM (
+//                         SELECT a.mutasi_id, a.tanggal, a.approved, a.dari, b.store as tujuan
+//                         FROM {$this->pindah} a
+//                         INNER JOIN {$this->store} b ON a.tujuan=b.storeid
+//                     ) x
+//                     INNER JOIN {$this->store} y ON x.dari=y.storeid
+//                     WHERE MONTH(x.tanggal)=? AND YEAR(x.tanggal)=?
+//                     AND (mutasi_id LIKE ? OR tanggal LIKE ? OR dari LIKE ? OR tujuan LIKE ?)
+//                     ORDER BY {$col} {$dir} LIMIT {$start}, {$limit}";
+//             $query = $this->db->query($sql, [$month, $year, $like, $like, $like, $like]);
+//         }
+
+//         return $query->getResultArray(); // CI4 style
+//     }
+//     // 
+//     public function posts_search_count($search)
+// {
+//     $storeid = @$_SESSION["logged_status"]["storeid"];
+//     $role    = @$_SESSION["logged_status"]["role"];
+//     $month   = date("m");
+//     $year    = date("Y");
+//     $like    = "%{$search}%";
+
+//     if ($role == "Store Manager" || $role == "Staff") {
+//         $sql = "SELECT x.mutasi_id, x.tanggal, y.store as dari, x.tujuan,
+//                     IF(x.approved=1,'Diterima',IF(x.approved=2,'Batal',IF(x.approved=3,'Dikirim','Belum'))) as status
+//                 FROM (
+//                     SELECT a.mutasi_id, a.tanggal, a.approved, a.dari, b.store as tujuan
+//                     FROM {$this->pindah} a
+//                     INNER JOIN {$this->store} b ON a.tujuan=b.storeid
+//                     WHERE a.tujuan=?
+//                 ) x
+//                 INNER JOIN {$this->store} y ON x.dari=y.storeid
+//                 WHERE MONTH(x.tanggal)=? AND YEAR(x.tanggal)=?
+//                   AND (mutasi_id LIKE ? OR tanggal LIKE ? OR dari LIKE ? OR tujuan LIKE ?)";
+//         $params = [$storeid, $month, $year, $like, $like, $like, $like];
+//     } else {
+//         $sql = "SELECT x.mutasi_id, x.tanggal, y.store as dari, x.tujuan,
+//                     IF(x.approved=1,'Diterima',IF(x.approved=2,'Batal',IF(x.approved=3,'Dikirim','Belum'))) as status
+//                 FROM (
+//                     SELECT a.mutasi_id, a.tanggal, a.approved, a.dari, b.store as tujuan
+//                     FROM {$this->pindah} a
+//                     INNER JOIN {$this->store} b ON a.tujuan=b.storeid
+//                 ) x
+//                 INNER JOIN {$this->store} y ON x.dari=y.storeid
+//                 WHERE MONTH(x.tanggal)=? AND YEAR(x.tanggal)=?
+//                   AND (mutasi_id LIKE ? OR tanggal LIKE ? OR dari LIKE ? OR tujuan LIKE ?)";
+//         $params = [$month, $year, $like, $like, $like, $like];
+//     }
+
+//     $query = $this->db->query($sql, $params);
+//     return $query->getNumRows();
+// }
 
 public function allposts_countkonfirm()
 {

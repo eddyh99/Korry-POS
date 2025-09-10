@@ -167,33 +167,33 @@ class KasModel extends Model
         return $mdata;
     }
 
-    // public function setSisa($data)
-    // {
-    //     $today = date("Y-m-d");
-    //     $sql = "SELECT * FROM kas WHERE dateonly=? AND storeid=? AND jenis='Kas Sisa'";
-    //     $query = $this->db->query($sql, [$today, $data['storeid']]);
-
-    //     if ($query->getNumRows() > 0) {
-    //         return ['code' => 5051];
-    //     } else {
-    //         $this->insert($data);
-    //         return ['code' => 0];
-    //     }
-    // }
-    public function setSisa($data) 
+    public function setSisa($data)
     {
-        $tanggal = $data['tanggal']; // ambil tanggal dari form, bukan hari ini
-
+        $today = date("Y-m-d");
         $sql = "SELECT * FROM kas WHERE dateonly=? AND storeid=? AND jenis='Kas Sisa'";
-        $query = $this->db->query($sql, [$tanggal, $data['storeid']]);
+        $query = $this->db->query($sql, [$today, $data['storeid']]);
 
         if ($query->getNumRows() > 0) {
-            return ['code' => 5051]; // apabila sudah pernah ditutup utk tanggal tsb
+            return ['code' => 5051];
         } else {
             $this->insert($data);
             return ['code' => 0];
         }
     }
+    // public function setSisa($data) 
+    // {
+    //     $tanggal = $data['tanggal']; // ambil tanggal dari form, bukan hari ini
+
+    //     $sql = "SELECT * FROM kas WHERE dateonly=? AND storeid=? AND jenis='Kas Sisa'";
+    //     $query = $this->db->query($sql, [$tanggal, $data['storeid']]);
+
+    //     if ($query->getNumRows() > 0) {
+    //         return ['code' => 5051]; // apabila sudah pernah ditutup utk tanggal tsb
+    //     } else {
+    //         $this->insert($data);
+    //         return ['code' => 0];
+    //     }
+    // }
 
 
     public function notclosedstore()

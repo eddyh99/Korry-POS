@@ -183,6 +183,57 @@ class ReturModel extends Model
         $this->db->table($this->tblretur)->insert($retur);
         $returid = $this->db->insertID();
 
+        // Detail retur (hanya insert kalau ada data)
+        $detailretur = [];
+        foreach ($barangretur as $dt) {
+            $detailretur[] = [
+                "id"      => $returid,
+                "barcode" => $dt[0] ?? null,
+                "size"    => $dt[1] ?? null,
+                "jumlah"  => $dt[2] ?? 0
+            ];
+        }
+        if (!empty($detailretur)) {
+            $this->db->table($this->detretur)->insertBatch($detailretur);
+        }
+
+        // Insert penjualan
+        $this->db->table($this->penjualan)->insert($jual);
+        $id = $this->db->insertID();
+
+        // Detail penjualan (hanya insert kalau ada data)
+        $detail = [];
+        foreach ($barang as $dt) {
+            $detail[] = [
+                "id"      => $id,
+                "barcode" => $dt[0] ?? null,
+                "size"    => $dt[2] ?? null,
+                "jumlah"  => $dt[3] ?? 0,
+                "diskonn" => $dt[5] ?? 0,
+                "diskonp" => $dt[6] ?? 0,
+                "alasan"  => $dt[8] ?? null
+            ];
+        }
+        if (!empty($detail)) {
+            $this->db->table($this->detjual)->insertBatch($detail);
+        }
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus()) {
+            return ["code" => 0, "message" => "Sukses simpan retur"];
+        } else {
+            return ["code" => 1, "message" => "Transaksi gagal"];
+        }
+    }
+    public function insertData1($jual, $barang, $retur, $barangretur)
+    {
+        $this->db->transStart();
+
+        // Insert retur
+        $this->db->table($this->tblretur)->insert($retur);
+        $returid = $this->db->insertID();
+
         // Detail retur
         $detailretur = [];
         foreach ($barangretur as $dt) {

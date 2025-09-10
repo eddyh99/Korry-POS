@@ -561,10 +561,10 @@ class ProdukModel extends Model
 
     public function posts_search($limit, $start, $search, $col, $dir)
     {
-        $sql = "SELECT a.*, x.harga, x.diskon
+        $sql = "SELECT a.*, x.harga, x.harga_konsinyasi, x.harga_wholesale, x.diskon
                 FROM {$this->produk} a
                 INNER JOIN (
-                    SELECT a.harga, a.barcode, a.diskon
+                    SELECT a.harga, a.harga_konsinyasi, a.harga_wholesale, a.barcode, a.diskon
                     FROM {$this->harga} a
                     INNER JOIN (
                         SELECT MAX(tanggal) as tanggal, barcode
@@ -577,21 +577,22 @@ class ProdukModel extends Model
                 WHERE (a.barcode LIKE ? 
                     OR namaproduk LIKE ? 
                     OR namabrand LIKE ? 
-                    OR namakategori LIKE ? 
+                    OR namakategori LIKE ?
+                    OR sku LIKE ? 
                     OR harga LIKE ?)
                 ORDER BY {$col} {$dir}
                 LIMIT {$start}, {$limit}";
 
         $like = "%{$search}%";
-        return $this->db->query($sql, [$like, $like, $like, $like, $like])->getResultArray();
+        return $this->db->query($sql, [$like, $like, $like, $like, $like, $like])->getResultArray();
     }
 
     public function posts_search_count($search)
     {
-        $sql = "SELECT a.*, x.harga, x.diskon
+        $sql = "SELECT a.*, x.harga, x.harga_konsinyasi, x.harga_wholesale, x.diskon
                 FROM {$this->produk} a
                 INNER JOIN (
-                    SELECT a.harga, a.barcode, a.diskon
+                    SELECT a.harga, a.harga_konsinyasi, a.harga_wholesale, a.barcode, a.diskon
                     FROM {$this->harga} a
                     INNER JOIN (
                         SELECT MAX(tanggal) as tanggal, barcode
@@ -605,10 +606,11 @@ class ProdukModel extends Model
                     OR namaproduk LIKE ? 
                     OR namabrand LIKE ? 
                     OR namakategori LIKE ? 
+                    OR sku LIKE ?
                     OR harga LIKE ?)";
 
         $like = "%{$search}%";
-        return $this->db->query($sql, [$like, $like, $like, $like, $like])->getNumRows();
+        return $this->db->query($sql, [$like, $like, $like, $like, $like, $like])->getNumRows();
     }
 
     public function insertbatchData($data)
@@ -670,8 +672,6 @@ class ProdukModel extends Model
 
         return $this->db->query($sql, [$barcode])->getResult();
     }
-
-
     public function setProdukBahan($barcode, $idbahanArr, $jumlahArr)
     {
         // hapus dulu bahan lama
@@ -696,6 +696,32 @@ class ProdukModel extends Model
         }
     }
 
+    public function getProdukBiaya($barcode)
+    {
+        $sql = "SELECT pb.namabiaya, pb.nominal, bp.namabiayaproduksi
+                FROM produk_biaya pb
+                LEFT JOIN biaya_produksi bp ON bp.namabiayaproduksi = pb.namabiaya
+                WHERE pb.barcode = ?";
+
+        return $this->db->query($sql, [$barcode])->getResult();
+    }
+    public function setProdukBiaya($barcode, $namaBiayaArr, $nominalArr)
+    {
+        // hapus dulu biaya lama
+        $this->db->table('produk_biaya')->where('barcode', $barcode)->delete();
+
+        if (!empty($namaBiayaArr) && is_array($namaBiayaArr)) {
+            foreach ($namaBiayaArr as $idx => $namabiaya) {
+                if (!empty($namabiaya) && !empty($nominalArr[$idx])) {
+                    $this->db->table('produk_biaya')->insert([
+                        'barcode'  => $barcode,
+                        'namabiaya'=> $namabiaya,
+                        'nominal'  => $nominalArr[$idx]
+                    ]);
+                }
+            }
+        }
+    }
 }
 
 
