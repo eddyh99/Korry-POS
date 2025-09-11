@@ -222,22 +222,22 @@
                             <li class="<?=@$side26?>">
                                 <a href="<?=base_url()?>admin/laporan/mutasidetail">Persediaan Detail</a>
                             </li>
-                            <li class="<?=@$side27?>">
+                            <!-- <li class="<?=@$side27?>">
                                 <a href="<?=base_url()?>admin/laporan/penjualan">Penjualan</a>
                             </li>
-
-                            <li class="<?=@$side28?>">
+ -->
+                            <!-- <li class="<?=@$side28?>">
                                 <a href="<?=base_url()?>admin/laporan/brand">Penjualan Brand</a>
-                            </li>
+                            </li> -->
                             <li class="<?=@$side29?>">
                                 <a href="<?=base_url()?>admin/laporan/barang">Drop In/Drop Out</a>
                             </li>
-                            <li class="<?=@$side30?>">
+                            <!-- <li class="<?=@$side30?>">
                                 <a href="<?=base_url()?>admin/laporan/nontunai">Non Tunai</a>
                             </li>
                             <li class="<?=@$side32?>">
                                 <a href="<?=base_url()?>admin/laporan/retur">Retur Konsumen</a>
-                            </li>
+                            </li> -->
                             <li class="<?=@$side33?>">
                                 <a href="<?=base_url()?>admin/laporan/stokout">Stok Out</a>
                             </li>
@@ -299,9 +299,9 @@
                             <li class="<?=@$side12?>">
                                 <a href="<?=base_url()?>admin/laporan/barang">Drop In/Drop Out</a>
                             </li>
-                            <li class="<?=@$side14?>">
+                            <!-- <li class="<?=@$side14?>">
                                 <a href="<?=base_url()?>admin/laporan/nontunai">Non Tunai</a>
-                            </li>
+                            </li> -->
                             <li class="<?=@$side17?>">
                                 <a href="<?=base_url()?>admin/laporan/request">Permintaan</a>
                             </li>
@@ -320,12 +320,12 @@
     					<p>Kas</p>
     				</a>
     			</li>
-    			<li class="<?=@$mn_tutup?>">
+    			<!-- <li class="<?=@$mn_tutup?>">
     				<a href="<?=base_url()?>staff/kas/tutupharian">
     					<i class="fas fa-file-invoice-dollar"></i>
     					<p>Rekapan Harian</p>
     				</a>
-    			</li>
+    			</li> -->
     			<li class="<?=@$mn_req?>">
     				<a href="<?=base_url()?>admin/moving">
     					<i class="fas fa-box"></i>

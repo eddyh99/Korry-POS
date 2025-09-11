@@ -655,58 +655,55 @@ class LaporanModel extends Model
     public function getpenjualan($awal, $akhir, $storeid)
     {
         $sql = "
-            SELECT a.*, c.nama AS kasir, d.nama AS member 
+            SELECT
+                a.id,
+                a.nonota,
+                a.tanggal,
+                COALESCE(d.nama, '') AS member,
+                c.nama AS kasir,
+                a.method,
+                COALESCE(SUM(pd.diskonn), 0) AS diskonn,
+                COALESCE(SUM(pd.diskonp), 0) AS diskonp,
+                COALESCE(SUM(
+                    (pd.jumlah * COALESCE((
+                        SELECT h.harga
+                        FROM {$this->harga} h
+                        WHERE h.barcode = pd.barcode
+                        AND h.tanggal <= a.tanggal
+                        ORDER BY h.tanggal DESC
+                        LIMIT 1
+                    ), 0))
+                    - pd.diskonn - pd.diskonp
+                ), 0) AS total
             FROM {$this->penjualan} a
             INNER JOIN pengguna c ON a.userid = c.username
             LEFT JOIN member d ON a.member_id = d.member_id
+            INNER JOIN {$this->penjualan_detail} pd ON pd.id = a.id
             WHERE DATE(a.tanggal) BETWEEN ? AND ?
-            AND IF(? != 'All', storeid, 'All') = ?
+            AND (? = 'All' OR a.storeid = ?)
             AND a.id NOT IN (SELECT jual_id FROM retur)
+            GROUP BY a.id, a.nonota, a.tanggal, d.nama, c.nama, a.method
+            ORDER BY a.tanggal
         ";
 
-        $penjualan = $this->db->query($sql, [$awal, $akhir, $storeid, $storeid])->getResultArray();
+        $rows = $this->db->query($sql, [$awal, $akhir, $storeid, $storeid])->getResultArray();
 
-        $mdata = [];
-        foreach ($penjualan as $dt) {
-            $temp = [
-                "id"      => $dt["id"],
-                "nonota"  => $dt["nonota"],
-                "tanggal" => $dt["tanggal"],
-                "member"  => $dt["member"],
-                "kasir"   => $dt["kasir"],
-                "method"  => $dt["method"],
-                "diskonn" => 0,
-                "diskonp" => 0,
-                "total"   => 0
+        // Pastikan tipe data konsisten sebelum dikembalikan
+        return array_map(function($r) {
+            return [
+                'id'      => $r['id'],
+                'nonota'  => $r['nonota'],
+                'tanggal' => $r['tanggal'],
+                'member'  => $r['member'],
+                'kasir'   => $r['kasir'],
+                'method'  => $r['method'],
+                'diskonn' => (int)$r['diskonn'],
+                'diskonp' => (int)$r['diskonp'],
+                'total'   => (float)$r['total'],
             ];
-
-            // Ambil detail penjualan
-            $dsql = "SELECT * FROM {$this->penjualan_detail} WHERE id = ?";
-            $detail = $this->db->query($dsql, [$dt["id"]])->getResultArray();
-
-            foreach ($detail as $det) {
-                $temp["diskonn"] += $det["diskonn"];
-                $temp["diskonp"] += $det["diskonp"];
-
-                // Ambil harga terbaru sebelum tanggal transaksi
-                $sqlHarga = "
-                    SELECT harga 
-                    FROM {$this->harga} 
-                    WHERE tanggal <= ? AND barcode = ?
-                    ORDER BY tanggal DESC 
-                    LIMIT 1
-                ";
-                $hargaRow = $this->db->query($sqlHarga, [$dt["tanggal"], $det["barcode"]])->getRow();
-
-                $harga = $hargaRow ? $hargaRow->harga : 0;
-                $temp["total"] += ($det["jumlah"] * $harga) - $det["diskonn"] - $det["diskonp"];
-            }
-
-            $mdata[] = $temp;
-        }
-
-        return $mdata;
+        }, $rows);
     }
+
 
     // DETAIL Penjualan
     public function detailpenjualan($id)
