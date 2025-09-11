@@ -925,7 +925,59 @@ class LaporanModel extends Model
     }
 
     // Retur
-    public function getretur($awal, $akhir, $storeid)
+    public function getRetur($awal, $akhir, $storeid)
+    {
+        $sql = "
+            SELECT 
+                a.id AS retur_id,
+                a.tanggal,
+                d.tanggal AS tgljual,
+                a.jual_id,
+                b.barcode,
+                b.size,
+                b.jumlah,
+                c.namaproduk,
+                c.namabrand
+            FROM retur a
+            INNER JOIN retur_detail b ON a.id = b.id
+            INNER JOIN produk c ON b.barcode = c.barcode
+            INNER JOIN penjualan d ON a.jual_id = d.id
+            WHERE DATE(a.tanggal) BETWEEN ? AND ?
+            AND (? = 'all' OR a.storeid = ?)
+        ";
+
+        $detail = $this->db->query($sql, [$awal, $akhir, strtolower($storeid), $storeid])->getResultArray();
+
+        $mdata = [];
+        foreach ($detail as $det) {
+            // ambil harga terakhir sebelum tanggal jual
+            $hargaSql = "
+                SELECT harga, diskon
+                FROM {$this->harga}
+                WHERE tanggal <= ? AND barcode = ?
+                ORDER BY tanggal DESC
+                LIMIT 1
+            ";
+            $hargaRow = $this->db->query($hargaSql, [$det["tgljual"], $det["barcode"]])->getRow();
+
+            $harga  = $hargaRow ? $hargaRow->harga : 0;
+            $diskon = $hargaRow ? $hargaRow->diskon : 0;
+
+            $mdata[] = [
+                "id"         => $det["retur_id"],
+                "tanggal"    => $det["tanggal"],
+                "jual_id"    => $det["jual_id"],
+                "namaproduk" => $det["namaproduk"],
+                "namabrand"  => $det["namabrand"],
+                "jumlah"     => $det["jumlah"],
+                "harga"      => $harga,
+                "total"      => ($det["jumlah"] * $harga) - $diskon
+            ];
+        }
+
+        return $mdata;
+    }
+    public function getretur1($awal, $akhir, $storeid)
     {
         $sql = "
             SELECT a.id, a.tanggal, d.tanggal as tgljual, a.jual_id, b.*, c.namaproduk, c.namabrand

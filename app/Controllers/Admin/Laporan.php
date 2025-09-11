@@ -336,7 +336,7 @@ class Laporan extends BaseApiController
         $awal   = date_format(date_create(trim($tgl[0])), "Y-m-d");
         $akhir  = date_format(date_create(trim($tgl[1])), "Y-m-d");
 
-        $result = $this->laporan->getretur($awal, $akhir, $storeid);
+        $result = $this->laporan->getRetur($awal, $akhir, $storeid);
 
         return $this->response->setJSON($result);
     }
