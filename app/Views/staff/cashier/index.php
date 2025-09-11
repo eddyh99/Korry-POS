@@ -246,6 +246,8 @@
 							<option value="cash">Cash</option>
 							<option value="debit">Debit Card</option>
 							<option value="credit">Credit Card</option>
+							<option value="qris">QRis</option>
+							<option value="transfer">Transfer</option>
 						</select>
 					</div>
 				</div>

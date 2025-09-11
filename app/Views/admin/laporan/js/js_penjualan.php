@@ -67,7 +67,7 @@ var table;
             "aoColumnDefs": [{
 				"aTargets": [8],
 				"mRender": function (data, type, full, meta){
-				    var button='<a href="<?=base_url()?>admin/laporan/detail/'+full.id+'" title="Detail Transaksi" class="btn btn-primary btn-sm"><i class="fas fa-info"></i> Detail</a>';
+				    var button='<a href="<?=base_url()?>admin/laporan/penjualandetail/'+full.id+'" title="Detail Transaksi" class="btn btn-primary btn-sm"><i class="fas fa-info"></i> Detail</a>';
 					return button;
 				}
 		    }],
