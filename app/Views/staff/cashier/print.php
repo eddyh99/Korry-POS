@@ -102,7 +102,7 @@
     <td><?=$i++?></td>
     <td><?=$dt["namaproduk"]?></td>
     <td><?=$dt["size"]?></td>
-    <td>-</td>
+    <td><?=$dt["namawarna"]?></td>
     <td><?=$dt["barcode"]?></td>
     <td class="num"><?=$dt["jumlah"]?></td>
     <td class="num"><?=number_format($dt["harga"])?></td>
@@ -126,38 +126,9 @@
     <td class="value">0</td>
   </tr>
   <tr class="regular">
-    <td class="label">Total</td>
-    <td class="value">IDR <?=number_format($subtotal)?></td>
+    <td class="label regular-bold">Total</td>
+    <td class="value regular-bold">IDR <?=number_format($subtotal)?></td>
   </tr>
-  <tr class="regular underline">
-    <td class="label">Down Payment</td>
-    <td class="value">IDR <?=number_format($subtotal/2)?></td>
-  </tr>
-  <tr>
-    <td class="label regular-bold">Amount Due</td>
-    <td class="value regular-bold">IDR <?=number_format($subtotal/2)?></td>
-  </tr>
-</table>
-
-<br><br><br>
-
-<div class="bold-wide">TERMS</div>
-<div class="regular">
-  Please settle the remaining balance to proceed with shipment.<br>
-  Payment is due within 15 days.
-</div>
-
-<br>
-
-<div class="bold-wide">PAYMENT METHOD VIA BANK TRANSFER</div>
-<table class="bank-info regular">
-  <tr><td class="label">ACCOUNT NAME</td><td class="sep">:</td><td class="value">XXXXXXXX</td></tr>
-  <tr><td class="label">ACCOUNT NUMBER</td><td class="sep">:</td><td class="value">XXXXXXXX</td></tr>
-  <tr><td class="label">BANK NAME</td><td class="sep">:</td><td class="value">XXXXXXXX</td></tr>
-  <tr><td class="label">BRANCH</td><td class="sep">:</td><td class="value">XXXXXXXX</td></tr>
-  <tr><td class="label">SWIFT CODE (for international transfer)</td><td class="sep">:</td><td class="value">XXXXXXXX</td></tr>
-  <tr><td class="label">CURRENCY</td><td class="sep">:</td><td class="value">XXXXXXXX</td></tr>
-  <tr><td class="label">COUNTRY</td><td class="sep">:</td><td class="value">XXXXXXXX</td></tr>
 </table>
 
 <script>

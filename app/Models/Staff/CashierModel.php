@@ -326,7 +326,7 @@ public function insertData($jual, $barang)
                 WHERE a.id=?";
         $mdata["header"] = $this->db->query($sql, [$id])->getRow();
 
-        $sql = "SELECT a.*,b.namaproduk 
+        $sql = "SELECT a.*,b.namaproduk, b.namawarna 
                 FROM {$this->penjualan_detail} a 
                 INNER JOIN {$this->produk} b ON a.barcode=b.barcode 
                 WHERE a.id=?";
@@ -338,6 +338,7 @@ public function insertData($jual, $barang)
             $mdata["detail"][$i]["namaproduk"] = $detjual["namaproduk"];
             $mdata["detail"][$i]["jumlah"]     = $detjual["jumlah"];
             $mdata["detail"][$i]["size"]       = $detjual["size"];
+            $mdata["detail"][$i]["namawarna"]  = $detjual["namawarna"];
             $mdata["detail"][$i]["diskonn"]    = $detjual["diskonn"];
             $mdata["detail"][$i]["diskonp"]    = $detjual["diskonp"];
 
